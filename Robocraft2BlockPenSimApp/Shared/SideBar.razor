@@ -1,0 +1,74 @@
+﻿<header class="" style="width: 300px;">
+    <div class="card h-100">
+        <div class="card-header">
+            <h1 class="h3 text-center">Robocraft 2 Block Penetraton Simulator</h1>
+        </div>
+        <div class="card-body">
+            <form>
+                <section>
+                    <h2 class="h5">Block Fill Constraints</h2>
+                    <label class="">CPU</label>
+                    <div class="input-group">
+                        <label for="inputCpuMin" aria-label="CPU Min" class="input-group-text">Min</label>
+                        <input id="inputCpuMin" type="number" min="0" max="940" step="1" @bind-value=@Cpu.Min class="form-control @(Cpu.Min < 0 || Cpu.Min > 940 ? "is-invalid" : "")" />
+                        <label for="inputCpuMax" aria-label="CPU Max" class="input-group-text">Max</label>
+                        <input id="inputCpuMax" type="number" min="0" max="940" step="1" @bind-value=@Cpu.Max class="form-control @(Cpu.Max < 0 || Cpu.Max > 940 ? "is-invalid" : "")" />
+                    </div>
+                    <label class="">Weight (kg)</label>
+                    <div class="input-group">
+                        <label for="inputWeightMin" aria-label="Weight Min" class="input-group-text">Min</label>
+                        <input id="inputWeightMin" type="number" min="0" max="1825344" step="1" @bind-value=@Weight.Min class="form-control @(Weight.Min < 0 || Weight.Min > 1825344 ? "is-invalid" : "")" />
+                        <label for="inputWeightMax" aria-label="Weight Max" class="input-group-text">Max</label>
+                        <input id="inputWeightMax" type="number" min="0" max="1825344" step="1" @bind-value=@Weight.Max class="form-control @(Weight.Max < 0 || Weight.Max > 1825344 ? "is-invalid" : "")" />
+                    </div>
+                    <label class="" title="The distance in blocks between the front and back sides.">Length (blocks)</label>
+                    <div class="input-group">
+                        <label for="inputLengthMin" aria-label="Length Min" class="input-group-text">Min</label>
+                        <input id="inputLengthMin" type="number" min="0" max="63" step="1" @bind-value=@Length.Min class="form-control @(Length.Min < 0 || Length.Min > 63 ? "is-invalid" : "")" />
+                        <label for="inputLengthMax" aria-label="Length Max" class="input-group-text">Max</label>
+                        <input id="inputLengthMax" type="number" min="0" max="63" step="1" @bind-value=@Length.Max class="form-control @(Length.Max < 0 || Length.Max > 63 ? "is-invalid" : "")" />
+                    </div>
+                    <label class="" title="The distance in blocks between the right and left sides.">Width (blocks)</label>
+                    <div class="input-group">
+                        <label for="inputWidthMin" aria-label="Width Min" class="input-group-text">Min</label>
+                        <input id="inputWidthMin" type="number" min="0" max="63" step="1" @bind-value=@Width.Min class="form-control @(Width.Min < 0 || Width.Min > 63 ? "is-invalid" : "")" />
+                        <label for="inputWidthMax" aria-label="Width Max" class="input-group-text">Max</label>
+                        <input id="inputWidthMax" type="number" min="0" max="63" step="1" @bind-value=@Width.Max class="form-control @(Width.Max < 0 || Width.Max > 63 ? "is-invalid" : "")" />
+                    </div>
+                    <label class="" title="The distance in blocks between the bottom and top sides.">Height (blocks)</label>
+                    <div class="input-group">
+                        <label for="inputHeightMin" aria-label="Height Min" class="input-group-text">Min</label>
+                        <input id="inputHeightMin" type="number" min="0" max="63" step="1" @bind-value=@Height.Min class="form-control @(Height.Min < 0 || Height.Min > 63 ? "is-invalid" : "")" />
+                        <label for="inputHeightMax" aria-label="Height Max" class="input-group-text">Max</label>
+                        <input id="inputHeightMax" type="number" min="0" max="63" step="1" @bind-value=@Height.Max class="form-control @(Height.Max < 0 || Height.Max > 63 ? "is-invalid" : "")" />
+                    </div>
+                </section>
+                <section>
+                    <h2 class="h5 my-2">Weapon Count</h2>
+                </section>
+                <section>
+                    <h2 class="h5 my-2">Weapon Score Ratio</h2>
+                </section>
+                <section>
+                    <h2 class="h5 my-2">Direction Score Ratio</h2>
+                </section>
+            </form>
+        </div>
+    </div>
+</header>
+
+@code {
+    struct MinMax
+    {
+        private double min;
+        private double max;
+        public double Min { get => min; set { min = value; max = Math.Max(value, max); } }
+        public double Max { get => max; set { max = value; min = Math.Min(value, min); } }
+    }
+
+    private MinMax Cpu = new MinMax { Min = 0, Max = 100, };
+    private MinMax Weight = new MinMax { Min = 0, Max = 4000, };
+    private MinMax Length = new MinMax { Min = 4, Max = 9 };
+    private MinMax Width = new MinMax { Min = 9, Max = 9 };
+    private MinMax Height = new MinMax { Min = 9, Max = 9 };
+}
