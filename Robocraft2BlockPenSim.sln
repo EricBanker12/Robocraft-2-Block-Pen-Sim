@@ -7,7 +7,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Robocraft2BlockPenSim", "Ro
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Robocraft2BlockPenSimApp", "Robocraft2BlockPenSimApp\Robocraft2BlockPenSimApp.csproj", "{7646D536-B583-4338-8C5F-F961D7C8C567}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AppLauncher", "AppLauncher\AppLauncher.csproj", "{9C309D07-6FBF-403E-BA9C-B0D22205BDFA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AppLauncher", "AppLauncher\AppLauncher.csproj", "{9C309D07-6FBF-403E-BA9C-B0D22205BDFA}"
 	ProjectSection(ProjectDependencies) = postProject
 		{7646D536-B583-4338-8C5F-F961D7C8C567} = {7646D536-B583-4338-8C5F-F961D7C8C567}
 	EndProjectSection

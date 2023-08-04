@@ -1,8 +1,122 @@
-﻿@page "/"
+﻿@using Robocraft2BlockPenSimApp.Data;
+@using Robocraft2BlockPenSimApp.Shared.Models;
+@using Robocraft2BlockPenSimApp.Shared.Components;
+@using Robocraft2BlockPenSimApp.Shared.State;
+@using System.Data;
+@page "/"
 
-<div class="d-flex vh-100">
-    <SideBar />
-    <main>
-        <h1>Hello World!</h1>
-    </main>
-</div>
+@if (State == null || SimData == null)
+{
+    <h1>Loading...</h1>
+}
+else
+{
+    <div class="d-flex vh-100 vw-100">
+        <SideBar State="State" OnSubmit="OnSubmit" />
+        <main class="flex-grow-1" style="width: 1px;">
+            <ResultsTable State="State" Data="SimData" SortData="SortData" />
+        </main>
+    </div>
+}
+
+@code {
+    #nullable enable
+    private PageStateIndex? State;
+    private BlockPenSimulator? Sim;
+    private DataTable? SimData;
+
+    private void SortData(string columnName)
+    {
+        if (SimData == null) return;
+        if (State == null) return;
+
+        var sortDirection = SortDirection.DESC;
+        if (State.SortColumn == columnName && State.SortDirection == SortDirection.DESC)
+            sortDirection = SortDirection.ASC;
+
+        if (SimData.Columns.Contains(columnName))
+        {
+            var tempView = new DataView(SimData);
+            tempView.Sort = $"{columnName} {sortDirection}";
+
+            var oldData = SimData;
+            SimData = tempView.ToTable();
+            oldData.Dispose();
+
+            State.SortColumn = columnName;
+            State.SortDirection = sortDirection;
+
+            StateHasChanged();
+        }
+    }
+
+    private async Task UpdateData()
+    {
+        if (State == null) return;
+        if (Sim == null) return;
+
+        // Run sim and update table.
+        var oldData = SimData;
+        SimData = await Sim.Run(State);
+        if (oldData != null) {
+            oldData.Clear();
+            oldData.Dispose();
+        }
+
+        if (SimData.Rows.Count > 0)
+        {
+            var tempView = new DataView(SimData);
+            var columnIndex = SimData.Columns.Count - 3;
+            var columnName = SimData.Columns[columnIndex].ColumnName;
+            tempView.Sort = $"{columnName} {SortDirection.DESC}";
+            State.MaxScore = (double)tempView[0].Row.ItemArray[columnIndex];
+
+            columnIndex = SimData.Columns.Count - 2;
+            columnName = SimData.Columns[columnIndex].ColumnName;
+            tempView.Sort = $"{columnName} {SortDirection.DESC}";
+            State.MaxScorePerCpu = (double)tempView[0].Row.ItemArray[columnIndex];
+
+            columnIndex = SimData.Columns.Count - 1;
+            columnName = SimData.Columns[columnIndex].ColumnName;
+            tempView.Sort = $"{columnName} {SortDirection.DESC}";
+            State.MaxScorePerWeight = (double)tempView[0].Row.ItemArray[columnIndex];
+        }
+
+        State.SortColumn = string.Empty;
+
+        State.SavePreferences();
+        StateHasChanged();
+    }
+
+    private async void OnSubmit() { await UpdateData(); }
+
+    protected override async Task OnInitializedAsync()
+    {
+        State = new PageStateIndex();
+        State.LoadPreferences();
+
+        var blockData = await BlockData.GetData();
+        State.Weapons = blockData.weapons;
+        State.Materials = blockData.materials;
+        State.Directions = Enum.GetNames(typeof(Direction));
+
+        // update preferences array length in case new materials/weapons were added
+        var arr = new double[State.Weapons.Length];
+        for (int i = 0; i < arr.Length && i < State.WeaponCount.Length; i++) arr[i] = State.WeaponCount[i];
+        State.WeaponCount = arr;
+
+        arr = new double[State.Weapons.Length];
+        for (int i = 0; i < arr.Length && i < State.WeaponRatio.Length; i++) arr[i] = State.WeaponRatio[i];
+        State.WeaponRatio = arr;
+
+        arr = new double[State.Directions.Length];
+        for (int i = 0; i < arr.Length && i < State.DirectionRatio.Length; i++) arr[i] = State.DirectionRatio[i];
+        State.DirectionRatio = arr;
+
+        Sim = new BlockPenSimulator(State.Weapons);
+
+        await UpdateData();
+
+        await base.OnInitializedAsync();
+    }
+}

@@ -6,7 +6,7 @@ using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
-using static Robocraft2BlockPenSimApp.Data.Structs;
+using Robocraft2BlockPenSimApp.Shared.Models;
 
 namespace Robocraft2BlockPenSimApp.Data
 {
