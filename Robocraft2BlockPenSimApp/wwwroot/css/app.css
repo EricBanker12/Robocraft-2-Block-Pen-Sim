@@ -8,18 +8,21 @@ h1:focus {
     outline: none;
 }
 
-a, .btn-link {
-    color: #0071c1;
-}
-
-.btn-primary {
-    color: #fff;
-    background-color: #1b6ec2;
-    border-color: #1861ac;
-}
-
-.content {
-    padding-top: 1.1rem;
+.btn-primary-subtle {
+    --bs-btn-color: #fff;
+    --bs-btn-bg: #031633;
+    --bs-btn-border-color: #031633;
+    --bs-btn-hover-color: #fff;
+    --bs-btn-hover-bg: #052759;
+    --bs-btn-hover-border-color: #062c66;
+    --bs-btn-focus-shadow-rgb: 19, 42, 77;
+    --bs-btn-active-color: #fff;
+    --bs-btn-active-bg: #062c66;
+    --bs-btn-active-border-color: #073273;
+    --bs-btn-active-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
+    --bs-btn-disabled-color: #fff;
+    --bs-btn-disabled-bg: #031633;
+    --bs-btn-disabled-border-color: #031633;
 }
 
 .valid.modified:not([type=checkbox]) {

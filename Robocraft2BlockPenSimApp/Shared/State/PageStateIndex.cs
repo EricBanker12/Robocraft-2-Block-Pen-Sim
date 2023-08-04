@@ -67,7 +67,7 @@ namespace Robocraft2BlockPenSimApp.Shared.State
                 this.WeaponRatio = pref.WeaponRatio;
                 this.DirectionRatio = pref.DirectionRatio;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 this.Cpu = defaultState.Cpu;
                 this.Weight = defaultState.Weight;

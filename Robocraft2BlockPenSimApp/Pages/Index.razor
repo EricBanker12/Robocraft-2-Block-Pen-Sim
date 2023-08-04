@@ -39,6 +39,7 @@ else
             var tempView = new DataView(SimData);
             tempView.Sort = $"{columnName} {sortDirection}";
 
+            // Remake table instead of update default view sort to trigger dependency rerender
             var oldData = SimData;
             SimData = tempView.ToTable();
             oldData.Dispose();
@@ -69,17 +70,20 @@ else
             var columnIndex = SimData.Columns.Count - 3;
             var columnName = SimData.Columns[columnIndex].ColumnName;
             tempView.Sort = $"{columnName} {SortDirection.DESC}";
-            State.MaxScore = (double)tempView[0].Row.ItemArray[columnIndex];
+            var tempObj = tempView[0].Row.ItemArray[columnIndex];
+            if (tempObj is double) State.MaxScore = (double)tempObj;
 
             columnIndex = SimData.Columns.Count - 2;
             columnName = SimData.Columns[columnIndex].ColumnName;
             tempView.Sort = $"{columnName} {SortDirection.DESC}";
-            State.MaxScorePerCpu = (double)tempView[0].Row.ItemArray[columnIndex];
+            tempObj = tempView[0].Row.ItemArray[columnIndex];
+            if (tempObj is double) State.MaxScorePerCpu = (double)tempObj;
 
             columnIndex = SimData.Columns.Count - 1;
             columnName = SimData.Columns[columnIndex].ColumnName;
             tempView.Sort = $"{columnName} {SortDirection.DESC}";
-            State.MaxScorePerWeight = (double)tempView[0].Row.ItemArray[columnIndex];
+            tempObj = tempView[0].Row.ItemArray[columnIndex];
+            if (tempObj is double) State.MaxScorePerWeight = (double)tempObj;
         }
 
         State.SortColumn = string.Empty;

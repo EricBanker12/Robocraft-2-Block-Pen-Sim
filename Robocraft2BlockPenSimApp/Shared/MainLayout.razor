@@ -1,3 +1,16 @@
-﻿@inherits LayoutComponentBase
+﻿@using Microsoft.JSInterop;
+@inherits LayoutComponentBase
 
 @Body
+
+@code {
+    [Inject]
+    IJSRuntime jSRuntime { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (jSRuntime != null)
+            await jSRuntime.InvokeVoidAsync("SetTheme", new string[] { Application.Current.RequestedTheme.ToString() });
+        await base.OnInitializedAsync();
+    }
+}
