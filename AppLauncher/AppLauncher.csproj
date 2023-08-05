@@ -1,14 +1,19 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>net6.0</TargetFramework>
+    <TargetFramework>net7.0-windows</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <ApplicationIcon>appicon.ico</ApplicationIcon>
   </PropertyGroup>
 
-  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="xcopy &quot;$(ProjectDir)..\Robocraft2BlockPenSimApp\bin\$(Configuration)\net7.0-windows10.0.19041.0\win10-x64\*&quot; &quot;$(TargetDir)\Robocraft2BlockPenSimApp\&quot; /e /y" />
+  <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
+    <Exec Command="rd &quot;$(TargetDir)Robocraft2BlockPenSimApp&quot;&#xD;&#xA;mklink /j &quot;$(TargetDir)Robocraft2BlockPenSimApp\&quot; &quot;$(ProjectDir)..\Robocraft2BlockPenSimApp\bin\$(Configuration)\net7.0-windows10.0.20348.0\win10-x64\&quot;" />
   </Target>
+
+  <ItemGroup>
+    <Content Include="appicon.ico" />
+  </ItemGroup>
 
 </Project>

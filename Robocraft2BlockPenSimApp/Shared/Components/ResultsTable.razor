@@ -1,8 +1,17 @@
-﻿@using Robocraft2BlockPenSimApp.Shared.Models;
+﻿@using CommunityToolkit.Maui.Storage;
+@using Robocraft2BlockPenSimApp.Shared.Models;
 @using Robocraft2BlockPenSimApp.Shared.State;
 @using System.Data;
+@using System.Text;
 
 <div class="w-100 h-100 overflow-auto">
+    <div class="position-sticky" style="z-index: 1045; top: 0; left: 0;">
+        <div class="position-relative">
+            <div class="position-absolute" style="top: 5px; right: 5px;">
+                <button @onclick="SaveFile" aria-label="Save" title="Save simulation results to a .csv file." class="btn btn-primary btn-sm px-0" style="width: 30px; height: 30px; border-radius: 50%;">&#x1f4be;</button>
+            </div>
+        </div>
+    </div>
     <table class="table table-striped table-hover table-sm @(Application.Current.RequestedTheme == AppTheme.Dark ? "table-dark" : "")">
         <thead class="position-sticky sticky-top" style="box-shadow: 0 1px 0 @(Application.Current.RequestedTheme == AppTheme.Dark ? "rgba(222, 226, 230, 0.5)" : "black");">
             <tr>
@@ -25,7 +34,7 @@
             </tr>
         </thead>
         <tbody>
-            <Virtualize @key=Data ItemsProvider="DataRowProvider" Context="Row" >
+            <Virtualize @key="Data" ItemsProvider="DataRowProvider" Context="Row" >
                 <tr @key=Row>
                     @for (int i = 0; i < Row.ItemArray.Length; i++)
                     {
@@ -77,6 +86,27 @@
     }
 
     private double Lerp(double y, double x, double s) => x * s + y * (1 - s);
+
+    private async void SaveFile()
+    {
+        var dataStream = new MemoryStream(Encoding.Default.GetBytes(GetCsvString(Data)));
+        var token = new CancellationToken();
+        var result = await FileSaver.Default.SaveAsync("RC2-BlockPenSim-Results.csv", dataStream, token);
+    }
+
+    private string GetCsvString(DataTable data)
+    {
+        var sb = new StringBuilder();
+        sb.AppendJoin(',', data.Columns.OfType<DataColumn>().Select(col => col.ColumnName));
+
+        for (int i = 0; i < data.Rows.Count; i++)
+        {
+            sb.Append("\r\n");
+            sb.AppendJoin(',', data.Rows[i].ItemArray);
+        }
+
+        return sb.ToString();
+    }
 
     private string GetValueString(int idx, DataRow Row)
     {

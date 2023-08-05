@@ -83,12 +83,12 @@
                     </div>
                 </section>
                 <hr />
-                <button class="btn btn-lg btn-primary w-100 @(Application.Current.RequestedTheme == AppTheme.Dark ? "btn-primary-subtle" : "")" type="submit">Run Simulation</button>
+                <button class="btn btn-lg btn-primary w-100" type="submit">Run Simulation</button>
             </form>
         </div>
     </div>
     <div class="position-absolute" style="right: @(State.ShowSideBar ? "5px" : "-35px"); top: 5px; transition: right 0.5s ease; z-index: 1045;">
-        <button class="btn btn-sm btn-primary @(Application.Current.RequestedTheme == AppTheme.Dark ? "btn-primary-subtle" : "")" style="width: 30px; height: 30px; border-radius: 50%;" @onclick="ToggleShowSideBar">@(State.ShowSideBar ? "🞀" : " 🞂")</button>
+        <button class="btn btn-sm btn-primary" style="width: 30px; height: 30px; border-radius: 50%;" @onclick="ToggleShowSideBar"><div class="fs-5" style="transform: translate(@(State.ShowSideBar ? "-0.167ch" : "0.167ch"), -0.25em);">@(State.ShowSideBar ? "🞀" : "🞂")</div></button>
     </div>
 </header>
 
