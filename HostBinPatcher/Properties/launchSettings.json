@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "HostBinPatcher": {
+      "commandName": "Project",
+      "commandLineArgs": "Robocraft2BlockPenSimApp\\Robocraft2BlockPenSimApp.exe"
+    }
+  }
+}

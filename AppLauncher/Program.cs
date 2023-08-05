@@ -9,7 +9,6 @@ namespace AppLauncher
         static void Main(string[] args)
         {
             var targetPath = Path.Join(AppContext.BaseDirectory, "Robocraft2BlockPenSimApp.exe");
-            //Process.Start(targetPath);
 
             try
             {
@@ -19,8 +18,6 @@ namespace AppLauncher
                     using (var sha = SHA256.Create())
                     {
                         hash = string.Join("", sha.ComputeHash(fs).Select(b => b.ToString("X2")));
-                        Console.WriteLine(hash);
-                        //Console.ReadKey();
                     }
                 }
 
@@ -28,6 +25,15 @@ namespace AppLauncher
                 if (hash == targetHash)
                 {
                     Process.Start(targetPath);
+                }
+                else
+                {
+                    Console.WriteLine("The sha256 hash for Robocraft2BlockPenSimApp.exe did not match.");
+                    Console.WriteLine($"Received: {hash}");
+                    Console.WriteLine($"Expected: {targetHash}");
+                    Console.WriteLine("Please reinstall Robocraft2BlockPenSimApp to fix this issue: https://github.com/EricBanker12/Robocraft-2-Block-Pen-Sim/releases/latest");
+                    Console.WriteLine($"Press any key to exit...");
+                    Console.ReadKey();
                 }
             }
             catch (Exception ex)

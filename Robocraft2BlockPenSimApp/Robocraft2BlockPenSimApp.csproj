@@ -41,6 +41,7 @@
         <PlatformTarget>AnyCPU</PlatformTarget>
         <Platforms>AnyCPU</Platforms>
         <PackageIcon>appicon.ico</PackageIcon>
+        <SignAssembly>False</SignAssembly>
     </PropertyGroup>
 
     <ItemGroup>
