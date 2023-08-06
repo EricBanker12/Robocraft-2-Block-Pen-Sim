@@ -8,7 +8,7 @@
   </PropertyGroup>
 
   <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
-    <Exec Command="rd &quot;$(TargetDir)Robocraft2BlockPenSimApp&quot;&#xD;&#xA;mklink /j &quot;$(TargetDir)Robocraft2BlockPenSimApp\&quot; &quot;$(ProjectDir)..\Robocraft2BlockPenSimApp\bin\$(Configuration)\net7.0-windows10.0.20348.0\win10-x64\&quot;" />
+    <Exec Command="rd &quot;$(TargetDir)Publish&quot;&#xD;&#xA;mklink /j &quot;$(TargetDir)Publish\&quot; &quot;$(ProjectDir)..\AppLauncher\bin\Publish\&quot;" />
   </Target>
 
 </Project>

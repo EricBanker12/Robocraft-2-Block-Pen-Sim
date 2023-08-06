@@ -12,7 +12,12 @@ namespace Robocraft2BlockPenSimApp.Shared.State
     public class PageStateIndex
     {
         public bool ShowSideBar;
-        
+        public bool ShowSettings;
+
+        public bool useDecimalComma;
+        public bool hideZeroRatioWeaponColumns;
+        public bool hideZeroRatioDirectionColumns;
+
         public string SortColumn;
         public SortDirection SortDirection;
         
@@ -45,6 +50,9 @@ namespace Robocraft2BlockPenSimApp.Shared.State
         {
             var defaultState = new PageStateIndex()
             {
+                useDecimalComma = false,
+                hideZeroRatioWeaponColumns = true,
+                hideZeroRatioDirectionColumns = true,
                 Cpu = new MinMax { Min = 0, Max = 100, },
                 Weight = new MinMax { Min = 0, Max = 4000, },
                 Length = new MinMax { Min = 4, Max = 9 },
@@ -58,6 +66,9 @@ namespace Robocraft2BlockPenSimApp.Shared.State
             try
             {
                 var pref = JsonConvert.DeserializeObject<PageStateIndex>(Preferences.Default.Get(preferencesKey, JsonConvert.SerializeObject(defaultState)));
+                this.useDecimalComma = pref.useDecimalComma;
+                this.hideZeroRatioWeaponColumns = pref.hideZeroRatioWeaponColumns;
+                this.hideZeroRatioDirectionColumns = pref.hideZeroRatioDirectionColumns;
                 this.Cpu = pref.Cpu;
                 this.Weight = pref.Weight;
                 this.Length = pref.Length;
@@ -69,6 +80,9 @@ namespace Robocraft2BlockPenSimApp.Shared.State
             }
             catch (Exception)
             {
+                this.useDecimalComma = defaultState.useDecimalComma;
+                this.hideZeroRatioWeaponColumns = defaultState.hideZeroRatioWeaponColumns;
+                this.hideZeroRatioDirectionColumns = defaultState.hideZeroRatioDirectionColumns;
                 this.Cpu = defaultState.Cpu;
                 this.Weight = defaultState.Weight;
                 this.Length = defaultState.Length;

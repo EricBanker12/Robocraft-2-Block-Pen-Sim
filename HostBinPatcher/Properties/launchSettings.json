@@ -2,7 +2,7 @@
   "profiles": {
     "HostBinPatcher": {
       "commandName": "Project",
-      "commandLineArgs": "Robocraft2BlockPenSimApp\\Robocraft2BlockPenSimApp.exe"
+      "commandLineArgs": "Publish\\AppLauncher.exe"
     }
   }
 }

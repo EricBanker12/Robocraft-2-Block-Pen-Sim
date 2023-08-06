@@ -1,4 +1,3 @@
-create bin patcher to replace app launcher "asmv3:file name='"
 add settings button
 user can view and edit weapons/materials stats
 user can swap decimal place indicator from period(.) to comma(,)

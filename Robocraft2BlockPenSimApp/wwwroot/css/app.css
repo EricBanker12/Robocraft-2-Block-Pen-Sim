@@ -8,6 +8,7 @@ h1:focus {
     outline: none;
 }
 
+/*bootstrap customization*/
 .btn-primary {
     --bs-btn-color: #000;
     --bs-btn-bg: #fd7e14;
@@ -25,23 +26,33 @@ h1:focus {
     --bs-btn-disabled-border-color: #fd7e14;
 }
 
-.btn-primary-subtle {
-    --bs-btn-color: #fff;
-    --bs-btn-bg: #653208;
-    --bs-btn-border-color: #653208;
-    --bs-btn-hover-color: #fff;
-    --bs-btn-hover-bg: #052759;
-    --bs-btn-hover-border-color: #062c66;
-    --bs-btn-focus-shadow-rgb: 140, 69, 11;
-    --bs-btn-active-color: #fff;
-    --bs-btn-active-bg: #062c66;
-    --bs-btn-active-border-color: #073273;
-    --bs-btn-active-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
-    --bs-btn-disabled-color: #fff;
-    --bs-btn-disabled-bg: #653208;
-    --bs-btn-disabled-border-color: #653208;
+/*fix bugged modals*/
+.modal {
+    display: block;
+    width: 100vw;
+    height: 100vh;
+    background: none;
+    border: none;
+    pointer-events: none;
 }
 
+.modal-content {
+    pointer-events: none;
+}
+
+.modal.show .modal-content {
+    pointer-events: auto;
+}
+
+.modal-backdrop {
+    pointer-events: none;
+}
+
+.modal-backdrop.show {
+    pointer-events: auto;
+}
+
+/*blazor stuff*/
 .valid.modified:not([type=checkbox]) {
     outline: 1px solid #26b050;
 }

@@ -2,7 +2,7 @@
 @using Robocraft2BlockPenSimApp.Shared.Models;
 @using Robocraft2BlockPenSimApp.Shared.State;
 
-<header class="position-relative col-12" style="width: 320px; margin-left: @(State.ShowSideBar ? "0px" : "-320px"); transition: margin-left 0.5s ease;">
+<header id="SideBar" class="position-relative col-12" style="width: 320px; margin-left: @(State.ShowSideBar ? "0px" : "-320px"); transition: margin-left 0.5s ease;">
     <div class="card h-100" aria-hidden="@(State.ShowSideBar ? "false" : "true")">
         <div class="card-header">
             <h1 class="h3 text-center">Robocraft 2 Block Penetraton Simulator</h1>
@@ -99,17 +99,23 @@
     [Parameter]
     public Action OnSubmit { get; set; }
 
+    [Parameter]
+    public Action PageStateHasChanged { get; set; }
+
     private void ToggleShowSideBar()
     {
         State.ShowSideBar = !State.ShowSideBar;
-        StateHasChanged();
+        PageStateHasChanged();
     }
 
     protected override async Task OnInitializedAsync()
     {
-        await Task.Delay(10);
-        State.ShowSideBar = true;
-        StateHasChanged();
+        if (!State.ShowSideBar)
+        {
+            await Task.Delay(10);
+            State.ShowSideBar = true;
+            PageStateHasChanged();
+        }
         await base.OnInitializedAsync();
     }
 }

@@ -12,9 +12,10 @@
 else
 {
     <div class="d-flex vh-100 vw-100">
-        <SideBar State="State" OnSubmit="OnSubmit" />
+        @*<SettingsModal State="State" PageStateHasChanged="StateHasChanged" />*@
+        <SideBar State="State" OnSubmit="OnSubmit" PageStateHasChanged="StateHasChanged" />
         <main class="flex-grow-1" style="width: 1px;">
-            <ResultsTable State="State" Data="SimData" SortData="SortData" />
+            <ResultsTable State="State" Data="SimData" SortData="SortData" PageStateHasChanged="StateHasChanged" />
         </main>
     </div>
 }
@@ -25,6 +26,10 @@ else
     private BlockPenSimulator? Sim;
     private DataTable? SimData;
 
+    /// <summary>
+    /// Sorts simulation results by a column
+    /// </summary>
+    /// <param name="columnName"></param>
     private void SortData(string columnName)
     {
         if (SimData == null) return;
@@ -51,6 +56,10 @@ else
         }
     }
 
+    /// <summary>
+    /// Runs the simulation
+    /// </summary>
+    /// <returns></returns>
     private async Task UpdateData()
     {
         if (State == null) return;
@@ -92,8 +101,15 @@ else
         StateHasChanged();
     }
 
+    /// <summary>
+    /// Event handler for running the simulation
+    /// </summary>
     private async void OnSubmit() { await UpdateData(); }
 
+    /// <summary>
+    /// Load user settings and first run simulation
+    /// </summary>
+    /// <returns></returns>
     protected override async Task OnInitializedAsync()
     {
         State = new PageStateIndex();
