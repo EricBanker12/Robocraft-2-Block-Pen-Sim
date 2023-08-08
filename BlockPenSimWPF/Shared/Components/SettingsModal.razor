@@ -1,0 +1,31 @@
+﻿@using BlockPenSimWPF.Shared.State;
+
+
+<div id="ModalBackdrop" class="modal-backdrop fade @(State.ShowSettings ? "show" : "")" @onclick="ToggleShowSettings" />
+<dialog id="SettingsModal" class="modal modal-xl fade @(State.ShowSettings ? "show" : "")" open="@State.ShowSettings">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title h5">Settings</h1>
+                <button type="button" @onclick="ToggleShowSettings" class="btn-close" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                    
+            </div>
+            <div class="modal-footer">
+                <button type="button" @onclick="ToggleShowSettings" class="btn btn-secondary">Close</button>
+                <button type="button" class="btn btn-primary">Save changes</button>
+            </div>
+        </div>
+    </div>
+</dialog>
+
+@code {
+    [Parameter]
+    public IndexStore State { get; set; } = new();
+
+    void ToggleShowSettings()
+    {
+        State.ShowSettings = !State.ShowSettings;
+    }
+}

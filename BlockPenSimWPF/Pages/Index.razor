@@ -1,0 +1,66 @@
+﻿@using BlockPenSimWPF.Data;
+@using BlockPenSimWPF.Shared.Models;
+@using BlockPenSimWPF.Shared.Components;
+@using BlockPenSimWPF.Shared.State;
+@using System.Data;
+@page "/"
+
+@if (!initialized)
+{
+    <h1>Loading...</h1>
+}
+else
+{
+    <div class="d-flex vh-100 vw-100">
+        <SettingsModal State="State" />
+        <SimFormSidebar State="State" />
+        <main class="flex-grow-1" style="width: 1px;">
+            <ResultsTableSection State="State" />
+        </main>
+    </div>
+}
+
+@code {
+    private IndexStore State = new();
+
+    private bool initialized = false;
+
+    /// <summary>
+    /// Load user settings and first run simulation
+    /// </summary>
+    /// <returns></returns>
+    protected override async Task OnInitializedAsync()
+    {
+        // Create State Store
+        State = new IndexStore(StateHasChanged);
+
+        // Load local app settings and custom block data
+        State.LoadPreferences();
+
+        // Look for block data updates from internet
+        if (State.updateDefaultBlockdataOverInternet)
+        {
+            var blockData = await BlockData.GetData();
+            foreach (var weapon in blockData.Weapons)
+            {
+                State.Weapons[weapon.Key] = weapon.Value;
+                if (!State.WeaponRatio.ContainsKey(weapon.Key))
+                    State.WeaponRatio.Add(weapon.Key, 0.0);
+                if (!State.WeaponCount.ContainsKey(weapon.Key))
+                    State.WeaponCount.Add(weapon.Key, 120.0 / weapon.Value.cpu);
+            }
+            foreach (var material in blockData.Materials)
+            {
+                State.Materials[material.Key] = material.Value;
+            }
+        }
+
+        State.SavePreferences();
+
+        State.SimData = await BlockPenSimulator.RunAsync(State);
+
+        initialized = true;
+
+        await base.OnInitializedAsync();
+    }
+}
