@@ -1,21 +1,44 @@
 ﻿@using BlockPenSimWPF.Shared.State;
-
+@using BlockPenSimWPF.Shared.Models;
 
 <div id="ModalBackdrop" class="modal-backdrop fade @(State.ShowSettings ? "show" : "")" @onclick="ToggleShowSettings" />
-<dialog id="SettingsModal" class="modal modal-xl fade @(State.ShowSettings ? "show" : "")" open="@State.ShowSettings">
+<dialog id="SettingsModal" class="modal modal-lg fade @(State.ShowSettings ? "show" : "")" open="@State.ShowSettings">
     <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
         <div class="modal-content">
             <div class="modal-header">
                 <h1 class="modal-title h5">Settings</h1>
                 <button type="button" @onclick="ToggleShowSettings" class="btn-close" aria-label="Close"></button>
             </div>
-            <div class="modal-body">
-                    
-            </div>
-            <div class="modal-footer">
-                <button type="button" @onclick="ToggleShowSettings" class="btn btn-secondary">Close</button>
-                <button type="button" class="btn btn-primary">Save changes</button>
-            </div>
+            <EditForm Model="settingsForm">
+                <div class="modal-body">
+                    <InputSelect @bind-Value="settingsForm.ThemeOverride">
+                        <option value="@Theme.Default">System Default</option>
+                        <option value="@Theme.Light">Light</option>
+                        <option value="@Theme.Dark">Dark</option>
+                    </InputSelect>
+                    <InputCheckbox @bind-Value=settingsForm.UseDecimalComma />
+                    <InputCheckbox @bind-Value=settingsForm.HideZeroRatioWeaponColumns />
+                    <InputCheckbox @bind-Value=settingsForm.HideZeroRatioDirectionColumns />
+                    <InputCheckbox @bind-Value=settingsForm.UpdateDefaultBlockdataOverInternet />
+                    <InputSelect
+                        Value="settingsForm.WeaponEdit"
+                        ValueExpression="() => settingsForm.WeaponEdit"
+                        ValueChanged="@((int select) => OnSelect_WeaponEdit(select))">
+                        @foreach(var weapon in State.Weapons)
+                        {
+                            <option value="@State.Weapons.Keys.ToList().IndexOf(weapon.Key)">
+                                <span>@weapon.Value.name</span>
+                            </option>
+                        }
+                        <option value="@State.Weapons.Count">New Weapon</option>
+                        <option value="@(State.Weapons.Count + 1)">None</option>
+                    </InputSelect>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" @onclick="ToggleShowSettings" class="btn btn-secondary">Close</button>
+                    <button type="submit" class="btn btn-primary">Save changes</button>
+                </div>
+            </EditForm>
         </div>
     </div>
 </dialog>
@@ -24,7 +47,16 @@
     [Parameter]
     public IndexStore State { get; set; } = new();
 
-    void ToggleShowSettings()
+    private SettingsForm settingsForm = new();
+
+
+    private void OnSelect_WeaponEdit(int select)
+    {
+        new EventCallbackFactory().Create<int>()
+        return 1;
+    }
+
+    private void ToggleShowSettings()
     {
         State.ShowSettings = !State.ShowSettings;
     }

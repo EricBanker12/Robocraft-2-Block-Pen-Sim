@@ -30,7 +30,15 @@ h1:focus {
     --bs-btn-disabled-border-color: #fd7e14;
 }
 
+.valid.modified:not([type=checkbox]) {
+    outline: inherit !important;
+}
+
 /*fix bugged modals*/
+dialog {
+    all: inherit;
+}
+
 .modal {
     display: block;
     width: 100vw;
@@ -54,6 +62,10 @@ h1:focus {
 
 .modal-backdrop.show {
     pointer-events: auto;
+}
+
+.dropdown {
+    z-index: 1000;
 }
 
 /*blazor stuff*/

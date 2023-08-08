@@ -46,5 +46,17 @@ namespace BlockPenSimWPF.Properties {
                 this["IndexStore"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string ThemeOverride {
+            get {
+                return ((string)(this["ThemeOverride"]));
+            }
+            set {
+                this["ThemeOverride"] = value;
+            }
+        }
     }
 }

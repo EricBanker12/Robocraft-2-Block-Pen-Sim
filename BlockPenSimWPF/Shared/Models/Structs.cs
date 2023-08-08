@@ -118,10 +118,4 @@
         public readonly double PercentSide { get => side / Sum; }
         public readonly double PercentTop { get => top / Sum; }
     }
-
-    public struct WindowSize
-    {
-        public int width;
-        public int height;
-    }
 }

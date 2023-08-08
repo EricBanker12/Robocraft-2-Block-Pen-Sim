@@ -1,4 +1,6 @@
-﻿<Router AppAssembly="@GetType().Assembly">
+﻿@using BlockPenSimWPF.Data;
+
+<Router AppAssembly="@GetType().Assembly">
     <Found Context="routeData">
         <RouteView RouteData="@routeData" />
     </Found>
@@ -7,3 +9,13 @@
         <p>Sorry, there's nothing here.</p>
     </NotFound>
 </Router>
+
+@code {
+    @inject IJSRuntime jsRuntime
+
+    protected override async Task OnInitializedAsync()
+    {
+        await ThemeData.OverridePreferredTheme(jsRuntime);
+        await base.OnInitializedAsync();
+    }
+}
