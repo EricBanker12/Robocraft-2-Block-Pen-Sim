@@ -40,4 +40,10 @@
         Light,
         Dark,
     }
+
+    public enum InputDisabledBy
+    {
+        WeaponEdit,
+        MaterialEdit,
+    }
 }
