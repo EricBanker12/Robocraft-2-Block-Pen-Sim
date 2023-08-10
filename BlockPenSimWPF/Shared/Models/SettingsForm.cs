@@ -1,7 +1,9 @@
 ﻿using BlockPenSimWPF.Data;
 using BlockPenSimWPF.Shared.State;
+using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -66,23 +68,33 @@ namespace BlockPenSimWPF.Shared.Models
             {
                 isValid = true;
                 
-                if (this.WeaponEdit != this.Weapons?.Count + 1)
+                var weaponFields = new string[] { "WeaponKey", "WeaponName", "WeaponCpu", "WeaponDamage", "WeaponPellets", "WeaponRadius", "WeaponEnergy", "WeaponCooldown" };
+                for (int i = 0; i < weaponFields.Length && isValid; i++)
                 {
-                    var weaponFields = new string[] { "WeaponKey", "WeaponName", "WeaponCpu", "WeaponDamage", "WeaponPellets", "WeaponRadius", "WeaponEnergy", "WeaponCooldown" };
-                    for (int i = 0; i < weaponFields.Length && isValid; i++)
+                    var fieldIdentifier = new FieldIdentifier(this, weaponFields[i]);
+                    if (this.WeaponEdit != this.Weapons?.Count + 1)
                     {
-                        isValid = this.EditContext?.GetValidationMessages(new FieldIdentifier(this, weaponFields[i])).Count() == 0;
+                        isValid = this.EditContext?.GetValidationMessages(fieldIdentifier).Count() == 0;
+                    }
+                    else
+                    {
+                        this.ClearValidation(fieldIdentifier);
                     }
                 }
 
                 if (!isValid) { return false; }
 
-                if (this.MaterialEdit != this.Materials?.Count + 1)
+                var materialFields = new string[] { "MaterialKey", "MaterialName", "MaterialDensity", "MaterialConnecitonStrength", "MaterialEnergyAbsorption" };
+                for (int i = 0; i < materialFields.Length && isValid; i++)
                 {
-                    var materialFields = new string[] { "MaterialKey", "MaterialName", "MaterialDensity", "MaterialConnecitonStrength", "MaterialEnergyAbsorption" };
-                    for (int i = 0; i < materialFields.Length && isValid; i++)
+                    var fieldIdentifier = new FieldIdentifier(this, materialFields[i]);
+                    if (this.MaterialEdit != this.Materials?.Count + 1)
                     {
-                        isValid = this.EditContext?.GetValidationMessages(new FieldIdentifier(this, materialFields[i])).Count() == 0;
+                        isValid = this.EditContext?.GetValidationMessages(fieldIdentifier).Count() == 0;
+                    }
+                    else
+                    {
+                        this.ClearValidation(fieldIdentifier);
                     }
                 }
 
@@ -91,9 +103,115 @@ namespace BlockPenSimWPF.Shared.Models
             return isValid;
         }
 
+        // https://stackoverflow.com/a/63356079
+        public void ClearValidation()
+        {
+            var bindingFlags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
+
+            object GetInstanceField(Type type, object instance, string fieldName)
+            {
+                var fieldInfo = type.GetField(fieldName, bindingFlags);
+                return fieldInfo.GetValue(instance);
+            }
+
+            var fieldStates = GetInstanceField(typeof(EditContext), this.EditContext, "_fieldStates");
+            var clearMethodInfo = typeof(HashSet<ValidationMessageStore>).GetMethod("Clear", bindingFlags);
+
+            foreach (DictionaryEntry kv in (IDictionary)fieldStates)
+            {
+                var messageStores = GetInstanceField(kv.Value.GetType(), kv.Value, "_validationMessageStores");
+                if (messageStores != null) clearMethodInfo?.Invoke(messageStores, null);
+            }
+        }
+
+        public void ClearValidation(FieldIdentifier fieldIdentifier)
+        {
+            var bindingFlags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
+
+            object GetInstanceField(Type type, object instance, string fieldName)
+            {
+                var fieldInfo = type.GetField(fieldName, bindingFlags);
+                return fieldInfo.GetValue(instance);
+            }
+
+            var fieldStates = GetInstanceField(typeof(EditContext), this.EditContext, "_fieldStates");
+            var allMethodInfo = typeof(HashSet<ValidationMessageStore>).GetMethods(bindingFlags);
+            var clearMethodInfo = allMethodInfo.Where(info => info.Name == "Clear").Skip(1).FirstOrDefault();
+
+            foreach (DictionaryEntry kv in (IDictionary)fieldStates)
+            {
+                var messageStores = GetInstanceField(kv.Value.GetType(), kv.Value, "_validationMessageStores");
+                if (messageStores != null) clearMethodInfo?.Invoke(messageStores, new object[] { fieldIdentifier });
+            }
+        }
+
         private void OnFieldChanged(object? sender, FieldChangedEventArgs args)
         {
             CustomValidate(args.FieldIdentifier);
+            if (args.FieldIdentifier.FieldName == "WeaponEdit")
+            {
+                OnSelect_WeaponEdit();
+            }
+            else if (args.FieldIdentifier.FieldName == "MaterialEdit")
+            {
+                OnSelect_MaterialEdit();
+            }
+        }
+
+        public void OnSelect_WeaponEdit()
+        {
+            if (this.WeaponEdit < this.Weapons?.Count)
+            {
+                var weapon = this.Weapons.ToArray()[this.WeaponEdit];
+                this.WeaponKey = weapon.Key;
+                this.WeaponName = weapon.Value.name;
+                this.WeaponDamage = weapon.Value.damage;
+                this.WeaponCpu = weapon.Value.cpu;
+                this.WeaponPellets = weapon.Value.pellets;
+                this.WeaponRadius = weapon.Value.radius;
+                this.WeaponEnergy = weapon.Value.energy;
+            }
+            else
+            {
+                this.WeaponKey = string.Empty;
+                this.WeaponName = string.Empty;
+                this.Validate();
+            }
+        }
+
+        public void OnSelect_MaterialEdit()
+        {
+            if (this.MaterialEdit < this.Materials?.Count)
+            {
+                var material = this.Materials.ToArray()[this.MaterialEdit];
+                this.MaterialKey = material.Key;
+                this.MaterialName = material.Value.name;
+                this.MaterialDensity = material.Value.density;
+                this.MaterialConnecitonStrength = material.Value.connectionStrength;
+                this.MaterialEnergyAbsorption = material.Value.energyAbsorption;
+            }
+            else
+            {
+                this.MaterialKey = string.Empty;
+                this.MaterialName = string.Empty;
+                this.Validate();
+            }
+        }
+
+        public void DeleteWeapon()
+        {
+            var weapon = this.Weapons.ToArray()[this.WeaponEdit];
+            this.Weapons?.Remove(weapon.Key);
+            this.WeaponEdit = this.Weapons.Count + 1;
+            this.OnSelect_WeaponEdit();
+        }
+
+        public void DeleteMaterial()
+        {
+            var material = this.Materials.ToArray()[this.MaterialEdit];
+            this.Materials?.Remove(material.Key);
+            this.MaterialEdit = this.Materials.Count + 1;
+            this.OnSelect_MaterialEdit();
         }
 
         private void OnValidationRequested(object? sender, ValidationRequestedEventArgs args)
@@ -217,19 +335,19 @@ namespace BlockPenSimWPF.Shared.Models
         // Weapon Edit
         public Dictionary<string, Weapon>? Weapons { get; set; }
         public int WeaponEdit { get; set; }
-        
-        [StringLength(255, MinimumLength = 3, ErrorMessage = "Weapon Key must be between 3 and 255 characters in length.")]
+
+        [StringLength(255, MinimumLength = 3, ErrorMessage = "Key must be between 3 and 255 characters in length.")]
         public string? WeaponKey { get; set; }
         
-        [StringLength(255, MinimumLength = 3, ErrorMessage = "Weapon Name must be between 3 and 255 characters in length.")]
+        [StringLength(255, MinimumLength = 3, ErrorMessage = "Name must be between 3 and 255 characters in length.")]
         public string? WeaponName { get; set; }
         
         [Range(1, int.MaxValue, ErrorMessage = "CPU Cost should be at least 1.")]
         public int WeaponCpu { get; set; }
-
+        
         [Range(1, int.MaxValue, ErrorMessage = "Damage should be at least 1.")]
         public double WeaponDamage { get; set; }
-
+        
         [Range(1, int.MaxValue, ErrorMessage = "Pellet Count should be at least 1.")]
         public double WeaponPellets { get; set; }
         
@@ -238,7 +356,7 @@ namespace BlockPenSimWPF.Shared.Models
         
         [Range(1, int.MaxValue, ErrorMessage = "Penetration Energy should be at least 1.")]
         public double WeaponEnergy { get; set; }
-
+        
         [Range(0.01, int.MaxValue, ErrorMessage = "Cooldown cannot be less than one-hundredth (1/100) of a second.")]
         public double WeaponCooldown { get; set; }
 
@@ -246,10 +364,10 @@ namespace BlockPenSimWPF.Shared.Models
         public Dictionary<string, Material>? Materials { get; set; }
         public int MaterialEdit { get; set; }
         
-        [StringLength(255, MinimumLength = 3, ErrorMessage = "Materia lKey must be between 3 and 255 characters in length.")]
+        [StringLength(255, MinimumLength = 3, ErrorMessage = "Key must be between 3 and 255 characters in length.")]
         public string? MaterialKey { get; set; }
         
-        [StringLength(255, MinimumLength = 3, ErrorMessage = "Material Name must be between 3 and 255 characters in length.")]
+        [StringLength(255, MinimumLength = 3, ErrorMessage = "Name must be between 3 and 255 characters in length.")]
         public string? MaterialName { get; set; }
 
         [Range(0.01, int.MaxValue, ErrorMessage = "Mass cannot be less than one-hundredth (1/100) of a kilogram.")]
@@ -261,6 +379,18 @@ namespace BlockPenSimWPF.Shared.Models
         [Range(0, int.MaxValue, ErrorMessage = "Penetration Energy Absorption cannot be less than 0.")]
         public double MaterialEnergyAbsorption { get; set; }
     }
+
+    //internal class WeaponAttribute : ValidationAttribute
+    //{
+    //    protected override ValidationResult? IsValid(object? value, ValidationContext validationContext)
+    //    {
+    //        var settingsForm = validationContext.ObjectInstance as SettingsForm;
+    //        if (settingsForm?.WeaponEdit == settingsForm?.Weapons?.Count + 1)
+    //            return null;
+
+    //        return null;
+    //    }
+    //}
 
     internal class SettingsFormCssProvider : FieldCssClassProvider
     {

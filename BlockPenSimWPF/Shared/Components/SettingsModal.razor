@@ -2,21 +2,20 @@
 @using BlockPenSimWPF.Shared.State;
 @using BlockPenSimWPF.Shared.Models;
 
-<div id="ModalBackdrop" class="modal-backdrop fade @(State.ShowSettings ? "show" : "")" @onclick="ToggleShowSettings" />
+<div id="ModalBackdrop" class="modal-backdrop fade @(State.ShowSettings ? "show" : "")" @onclick="OnClick_Cancel" />
 <dialog id="SettingsModal" class="modal modal-lg fade @(State.ShowSettings ? "show" : "")" open="@State.ShowSettings">
     <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
-        <div class="modal-content h-100" style="max-height: 1600px;">
-            <EditForm class="h-100 d-flex flex-column" EditContext="settingsFormContext" OnSubmit="OnSubmit_SettingsForm">
+        <div class="modal-content">
+            <EditForm class="d-flex flex-column mh-100 overflow-hidden" EditContext="settingsFormContext" OnSubmit="OnSubmit_SettingsForm">
                 <DataAnnotationsValidator />
                 <div class="modal-header">
                     <h1 class="modal-title h5">Settings</h1>
-                    <button type="button" @onclick="ToggleShowSettings" class="btn-close" aria-label="Close"></button>
+                    <button type="button" @onclick="OnClick_Cancel" class="btn-close" aria-label="Close"></button>
                 </div>
-                <div class="modal-body flex-grow-1 overflow-auto" style="height: 1px;">
-                    <ValidationSummary />
+                <div class="modal-body overflow-auto">
                     <h2 class="h5">General</h2>
                     <div class="input-group">
-                        <label for="ThemeOverrideSelect" class="input-group-text" style="width: 15ch;">Theme</label>
+                        <label for="ThemeOverrideSelect" class="input-group-text" style="width: 13ch;">Theme</label>
                         <InputSelect id="ThemeOverrideSelect" class="form-select" @bind-Value="settingsForm.ThemeOverride">
                             <option value="@Theme.Default">Detect System Setting</option>
                             <option value="@Theme.Light">Light</option>
@@ -53,42 +52,48 @@
                     <h2 class="h5">Weapons</h2>
                     <div>
                         <div class="input-group my-1">
-                            <label for="WeaponEditSelect" class="input-group-text" style="width: 15ch;">Weapon</label>
+                            <label for="WeaponEditSelect" class="input-group-text" style="width: 13ch;">Weapon</label>
                             <InputSelect id="WeaponEditSelect" class="form-select" @bind-Value=settingsForm.WeaponEdit>
-                                @foreach(var weapon in State.Weapons)
+                                @foreach(var weapon in settingsForm.Weapons)
                                 {
-                                    <option value="@State.Weapons.Keys.ToList().IndexOf(weapon.Key)">
+                                    <option value="@settingsForm.Weapons.Keys.ToList().IndexOf(weapon.Key)">
                                         <span>@weapon.Value.name</span>
                                     </option>
                                 }
-                                <option value="@State.Weapons.Count">Add New Weapon</option>
-                                <option value="@(State.Weapons.Count + 1)">None</option>
+                                <option value="@settingsForm.Weapons.Count">New Weapon</option>
+                                <option value="@(settingsForm.Weapons.Count + 1)">None</option>
                             </InputSelect>
                         </div>
                         <div class="row">
                             <div class="col-lg-6">
                                 <div class="input-group my-1">
-                                    <label for="WeaponKeyInput" class="input-group-text" style="width: 15ch;">Key</label>
+                                    <label for="WeaponKeyInput" class="input-group-text" style="width: 13ch;">Key</label>
                                     <InputText id="WeaponKeyInput" class="form-control" @bind-Value=settingsForm.WeaponKey minlength="3" maxlength="255" disabled="@(settingsForm.WeaponEdit == settingsForm.Weapons?.Count + 1)" />
+                                    <div class="invalid-feedback">
+                                        <ValidationMessage For="() => settingsForm.WeaponKey"></ValidationMessage>
+                                    </div>
                                 </div>
                             </div>
                             <div class="col-lg-6">
                                 <div class="input-group my-1">
-                                    <label for="WeaponNameInput" class="input-group-text" style="width: 15ch;">Name</label>
+                                    <label for="WeaponNameInput" class="input-group-text" style="width: 13ch;">Name</label>
                                     <InputText id="WeaponNameInput" class="form-control" @bind-Value=settingsForm.WeaponName  minlength="3" maxlength="255" disabled="@(settingsForm.WeaponEdit == settingsForm.Weapons?.Count + 1)" />
+                                    <div class="invalid-feedback">
+                                        <ValidationMessage For="() => settingsForm.WeaponName"></ValidationMessage>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                         <div class="row">
                             <div class="col-lg-6">
                                 <div class="input-group my-1">
-                                    <label for="WeaponCpuInput" class="input-group-text" style="width: 15ch;">CPU Cost</label>
+                                    <label for="WeaponCpuInput" class="input-group-text" style="width: 13ch;">CPU Cost</label>
                                     <InputNumber id="WeaponCpuInput" class="form-control" @bind-Value=settingsForm.WeaponCpu  min="1" disabled="@(settingsForm.WeaponEdit == settingsForm.Weapons?.Count + 1)" />
                                 </div>
                             </div>
                             <div class="col-lg-6">
                                 <div class="input-group my-1">
-                                    <label for="WeaponDamageInput" class="input-group-text" style="width: 15ch;">Damage</label>
+                                    <label for="WeaponDamageInput" class="input-group-text" style="width: 13ch;">Damage</label>
                                     <InputNumber id="WeaponDamageInput" class="form-control" @bind-Value=settingsForm.WeaponDamage min="1" disabled="@(settingsForm.WeaponEdit == settingsForm.Weapons?.Count + 1)" />
                                 </div>
                             </div>
@@ -96,78 +101,112 @@
                         <div class="row">
                             <div class="col-lg-6">
                                 <div class="input-group my-1">
-                                    <label for="WeaponPelletsInput" class="input-group-text" style="width: 15ch;">Pellet Count</label>
+                                    <label for="WeaponPelletsInput" class="input-group-text" style="width: 13ch;">Pellet Count</label>
                                     <InputNumber id="WeaponPelletsInput" class="form-control" @bind-Value=settingsForm.WeaponPellets min="1" disabled="@(settingsForm.WeaponEdit == settingsForm.Weapons?.Count + 1)" />
                                 </div>
                             </div>
                             <div class="col-lg-6">
                                 <div class="input-group my-1">
-                                    <label for="WeaponRadiusInput" class="input-group-text" style="width: 15ch;">Radius</label>
+                                    <label for="WeaponRadiusInput" class="input-group-text" style="width: 13ch;">Radius</label>
                                     <InputNumber id="WeaponRadiusInput" class="form-control" @bind-Value=settingsForm.WeaponRadius min="0" disabled="@(settingsForm.WeaponEdit == settingsForm.Weapons?.Count + 1)" />
+                                    <label for="WeaponCooldownInput" class="input-group-text" style="width: 6.5ch;">blks</label>
                                 </div>
                             </div>
                         </div>
                         <div class="row">
                             <div class="col-lg-6">
                                 <div class="input-group my-1">
-                                    <label for="WeaponEnergyInput" class="input-group-text" style="width: 15ch;">Pen. Energy</label>
+                                    <label for="WeaponEnergyInput" class="input-group-text" style="width: 13ch;">Pen. Energy</label>
                                     <InputNumber id="WeaponEnergyInput" class="form-control" @bind-Value=settingsForm.WeaponEnergy min="1" disabled="@(settingsForm.WeaponEdit == settingsForm.Weapons?.Count + 1)" />
+                                    <label for="WeaponEnergyInput" class="input-group-text" style="width: 6.5ch;">kJ/m</label>
                                 </div>
                             </div>
                             <div class="col-lg-6">
                                 <div class="input-group my-1">
-                                    <label for="WeaponCooldownInput" class="input-group-text" style="width: 15ch;">Cooldown</label>
+                                    <label for="WeaponCooldownInput" class="input-group-text" style="width: 13ch;">Cooldown</label>
                                     <InputNumber id="WeaponCooldownInput" class="form-control" @bind-Value=settingsForm.WeaponCooldown min="0.01" disabled="@(settingsForm.WeaponEdit == settingsForm.Weapons?.Count + 1)" />
+                                    <label for="WeaponCooldownInput" class="input-group-text" style="width: 6.5ch;">sec</label>
                                 </div>
                             </div>
                         </div>
                         <div class="row">
-                        <div class="col-lg-6"></div>
-                        <div class="col-lg-6">
-                            <button type="button" class="btn btn-danger w-100 my-1" disabled>Delete</button>
-                        </div>
+                            <div class="col-lg-6 d-none d-lg-block"></div>
+                            <div class="col-lg-6">
+                                <button type="button"
+                                    class="btn btn-danger w-100 my-1"
+                                    disabled="@(settingsForm.WeaponEdit >= settingsForm.Weapons?.Count)"
+                                    @onclick="OnClick_WeaponDelete">
+                                    <span>Delete</span>
+                                </button>
+                            </div>
                         </div>
                     </div>
                     <hr />
                     <h2 class="h5">Materials</h2>
                     <div>
-                        <div>
-                            <label for="MaterialEditSelect" class="form-label">Edit Material</label>
+                        <div class="input-group my-1">
+                            <label for="MaterialEditSelect" class="input-group-text" style="width: 13ch;">Material</label>
                             <InputSelect id="MaterialEditSelect" class="form-select" @bind-Value=settingsForm.MaterialEdit>
-                                @foreach (var material in State.Materials)
+                                @foreach (var material in settingsForm.Materials)
                                 {
-                                    <option value="@State.Materials.Keys.ToList().IndexOf(material.Key)">
+                                    <option value="@settingsForm.Materials.Keys.ToList().IndexOf(material.Key)">
                                         <span>@material.Value.name</span>
                                     </option>
                                 }
-                                <option value="@State.Materials.Count">New Material</option>
-                                <option value="@(State.Materials.Count + 1)">None</option>
+                                <option value="@settingsForm.Materials.Count">New Material</option>
+                                <option value="@(settingsForm.Materials.Count + 1)">None</option>
                             </InputSelect>
                         </div>
-                        <div>
-                            <label for="MaterialKeyInput" class="form-label">Material Key</label>
-                            <InputText id="MaterialKeyInput" class="form-control" @bind-Value=settingsForm.MaterialKey minlength="3" maxlength="255" disabled="@(settingsForm.MaterialEdit == settingsForm.Materials?.Count + 1)" />
+                        <div class="row">
+                            <div class="col-lg-6">
+                                <div class="input-group my-1">
+                                    <label for="MaterialKeyInput" class="input-group-text" style="width: 13ch;">Key</label>
+                                    <InputText id="MaterialKeyInput" class="form-control" @bind-Value=settingsForm.MaterialKey minlength="3" maxlength="255" disabled="@(settingsForm.MaterialEdit == settingsForm.Materials?.Count + 1)" />
+                                </div>
+                            </div>
+                            <div class="col-lg-6">
+                                <div class="input-group my-1">
+                                    <label for="MaterialNameInput" class="input-group-text" style="width: 13ch;">Name</label>
+                                    <InputText id="MaterialNameInput" class="form-control" @bind-Value=settingsForm.MaterialName minlength="3" maxlength="255" disabled="@(settingsForm.MaterialEdit == settingsForm.Materials?.Count + 1)" />
+                                </div>
+                            </div>
                         </div>
-                        <div>
-                            <label for="MaterialNameInput" class="form-label">Material Name</label>
-                            <InputText id="MaterialNameInput" class="form-control" @bind-Value=settingsForm.MaterialName minlength="3" maxlength="255" disabled="@(settingsForm.MaterialEdit == settingsForm.Materials?.Count + 1)" />
+                        <div class="row">
+                            <div class="col-lg-6">
+                                <div class="input-group my-1">
+                                    <label for="MaterialDensityInput" class="input-group-text" style="width: 13ch;">Mass</label>
+                                    <InputNumber id="MaterialDensityInput" class="form-control" @bind-Value=settingsForm.MaterialDensity min="0.01" disabled="@(settingsForm.MaterialEdit == settingsForm.Materials?.Count + 1)" />
+                                    <label for="MaterialDensityInput" class="input-group-text" style="width: 6.5ch;">kg</label>
+                                </div>
+                            </div>
+                            <div class="col-lg-6">
+                                <div class="input-group my-1">
+                                    <label for="MaterialConnecitonStrengthInput" class="input-group-text" style="width: 13ch;">Conn. Str.</label>
+                                    <InputNumber id="MaterialConnecitonStrengthInput" class="form-control" @bind-Value=settingsForm.MaterialConnecitonStrength min="0" disabled="@(settingsForm.MaterialEdit == settingsForm.Materials?.Count + 1)" />
+                                </div>
+                            </div>
                         </div>
-                        <div>
-                            <label for="MaterialDensityInput" class="form-label">Material Mass</label>
-                            <InputNumber id="MaterialDensityInput" class="form-control" @bind-Value=settingsForm.MaterialDensity min="0.01" disabled="@(settingsForm.MaterialEdit == settingsForm.Materials?.Count + 1)" />
-                        </div>
-                        <div>
-                            <label for="MaterialConnecitonStrengthInput" class="form-label">Conn. Str.</label>
-                            <InputNumber id="MaterialConnecitonStrengthInput" class="form-control" @bind-Value=settingsForm.MaterialConnecitonStrength min="0" disabled="@(settingsForm.MaterialEdit == settingsForm.Materials?.Count + 1)" />
-                        </div>
-                        <div>
-                            <label for="MaterialEnergyAbsorptionInput" class="form-label">Pen. Energy Abs.</label>
-                            <InputNumber id="MaterialEnergyAbsorptionInput" class="form-control" @bind-Value=settingsForm.MaterialEnergyAbsorption min="0" disabled="@(settingsForm.MaterialEdit == settingsForm.Materials?.Count + 1)" />
+                        <div class="row">
+                            <div class="col-lg-6">
+                                <div class="input-group my-1">
+                                    <label for="MaterialEnergyAbsorptionInput" class="input-group-text" style="width: 17ch;">Pen. Energy Abs.</label>
+                                    <InputNumber id="MaterialEnergyAbsorptionInput" class="form-control" @bind-Value=settingsForm.MaterialEnergyAbsorption min="0" disabled="@(settingsForm.MaterialEdit == settingsForm.Materials?.Count + 1)" />
+                                    <label for="MaterialEnergyAbsorptionInput" class="input-group-text" style="width: 6.5ch;">kJ/m</label>
+                                </div>
+                            </div>
+                            <div class="col-lg-6">
+                                <button type="button"
+                                        class="btn btn-danger w-100 my-1"
+                                        disabled="@(settingsForm.MaterialEdit >= settingsForm.Materials?.Count)"
+                                @onclick="OnClick_DeleteMaterial">
+                                    <span>Delete</span>
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" @onclick="ToggleShowSettings" class="btn btn-secondary">Cancel</button>
+                    <button type="button" @onclick="OnClick_Cancel" class="btn btn-secondary">Cancel</button>
                     <button type="submit" class="btn btn-primary">Save Changes</button>
                 </div>
             </EditForm>
@@ -179,6 +218,8 @@
     [Parameter]
     public IndexStore State { get; set; } = new();
 
+    @inject IJSRuntime js;
+
     private SettingsForm settingsForm = new();
     private EditContext? settingsFormContext { get; set; }
 
@@ -189,23 +230,29 @@
         return base.OnInitializedAsync();
     }
 
-    private void OnSubmit_SettingsForm()
+    private async void OnSubmit_SettingsForm()
     {
-        
+        if (settingsForm.Validate())
+        {
+            ThemeData.ThemeOverride = settingsForm.ThemeOverride;
+            await ThemeData.OverridePreferredTheme(js);
+        }
     }
 
-    //private void OnSelect_WeaponEdit(int select)
-    //{
-
-    //}
-
-    //private void OnSelect_MaterialEdit(int select)
-    //{
-
-    //}
-
-    private void ToggleShowSettings()
+    private void OnClick_WeaponDelete()
     {
+        settingsForm.DeleteWeapon();
+    }
+
+    private void OnClick_DeleteMaterial()
+    {
+        settingsForm.DeleteMaterial();
+    }
+
+    private void OnClick_Cancel()
+    {
+        settingsForm.Reset(State);
+        settingsForm.ClearValidation();
         State.ShowSettings = !State.ShowSettings;
     }
 }
