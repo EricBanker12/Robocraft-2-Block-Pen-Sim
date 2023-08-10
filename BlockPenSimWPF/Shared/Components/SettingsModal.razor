@@ -6,8 +6,7 @@
 <dialog id="SettingsModal" class="modal modal-lg fade @(State.ShowSettings ? "show" : "")" open="@State.ShowSettings">
     <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
         <div class="modal-content">
-            <EditForm class="d-flex flex-column mh-100 overflow-hidden" EditContext="settingsFormContext" OnSubmit="OnSubmit_SettingsForm">
-                <DataAnnotationsValidator />
+            <form class="d-flex flex-column mh-100 overflow-hidden" @onsubmit="OnSubmit_SettingsForm" @onsubmit:preventDefault>
                 <div class="modal-header">
                     <h1 class="modal-title h5">Settings</h1>
                     <button type="button" @onclick="OnClick_Cancel" class="btn-close" aria-label="Close"></button>
@@ -16,33 +15,33 @@
                     <h2 class="h5">General</h2>
                     <div class="input-group">
                         <label for="ThemeOverrideSelect" class="input-group-text" style="width: 13ch;">Theme</label>
-                        <InputSelect id="ThemeOverrideSelect" class="form-select" @bind-Value="settingsForm.ThemeOverride">
+                        <select id="ThemeOverrideSelect" class="form-select" @bind=settingsForm.ThemeOverride>
                             <option value="@Theme.Default">Detect System Setting</option>
                             <option value="@Theme.Light">Light</option>
                             <option value="@Theme.Dark">Dark</option>
-                        </InputSelect>
+                        </select>
                     </div>
                     <div class="my-2">
                         <div class="form-check">
-                            <InputCheckbox id="UseDecimalCommaCheckbox" class="form-check-input" @bind-Value=settingsForm.UseDecimalComma />
+                            <input type="checkbox" id="UseDecimalCommaCheckbox" class="form-check-input" @bind=settingsForm.UseDecimalComma />
                             <label for="UseDecimalCommaCheckbox" class="form-label">
                                 <span>Use Decimal Comma (1,00)</span>
                             </label>
                         </div>
                         <div class="form-check">
-                            <InputCheckbox id="HideZeroRatioWeaponColumnsCheckbox" class="form-check-input" @bind-Value=settingsForm.HideZeroRatioWeaponColumns />
+                            <input type="checkbox" id="HideZeroRatioWeaponColumnsCheckbox" class="form-check-input" @bind=settingsForm.HideZeroRatioWeaponColumns />
                             <label for="HideZeroRatioWeaponColumnsCheckbox" class="form-label">
                                 <span>Hide Zero Ratio Weapon Columns</span>
                             </label>
                         </div>
                         <div class="form-check">
-                            <InputCheckbox id="HideZeroRatioDirectionColumnsCheckbox" class="form-check-input" @bind-Value=settingsForm.HideZeroRatioDirectionColumns />
+                            <input type="checkbox" id="HideZeroRatioDirectionColumnsCheckbox" class="form-check-input" @bind=settingsForm.HideZeroRatioDirectionColumns />
                             <label for="HideZeroRatioDirectionColumnsCheckbox" class="form-label">
                                 <span>Hide Zero Ratio Direction Columns</span>
                             </label>
                         </div>
                         <div class="form-check">
-                            <InputCheckbox id="UpdateDefaultBlockdataOverInternetCheckbox" class="form-check-input" @bind-Value=settingsForm.UpdateDefaultBlockdataOverInternet />
+                            <input type="checkbox" id="UpdateDefaultBlockdataOverInternetCheckbox" class="form-check-input" @bind=settingsForm.UpdateDefaultBlockdataOverInternet />
                             <label for="UpdateDefaultBlockdataOverInternetCheckbox" class="form-label">
                                 <span>Auto-Update Weapons and Materials</span>
                             </label>
@@ -52,8 +51,8 @@
                     <h2 class="h5">Weapons</h2>
                     <div>
                         <div class="input-group my-1">
-                            <label for="WeaponEditSelect" class="input-group-text" style="width: 13ch;">Weapon</label>
-                            <InputSelect id="WeaponEditSelect" class="form-select" @bind-Value=settingsForm.WeaponEdit>
+                            <label for="WeaponEditSelect" class="input-group-text" style="width: 13ch;">Edit</label>
+                            <select @key=settingsForm.Weapons.Count id="WeaponEditSelect" class="form-select" @bind=settingsForm.WeaponEdit>
                                 @foreach(var weapon in settingsForm.Weapons)
                                 {
                                     <option value="@settingsForm.Weapons.Keys.ToList().IndexOf(weapon.Key)">
@@ -62,24 +61,46 @@
                                 }
                                 <option value="@settingsForm.Weapons.Count">New Weapon</option>
                                 <option value="@(settingsForm.Weapons.Count + 1)">None</option>
-                            </InputSelect>
+                            </select>
                         </div>
                         <div class="row">
                             <div class="col-lg-6">
                                 <div class="input-group my-1">
                                     <label for="WeaponKeyInput" class="input-group-text" style="width: 13ch;">Key</label>
-                                    <InputText id="WeaponKeyInput" class="form-control" @bind-Value=settingsForm.WeaponKey minlength="3" maxlength="255" disabled="@(settingsForm.WeaponEdit == settingsForm.Weapons?.Count + 1)" />
+                                    <input type="text"
+                                        id="WeaponKeyInput"
+                                           class="form-control @IsValidClass(nameof(settingsForm.WeaponKey))"
+                                        @bind-value=settingsForm.WeaponKey
+                                        minlength="3"
+                                        maxlength="255"
+                                        disabled="@IsWeaponNone()" />
                                     <div class="invalid-feedback">
-                                        <ValidationMessage For="() => settingsForm.WeaponKey"></ValidationMessage>
+                                        <ul class="mb-0">
+                                            @foreach(var message in settingsForm.GetErrorMessages(nameof(settingsForm.WeaponKey)))
+                                            {
+                                                <li>@message</li>
+                                            }
+                                        </ul>
                                     </div>
                                 </div>
                             </div>
                             <div class="col-lg-6">
                                 <div class="input-group my-1">
                                     <label for="WeaponNameInput" class="input-group-text" style="width: 13ch;">Name</label>
-                                    <InputText id="WeaponNameInput" class="form-control" @bind-Value=settingsForm.WeaponName  minlength="3" maxlength="255" disabled="@(settingsForm.WeaponEdit == settingsForm.Weapons?.Count + 1)" />
+                                    <input type="text"
+                                        id="WeaponNameInput"
+                                           class="form-control @IsValidClass(nameof(settingsForm.WeaponName))"
+                                        @bind-value=settingsForm.WeaponName
+                                        minlength="3"
+                                        maxlength="255"
+                                        disabled="@IsWeaponNone()" />
                                     <div class="invalid-feedback">
-                                        <ValidationMessage For="() => settingsForm.WeaponName"></ValidationMessage>
+                                        <ul class="mb-0">
+                                            @foreach (var message in settingsForm.GetErrorMessages(nameof(settingsForm.WeaponName)))
+                                            {
+                                                <li>@message</li>
+                                            }
+                                        </ul>
                                     </div>
                                 </div>
                             </div>
@@ -88,13 +109,39 @@
                             <div class="col-lg-6">
                                 <div class="input-group my-1">
                                     <label for="WeaponCpuInput" class="input-group-text" style="width: 13ch;">CPU Cost</label>
-                                    <InputNumber id="WeaponCpuInput" class="form-control" @bind-Value=settingsForm.WeaponCpu  min="1" disabled="@(settingsForm.WeaponEdit == settingsForm.Weapons?.Count + 1)" />
+                                    <input type="number"
+                                        id="WeaponCpuInput"
+                                        class="form-control @IsValidClass(nameof(settingsForm.WeaponCpu))"
+                                        @bind-value=settingsForm.WeaponCpu
+                                        min="1"
+                                        disabled="@IsWeaponNone()" />
+                                    <div class="invalid-feedback">
+                                        <ul class="mb-0">
+                                            @foreach (var message in settingsForm.GetErrorMessages(nameof(settingsForm.WeaponCpu)))
+                                            {
+                                                <li>@message</li>
+                                            }
+                                        </ul>
+                                    </div>
                                 </div>
                             </div>
                             <div class="col-lg-6">
                                 <div class="input-group my-1">
                                     <label for="WeaponDamageInput" class="input-group-text" style="width: 13ch;">Damage</label>
-                                    <InputNumber id="WeaponDamageInput" class="form-control" @bind-Value=settingsForm.WeaponDamage min="1" disabled="@(settingsForm.WeaponEdit == settingsForm.Weapons?.Count + 1)" />
+                                    <input type="number"
+                                        id="WeaponDamageInput"
+                                           class="form-control @IsValidClass(nameof(settingsForm.WeaponDamage))"
+                                           @bind-value=settingsForm.WeaponDamage
+                                           min="1"
+                                           disabled="@IsWeaponNone()" />
+                                    <div class="invalid-feedback">
+                                        <ul class="mb-0">
+                                            @foreach (var message in settingsForm.GetErrorMessages(nameof(settingsForm.WeaponDamage)))
+                                            {
+                                                <li>@message</li>
+                                            }
+                                        </ul>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -102,14 +149,41 @@
                             <div class="col-lg-6">
                                 <div class="input-group my-1">
                                     <label for="WeaponPelletsInput" class="input-group-text" style="width: 13ch;">Pellet Count</label>
-                                    <InputNumber id="WeaponPelletsInput" class="form-control" @bind-Value=settingsForm.WeaponPellets min="1" disabled="@(settingsForm.WeaponEdit == settingsForm.Weapons?.Count + 1)" />
+                                    <input type="number"
+                                        id="WeaponPelletsInput"
+                                        class="form-control @IsValidClass(nameof(settingsForm.WeaponPellets))"
+                                        @bind-value=settingsForm.WeaponPellets
+                                        min="1"
+                                        disabled="@IsWeaponNone()" />
+                                    <div class="invalid-feedback">
+                                        <ul class="mb-0">
+                                            @foreach (var message in settingsForm.GetErrorMessages(nameof(settingsForm.WeaponPellets)))
+                                            {
+                                                <li>@message</li>
+                                            }
+                                        </ul>
+                                    </div>
                                 </div>
                             </div>
                             <div class="col-lg-6">
                                 <div class="input-group my-1">
                                     <label for="WeaponRadiusInput" class="input-group-text" style="width: 13ch;">Radius</label>
-                                    <InputNumber id="WeaponRadiusInput" class="form-control" @bind-Value=settingsForm.WeaponRadius min="0" disabled="@(settingsForm.WeaponEdit == settingsForm.Weapons?.Count + 1)" />
+                                    <input type="number"
+                                        id="WeaponRadiusInput"
+                                        class="form-control @IsValidClass(nameof(settingsForm.WeaponRadius))"
+                                        @bind-value=settingsForm.WeaponRadius
+                                        min="0"
+                                        step="0.01"
+                                        disabled="@IsWeaponNone()" />
                                     <label for="WeaponCooldownInput" class="input-group-text" style="width: 6.5ch;">blks</label>
+                                    <div class="invalid-feedback">
+                                        <ul class="mb-0">
+                                            @foreach (var message in settingsForm.GetErrorMessages(nameof(settingsForm.WeaponRadius)))
+                                            {
+                                                <li>@message</li>
+                                            }
+                                        </ul>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -117,15 +191,42 @@
                             <div class="col-lg-6">
                                 <div class="input-group my-1">
                                     <label for="WeaponEnergyInput" class="input-group-text" style="width: 13ch;">Pen. Energy</label>
-                                    <InputNumber id="WeaponEnergyInput" class="form-control" @bind-Value=settingsForm.WeaponEnergy min="1" disabled="@(settingsForm.WeaponEdit == settingsForm.Weapons?.Count + 1)" />
+                                    <input type="number"
+                                        id="WeaponEnergyInput"
+                                        class="form-control @IsValidClass(nameof(settingsForm.WeaponEnergy))"
+                                        @bind-value=settingsForm.WeaponEnergy
+                                        min="1"
+                                        disabled="@IsWeaponNone()" />
                                     <label for="WeaponEnergyInput" class="input-group-text" style="width: 6.5ch;">kJ/m</label>
+                                    <div class="invalid-feedback">
+                                        <ul class="mb-0">
+                                            @foreach (var message in settingsForm.GetErrorMessages(nameof(settingsForm.WeaponEnergy)))
+                                            {
+                                                <li>@message</li>
+                                            }
+                                        </ul>
+                                    </div>
                                 </div>
                             </div>
                             <div class="col-lg-6">
                                 <div class="input-group my-1">
                                     <label for="WeaponCooldownInput" class="input-group-text" style="width: 13ch;">Cooldown</label>
-                                    <InputNumber id="WeaponCooldownInput" class="form-control" @bind-Value=settingsForm.WeaponCooldown min="0.01" disabled="@(settingsForm.WeaponEdit == settingsForm.Weapons?.Count + 1)" />
+                                    <input type="number"
+                                        id="WeaponCooldownInput"
+                                        class="form-control @IsValidClass(nameof(settingsForm.WeaponCooldown))"
+                                        @bind-value=settingsForm.WeaponCooldown
+                                        min="0.01"
+                                        step="0.01"
+                                        disabled="@IsWeaponNone()" />
                                     <label for="WeaponCooldownInput" class="input-group-text" style="width: 6.5ch;">sec</label>
+                                    <div class="invalid-feedback">
+                                        <ul class="mb-0">
+                                            @foreach (var message in settingsForm.GetErrorMessages(nameof(settingsForm.WeaponCooldown)))
+                                            {
+                                                <li>@message</li>
+                                            }
+                                        </ul>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -135,8 +236,16 @@
                                 <button type="button"
                                     class="btn btn-danger w-100 my-1"
                                     disabled="@(settingsForm.WeaponEdit >= settingsForm.Weapons?.Count)"
+                                    hidden="@(settingsForm.WeaponEdit >= settingsForm.Weapons?.Count)"
                                     @onclick="OnClick_WeaponDelete">
                                     <span>Delete</span>
+                                </button>
+                                <button type="button"
+                                    class="btn btn-primary w-100 my-1"
+                                    disabled="@(settingsForm.WeaponEdit != settingsForm.Weapons?.Count)"
+                                    hidden="@(settingsForm.WeaponEdit != settingsForm.Weapons?.Count)"
+                                    @onclick="OnClick_WeaponAdd">
+                                    <span>Add</span>
                                 </button>
                             </div>
                         </div>
@@ -145,8 +254,8 @@
                     <h2 class="h5">Materials</h2>
                     <div>
                         <div class="input-group my-1">
-                            <label for="MaterialEditSelect" class="input-group-text" style="width: 13ch;">Material</label>
-                            <InputSelect id="MaterialEditSelect" class="form-select" @bind-Value=settingsForm.MaterialEdit>
+                            <label for="MaterialEditSelect" class="input-group-text" style="width: 13ch;">Edit</label>
+                            <select @key=settingsForm.Materials.Count id="MaterialEditSelect" class="form-select" @bind=settingsForm.MaterialEdit>
                                 @foreach (var material in settingsForm.Materials)
                                 {
                                     <option value="@settingsForm.Materials.Keys.ToList().IndexOf(material.Key)">
@@ -155,19 +264,47 @@
                                 }
                                 <option value="@settingsForm.Materials.Count">New Material</option>
                                 <option value="@(settingsForm.Materials.Count + 1)">None</option>
-                            </InputSelect>
+                            </select>
                         </div>
                         <div class="row">
                             <div class="col-lg-6">
                                 <div class="input-group my-1">
                                     <label for="MaterialKeyInput" class="input-group-text" style="width: 13ch;">Key</label>
-                                    <InputText id="MaterialKeyInput" class="form-control" @bind-Value=settingsForm.MaterialKey minlength="3" maxlength="255" disabled="@(settingsForm.MaterialEdit == settingsForm.Materials?.Count + 1)" />
+                                    <input type="text"
+                                        id="MaterialKeyInput"
+                                        class="form-control @IsValidClass(nameof(settingsForm.MaterialKey))"
+                                        @bind-value=settingsForm.MaterialKey
+                                        minlength="3"
+                                        maxlength="255"
+                                        disabled="@IsMaterialNone()" />
+                                    <div class="invalid-feedback">
+                                        <ul class="mb-0">
+                                            @foreach (var message in settingsForm.GetErrorMessages(nameof(settingsForm.MaterialKey)))
+                                            {
+                                                <li>@message</li>
+                                            }
+                                        </ul>
+                                    </div>
                                 </div>
                             </div>
                             <div class="col-lg-6">
                                 <div class="input-group my-1">
                                     <label for="MaterialNameInput" class="input-group-text" style="width: 13ch;">Name</label>
-                                    <InputText id="MaterialNameInput" class="form-control" @bind-Value=settingsForm.MaterialName minlength="3" maxlength="255" disabled="@(settingsForm.MaterialEdit == settingsForm.Materials?.Count + 1)" />
+                                    <input type="text"
+                                        id="MaterialNameInput"
+                                        class="form-control @IsValidClass(nameof(settingsForm.MaterialName))"
+                                        @bind-value=settingsForm.MaterialName
+                                        minlength="3"
+                                        maxlength="255"
+                                        disabled="@IsMaterialNone()" />
+                                    <div class="invalid-feedback">
+                                        <ul class="mb-0">
+                                            @foreach (var message in settingsForm.GetErrorMessages(nameof(settingsForm.MaterialName)))
+                                            {
+                                                <li>@message</li>
+                                            }
+                                        </ul>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -175,14 +312,42 @@
                             <div class="col-lg-6">
                                 <div class="input-group my-1">
                                     <label for="MaterialDensityInput" class="input-group-text" style="width: 13ch;">Mass</label>
-                                    <InputNumber id="MaterialDensityInput" class="form-control" @bind-Value=settingsForm.MaterialDensity min="0.01" disabled="@(settingsForm.MaterialEdit == settingsForm.Materials?.Count + 1)" />
+                                    <input type="number"
+                                        id="MaterialDensityInput"
+                                        class="form-control @IsValidClass(nameof(settingsForm.MaterialDensity))"
+                                        @bind-value=settingsForm.MaterialDensity
+                                        min="0.01"
+                                        step="0.01"
+                                        disabled="@IsMaterialNone()" />
                                     <label for="MaterialDensityInput" class="input-group-text" style="width: 6.5ch;">kg</label>
+                                    <div class="invalid-feedback">
+                                        <ul class="mb-0">
+                                            @foreach (var message in settingsForm.GetErrorMessages(nameof(settingsForm.MaterialDensity)))
+                                            {
+                                                <li>@message</li>
+                                            }
+                                        </ul>
+                                    </div>
                                 </div>
                             </div>
                             <div class="col-lg-6">
                                 <div class="input-group my-1">
                                     <label for="MaterialConnecitonStrengthInput" class="input-group-text" style="width: 13ch;">Conn. Str.</label>
-                                    <InputNumber id="MaterialConnecitonStrengthInput" class="form-control" @bind-Value=settingsForm.MaterialConnecitonStrength min="0" disabled="@(settingsForm.MaterialEdit == settingsForm.Materials?.Count + 1)" />
+                                    <input type="number"
+                                        id="MaterialConnecitonStrengthInput"
+                                        class="form-control @IsValidClass(nameof(settingsForm.MaterialConnectionStrength))"
+                                        @bind-value=settingsForm.MaterialConnectionStrength
+                                        min="0"
+                                        step="0.01"
+                                        disabled="@IsMaterialNone()" />
+                                    <div class="invalid-feedback">
+                                        <ul class="mb-0">
+                                            @foreach (var message in settingsForm.GetErrorMessages(nameof(settingsForm.MaterialConnectionStrength)))
+                                            {
+                                                <li>@message</li>
+                                            }
+                                        </ul>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -190,16 +355,37 @@
                             <div class="col-lg-6">
                                 <div class="input-group my-1">
                                     <label for="MaterialEnergyAbsorptionInput" class="input-group-text" style="width: 17ch;">Pen. Energy Abs.</label>
-                                    <InputNumber id="MaterialEnergyAbsorptionInput" class="form-control" @bind-Value=settingsForm.MaterialEnergyAbsorption min="0" disabled="@(settingsForm.MaterialEdit == settingsForm.Materials?.Count + 1)" />
+                                    <input type="number"
+                                        id="MaterialEnergyAbsorptionInput"
+                                        class="form-control @IsValidClass(nameof(settingsForm.MaterialEnergyAbsorption))"
+                                        @bind-value=settingsForm.MaterialEnergyAbsorption
+                                        min="0"
+                                        disabled="@IsMaterialNone()" />
                                     <label for="MaterialEnergyAbsorptionInput" class="input-group-text" style="width: 6.5ch;">kJ/m</label>
+                                    <div class="invalid-feedback">
+                                        <ul class="mb-0">
+                                            @foreach (var message in settingsForm.GetErrorMessages(nameof(settingsForm.MaterialEnergyAbsorption)))
+                                            {
+                                                <li>@message</li>
+                                            }
+                                        </ul>
+                                    </div>
                                 </div>
                             </div>
                             <div class="col-lg-6">
                                 <button type="button"
                                         class="btn btn-danger w-100 my-1"
                                         disabled="@(settingsForm.MaterialEdit >= settingsForm.Materials?.Count)"
-                                @onclick="OnClick_DeleteMaterial">
+                                        hidden="@(settingsForm.MaterialEdit >= settingsForm.Materials?.Count)"
+                                        @onclick="OnClick_DeleteMaterial">
                                     <span>Delete</span>
+                                </button>
+                                <button type="button"
+                                        class="btn btn-primary w-100 my-1"
+                                        disabled="@(settingsForm.MaterialEdit != settingsForm.Materials?.Count)"
+                                        hidden="@(settingsForm.MaterialEdit != settingsForm.Materials?.Count)"
+                                        @onclick="OnClick_MaterialAdd">
+                                    <span>Add</span>
                                 </button>
                             </div>
                         </div>
@@ -209,7 +395,7 @@
                     <button type="button" @onclick="OnClick_Cancel" class="btn btn-secondary">Cancel</button>
                     <button type="submit" class="btn btn-primary">Save Changes</button>
                 </div>
-            </EditForm>
+            </form>
         </div>
     </div>
 </dialog>
@@ -218,25 +404,133 @@
     [Parameter]
     public IndexStore State { get; set; } = new();
 
-    @inject IJSRuntime js;
-
     private SettingsForm settingsForm = new();
-    private EditContext? settingsFormContext { get; set; }
+
+    @inject NavigationManager Nav;
 
     protected override Task OnInitializedAsync()
     {
-        settingsFormContext = settingsForm.InitAndGetContext(State);
+        settingsForm.Reset(State);
 
         return base.OnInitializedAsync();
     }
 
-    private async void OnSubmit_SettingsForm()
+    private void OnSubmit_SettingsForm()
     {
-        if (settingsForm.Validate())
+        if (settingsForm.IsValid())
         {
-            ThemeData.ThemeOverride = settingsForm.ThemeOverride;
-            await ThemeData.OverridePreferredTheme(js);
+            State.useDecimalComma = settingsForm.UseDecimalComma;
+            State.hideZeroRatioWeaponColumns = settingsForm.HideZeroRatioWeaponColumns;
+            State.hideZeroRatioDirectionColumns = settingsForm.HideZeroRatioDirectionColumns;
+            State.updateDefaultBlockdataOverInternet = settingsForm.UpdateDefaultBlockdataOverInternet;
+
+            // edit weapoon
+            if (settingsForm.WeaponEdit < settingsForm.Weapons.Count)
+            {
+                var key = settingsForm.Weapons.Keys.ToList()[settingsForm.WeaponEdit];
+                if (settingsForm.WeaponKey != key)
+                {
+                    settingsForm.Weapons.Remove(key);
+                    settingsForm.AddWeapon();
+                }
+                else
+                {
+                    settingsForm.Weapons[key] = new Weapon()
+                        {
+                            name = settingsForm.WeaponName,
+                            cpu = settingsForm.WeaponCpu,
+                            damage = settingsForm.WeaponDamage,
+                            pellets = settingsForm.WeaponPellets,
+                            cooldown = settingsForm.WeaponCooldown,
+                            energy = settingsForm.WeaponEnergy,
+                            radius = settingsForm.WeaponRadius,
+                        };
+                }
+            }
+            // add weapon
+            else if (settingsForm.WeaponEdit == settingsForm.Weapons.Count)
+            {
+                settingsForm.AddWeapon();
+            }
+
+            State.Weapons = settingsForm.Weapons;
+
+            // edit material
+            if (settingsForm.MaterialEdit < settingsForm.Materials.Count)
+            {
+                var key = settingsForm.Materials.Keys.ToList()[settingsForm.MaterialEdit];
+                if (settingsForm.MaterialKey != key)
+                {
+                    settingsForm.Materials.Remove(key);
+                    settingsForm.AddMaterial();
+                }
+                else
+                {
+                    settingsForm.Materials[key] = new Material()
+                        {
+                            name = settingsForm.WeaponName,
+                            density = settingsForm.MaterialDensity,
+                            connectionStrength = settingsForm.MaterialConnectionStrength,
+                            energyAbsorption = settingsForm.MaterialEnergyAbsorption,
+                        };
+                }
+            }
+            // add material
+            else if (settingsForm.MaterialEdit == settingsForm.Materials.Count)
+            {
+                settingsForm.AddMaterial();
+            }
+
+            State.Materials = settingsForm.Materials;
+
+            State.HasChanged();
+
+            if (settingsForm.ThemeOverride != ThemeData.ThemeOverride)
+            {
+                var currentTheme = ThemeData.GetCurrentTheme();
+
+                // refresh if default → dark when system light, or vice-versa
+                if (ThemeData.ThemeOverride == Theme.Default) 
+                {
+                    if (settingsForm.ThemeOverride != currentTheme)
+                    {
+                        ThemeData.ThemeOverride = settingsForm.ThemeOverride;
+                        Nav.NavigateTo(Nav.Uri, true);
+                    }
+                    else
+                    {
+                        ThemeData.ThemeOverride = settingsForm.ThemeOverride;
+                    }
+                }
+                // refresh if dark → default, when system light, or vice-versa
+                else if (settingsForm.ThemeOverride == Theme.Default)
+                {
+                    ThemeData.ThemeOverride = settingsForm.ThemeOverride;
+                    var newTheme = ThemeData.GetCurrentTheme();
+                    if (currentTheme != newTheme)
+                    {
+                        Nav.NavigateTo(Nav.Uri, true);
+                    }
+                }
+                // refresh if dark → light, or vice-versa
+                else
+                {
+                    Nav.NavigateTo(Nav.Uri, true);
+                }
+            }
+
+            State.ShowSettings = !State.ShowSettings;
         }
+    }
+
+    private void OnClick_WeaponAdd()
+    {
+        settingsForm.AddWeapon();
+    }
+
+    private void OnClick_MaterialAdd()
+    {
+        settingsForm.AddMaterial();
     }
 
     private void OnClick_WeaponDelete()
@@ -252,7 +546,21 @@
     private void OnClick_Cancel()
     {
         settingsForm.Reset(State);
-        settingsForm.ClearValidation();
         State.ShowSettings = !State.ShowSettings;
+    }
+
+    private string IsValidClass(string fieldName)
+    {
+        return settingsForm.WasValid(fieldName) ? "" : "is-invalid";
+    }
+
+    private bool IsWeaponNone()
+    {
+        return settingsForm.WeaponEdit == settingsForm.Weapons.Count + 1;
+    }
+
+    private bool IsMaterialNone()
+    {
+        return settingsForm.MaterialEdit == settingsForm.Materials.Count + 1;
     }
 }

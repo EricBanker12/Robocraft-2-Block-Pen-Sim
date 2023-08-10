@@ -13,7 +13,7 @@ h1:focus {
 }
 
 ::selection:not(:window-inactive) {
-    background-color: #984c0c
+    background-color: rgba(152, 76, 12, 0.5);
 }
 
 input:disabled ~ label,

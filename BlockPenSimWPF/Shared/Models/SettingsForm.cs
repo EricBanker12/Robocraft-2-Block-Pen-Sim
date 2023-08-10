@@ -15,20 +15,6 @@ namespace BlockPenSimWPF.Shared.Models
 {
     internal class SettingsForm
     {
-        public EditContext InitAndGetContext(IndexStore State)
-        {
-            this.Reset(State);
-            
-            // create context and add custom validation
-            this.EditContext = new EditContext(this);
-            this.ValidationMessageStore = new ValidationMessageStore(EditContext);
-            this.EditContext.OnFieldChanged += OnFieldChanged;
-            this.EditContext.OnValidationRequested += OnValidationRequested;
-            this.EditContext.SetFieldCssClassProvider(new SettingsFormCssProvider());
-
-            return EditContext;
-        }
-
         public void Reset(IndexStore State)
         {
             // Set initial values
@@ -43,122 +29,155 @@ namespace BlockPenSimWPF.Shared.Models
             this.Materials = State.Materials.ToDictionary(e => e.Key, e => e.Value);
 
             // set select to None
-            this.WeaponEdit = State.Weapons.Count + 1;
-            this.WeaponKey = string.Empty;
-            this.WeaponName = string.Empty;
-            this.WeaponCpu = 20;
-            this.WeaponDamage = 13;
-            this.WeaponPellets = 1;
-            this.WeaponRadius = 0.3;
-            this.WeaponEnergy = 2000;
-            this.WeaponCooldown = 0.6;
+            this.weaponEdit = State.Weapons.Count + 1;
+            this.weaponKey = string.Empty;
+            this.weaponName = string.Empty;
+            this.weaponCpu = 20;
+            this.weaponDamage = 13;
+            this.weaponPellets = 1;
+            this.weaponRadius = 0.3;
+            this.weaponEnergy = 2000;
+            this.weaponCooldown = 0.6;
 
-            this.MaterialEdit = State.Materials.Count + 1;
-            this.MaterialKey = string.Empty;
-            this.MaterialName = string.Empty;
-            this.MaterialDensity = 1.8;
-            this.MaterialConnecitonStrength = 2.65;
-            this.MaterialEnergyAbsorption = 5000;
+            this.materialEdit = State.Materials.Count + 1;
+            this.materialKey = string.Empty;
+            this.materialName = string.Empty;
+            this.materialDensity = 1.8;
+            this.materialConnectionStrength = 2.65;
+            this.materialEnergyAbsorption = 5000;
+
+            this.ErrorMessages.Clear();
         }
 
-        public bool Validate()
+        public bool WasValid(string fieldName)
         {
-            bool isValid = this.EditContext?.Validate() ?? false;
-            if (!isValid)
-            {
-                isValid = true;
-                
-                var weaponFields = new string[] { "WeaponKey", "WeaponName", "WeaponCpu", "WeaponDamage", "WeaponPellets", "WeaponRadius", "WeaponEnergy", "WeaponCooldown" };
-                for (int i = 0; i < weaponFields.Length && isValid; i++)
-                {
-                    var fieldIdentifier = new FieldIdentifier(this, weaponFields[i]);
-                    if (this.WeaponEdit != this.Weapons?.Count + 1)
-                    {
-                        isValid = this.EditContext?.GetValidationMessages(fieldIdentifier).Count() == 0;
-                    }
-                    else
-                    {
-                        this.ClearValidation(fieldIdentifier);
-                    }
-                }
+            if (fieldName.StartsWith("Weapon") && WeaponEdit == this.Weapons?.Count + 1)
+                return true;
 
-                if (!isValid) { return false; }
+            if (fieldName.StartsWith("Material") && MaterialEdit == this.Weapons?.Count + 1)
+                return true;
 
-                var materialFields = new string[] { "MaterialKey", "MaterialName", "MaterialDensity", "MaterialConnecitonStrength", "MaterialEnergyAbsorption" };
-                for (int i = 0; i < materialFields.Length && isValid; i++)
-                {
-                    var fieldIdentifier = new FieldIdentifier(this, materialFields[i]);
-                    if (this.MaterialEdit != this.Materials?.Count + 1)
-                    {
-                        isValid = this.EditContext?.GetValidationMessages(fieldIdentifier).Count() == 0;
-                    }
-                    else
-                    {
-                        this.ClearValidation(fieldIdentifier);
-                    }
-                }
-
-                return isValid;
-            }
-            return isValid;
+            return !ErrorMessages.ContainsKey(fieldName) || ErrorMessages[fieldName].Count == 0;
         }
 
-        // https://stackoverflow.com/a/63356079
-        public void ClearValidation()
+        private void OverrideWasValid(string fieldName)
         {
-            var bindingFlags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
-
-            object GetInstanceField(Type type, object instance, string fieldName)
-            {
-                var fieldInfo = type.GetField(fieldName, bindingFlags);
-                return fieldInfo.GetValue(instance);
-            }
-
-            var fieldStates = GetInstanceField(typeof(EditContext), this.EditContext, "_fieldStates");
-            var clearMethodInfo = typeof(HashSet<ValidationMessageStore>).GetMethod("Clear", bindingFlags);
-
-            foreach (DictionaryEntry kv in (IDictionary)fieldStates)
-            {
-                var messageStores = GetInstanceField(kv.Value.GetType(), kv.Value, "_validationMessageStores");
-                if (messageStores != null) clearMethodInfo?.Invoke(messageStores, null);
-            }
+            if (ErrorMessages.ContainsKey(fieldName)) ErrorMessages[fieldName].Clear();
         }
 
-        public void ClearValidation(FieldIdentifier fieldIdentifier)
+        public bool IsValid(string fieldName)
         {
-            var bindingFlags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
+            if (ErrorMessages.ContainsKey(fieldName)) ErrorMessages[fieldName].Clear();
+            else ErrorMessages[fieldName] = new List<string>();
 
-            object GetInstanceField(Type type, object instance, string fieldName)
+            if (fieldName.StartsWith("Weapon") && WeaponEdit == this.Weapons?.Count + 1)
+                return true;
+
+            if (fieldName.StartsWith("Material") && MaterialEdit == this.Materials?.Count + 1)
+                return true;
+
+            switch (fieldName)
             {
-                var fieldInfo = type.GetField(fieldName, bindingFlags);
-                return fieldInfo.GetValue(instance);
+                case nameof(WeaponKey):
+                    if (string.IsNullOrWhiteSpace(WeaponKey) || WeaponKey?.Length > 255 || WeaponKey?.Length < 3)
+                        ErrorMessages[fieldName].Add("Key must be between 3 and 255 characters in length.");
+                    else if (WeaponEdit <= this.Weapons?.Count)
+                    {
+                        var match = Weapons.Select(kv => kv.Key).ToList().IndexOf(WeaponKey ?? string.Empty);
+                        if (match >= 0 && match != WeaponEdit) ErrorMessages[fieldName].Add("Key must be unique.");
+                    }
+                    break;
+                case nameof(WeaponName):
+                    if (string.IsNullOrWhiteSpace(WeaponName) || WeaponName?.Length > 255 || WeaponName?.Length < 3)
+                        ErrorMessages[fieldName].Add("Name must be between 3 and 255 characters in length.");
+                    else if (weaponEdit <= this.Weapons?.Count)
+                    {
+                        var match = Weapons.Select(kv => kv.Value.name).ToList().IndexOf(WeaponName ?? string.Empty);
+                        if (match >= 0 && match != WeaponEdit) ErrorMessages[fieldName].Add("Name must be unique.");
+                    }
+                    break;
+                case nameof(WeaponCpu):
+                    if (WeaponCpu < 1) ErrorMessages[fieldName].Add("CPU Cost must be at least 1.");
+                    break;
+                case nameof(WeaponDamage):
+                    if (WeaponDamage < 1) ErrorMessages[fieldName].Add("Damage must be at least 1.");
+                    break;
+                case nameof(WeaponPellets):
+                    if (WeaponPellets < 1) ErrorMessages[fieldName].Add("Pellet Count must be at least 1.");
+                    break;
+                case nameof(WeaponCooldown):
+                    if (WeaponCooldown < 0.01) ErrorMessages[fieldName].Add("Cooldown cannot be less than one-hundredth (1/100) of a second.");
+                    break;
+                case nameof(WeaponEnergy):
+                    if (WeaponEnergy < 1) ErrorMessages[fieldName].Add("Penetration Energy must be at least 1 kJ/m.");
+                    break;
+                case nameof(WeaponRadius):
+                    if (WeaponRadius < 0) ErrorMessages[fieldName].Add("Radius cannot be less than 0 blocks.");
+                    break;
+                case nameof(MaterialKey):
+                    if (string.IsNullOrWhiteSpace(MaterialKey) || MaterialKey?.Length > 255 || MaterialKey?.Length < 3)
+                        ErrorMessages[fieldName].Add("Key must be between 3 and 255 characters in length.");
+                    else if (MaterialEdit <= this.Materials?.Count)
+                    {
+                        var match = Materials.Select(kv => kv.Key).ToList().IndexOf(MaterialKey ?? string.Empty);
+                        if (match >= 0 && match != MaterialEdit) ErrorMessages[fieldName].Add("Key must be unique.");
+                    }
+                    break;
+                case nameof(MaterialName):
+                    if (string.IsNullOrWhiteSpace(MaterialName) || MaterialName?.Length > 255 || MaterialName?.Length < 3)
+                        ErrorMessages[fieldName].Add("Name must be between 3 and 255 characters in length.");
+                    else if (materialEdit <= this.Materials?.Count)
+                    {
+                        var match = Materials.Select(kv => kv.Value.name).ToList().IndexOf(MaterialName ?? string.Empty);
+                        if (match >= 0 && match != MaterialEdit) ErrorMessages[fieldName].Add("Name must be unique.");
+                    }
+                    break;
+                case nameof(MaterialDensity):
+                    if (MaterialDensity < 0.01) ErrorMessages[fieldName].Add("Mass cannot be less than one-hundredth (1/100) of a kilogram.");
+                    break;
+                case nameof(MaterialConnectionStrength):
+                    if (MaterialConnectionStrength < 0) ErrorMessages[fieldName].Add("Connection Strength cannot be less than 0.");
+                    break;
+                case nameof(MaterialEnergyAbsorption):
+                    if (MaterialEnergyAbsorption < 0) ErrorMessages[fieldName].Add("Penetration Energy Absorption cannot be less than 0 kJ/m.");
+                    break;
+                default:
+                    break;
             }
 
-            var fieldStates = GetInstanceField(typeof(EditContext), this.EditContext, "_fieldStates");
-            var allMethodInfo = typeof(HashSet<ValidationMessageStore>).GetMethods(bindingFlags);
-            var clearMethodInfo = allMethodInfo.Where(info => info.Name == "Clear").Skip(1).FirstOrDefault();
-
-            foreach (DictionaryEntry kv in (IDictionary)fieldStates)
-            {
-                var messageStores = GetInstanceField(kv.Value.GetType(), kv.Value, "_validationMessageStores");
-                if (messageStores != null) clearMethodInfo?.Invoke(messageStores, new object[] { fieldIdentifier });
-            }
+            return !ErrorMessages.ContainsKey(fieldName) || ErrorMessages[fieldName].Count == 0;
         }
 
-        private void OnFieldChanged(object? sender, FieldChangedEventArgs args)
+        public bool IsValid()
         {
-            CustomValidate(args.FieldIdentifier);
-            if (args.FieldIdentifier.FieldName == "WeaponEdit")
-            {
-                OnSelect_WeaponEdit();
-            }
-            else if (args.FieldIdentifier.FieldName == "MaterialEdit")
-            {
-                OnSelect_MaterialEdit();
-            }
+            return  IsValidWeapon() && IsValidMaterial();
         }
 
-        public void OnSelect_WeaponEdit()
+        public bool IsValidWeapon()
+        {
+            if (!IsValid(nameof(WeaponKey))) return false;
+            if (!IsValid(nameof(WeaponName))) return false;
+            if (!IsValid(nameof(WeaponCpu))) return false;
+            if (!IsValid(nameof(WeaponDamage))) return false;
+            if (!IsValid(nameof(WeaponPellets))) return false;
+            if (!IsValid(nameof(WeaponCooldown))) return false;
+            if (!IsValid(nameof(WeaponEnergy))) return false;
+            if (!IsValid(nameof(WeaponRadius))) return false;
+
+            return true;
+        }
+
+        public bool IsValidMaterial()
+        {
+            if (!IsValid(nameof(MaterialKey))) return false;
+            if (!IsValid(nameof(MaterialName))) return false;
+            if (!IsValid(nameof(MaterialDensity))) return false;
+            if (!IsValid(nameof(MaterialEnergyAbsorption))) return false;
+            if (!IsValid(nameof(MaterialConnectionStrength))) return false;
+            return true;
+        }
+
+        public void OnChange_WeaponEdit()
         {
             if (this.WeaponEdit < this.Weapons?.Count)
             {
@@ -173,13 +192,14 @@ namespace BlockPenSimWPF.Shared.Models
             }
             else
             {
-                this.WeaponKey = string.Empty;
-                this.WeaponName = string.Empty;
-                this.Validate();
+                this.weaponKey = string.Empty;
+                this.weaponName = string.Empty;
+                OverrideWasValid(nameof(WeaponKey));
+                OverrideWasValid(nameof(WeaponName));
             }
         }
 
-        public void OnSelect_MaterialEdit()
+        public void OnChange_MaterialEdit()
         {
             if (this.MaterialEdit < this.Materials?.Count)
             {
@@ -187,143 +207,93 @@ namespace BlockPenSimWPF.Shared.Models
                 this.MaterialKey = material.Key;
                 this.MaterialName = material.Value.name;
                 this.MaterialDensity = material.Value.density;
-                this.MaterialConnecitonStrength = material.Value.connectionStrength;
+                this.MaterialConnectionStrength = material.Value.connectionStrength;
                 this.MaterialEnergyAbsorption = material.Value.energyAbsorption;
             }
             else
             {
-                this.MaterialKey = string.Empty;
-                this.MaterialName = string.Empty;
-                this.Validate();
+                this.materialKey = string.Empty;
+                this.materialName = string.Empty;
+                OverrideWasValid(nameof(MaterialKey));
+                OverrideWasValid(nameof(MaterialName));
+            }
+        }
+
+        public void AddWeapon()
+        {
+            if (this.Weapons == null) return;
+
+            if (IsValidWeapon())
+            {
+                this.Weapons.Add(WeaponKey, new Weapon()
+                {
+                    name = WeaponName,
+                    cpu = WeaponCpu,
+                    damage = WeaponDamage,
+                    pellets = WeaponPellets,
+                    cooldown = WeaponCooldown,
+                    energy = WeaponEnergy,
+                    radius = WeaponRadius,
+                });
+            }
+        }
+
+        public void AddMaterial()
+        {
+            if (this.Materials == null) return;
+
+            if (IsValidMaterial())
+            {
+                this.Materials.Add(MaterialKey, new Material()
+                {
+                    name = MaterialName,
+                    density = MaterialDensity,
+                    connectionStrength = MaterialConnectionStrength,
+                    energyAbsorption = MaterialEnergyAbsorption,
+                });
             }
         }
 
         public void DeleteWeapon()
         {
+            if (this.Weapons == null) return;
             var weapon = this.Weapons.ToArray()[this.WeaponEdit];
-            this.Weapons?.Remove(weapon.Key);
+            this.Weapons.Remove(weapon.Key);
             this.WeaponEdit = this.Weapons.Count + 1;
-            this.OnSelect_WeaponEdit();
         }
 
         public void DeleteMaterial()
         {
+            if (this.Materials == null) return;
             var material = this.Materials.ToArray()[this.MaterialEdit];
-            this.Materials?.Remove(material.Key);
+            this.Materials.Remove(material.Key);
             this.MaterialEdit = this.Materials.Count + 1;
-            this.OnSelect_MaterialEdit();
         }
 
-        private void OnValidationRequested(object? sender, ValidationRequestedEventArgs args)
+        public List<string> GetErrorMessages()
         {
-            CustomValidate(new FieldIdentifier(this, "WeaponKey"));
-            CustomValidate(new FieldIdentifier(this, "WeaponName"));
-            
-            CustomValidate(new FieldIdentifier(this, "MaterialKey"));
-            CustomValidate(new FieldIdentifier(this, "MaterialName"));
+            var errorMessages = new List<string>();
+            foreach (var kv in this.ErrorMessages)
+            {
+                errorMessages.AddRange(kv.Value);
+            }
+            return errorMessages;
         }
 
-        private void CustomValidate(FieldIdentifier fieldIdentifier)
+        public List<string> GetErrorMessages(string fieldName)
         {
-            this.ValidationMessageStore?.Clear(fieldIdentifier);
-
-            var field = fieldIdentifier.FieldName;
-            if (field == "WeaponKey")
+            List<string>? errorMessages;
+            if (this.ErrorMessages.TryGetValue(fieldName, out errorMessages))
             {
-                if (string.IsNullOrWhiteSpace(WeaponKey))
-                    ValidationMessageStore?.Add(fieldIdentifier, "Weapon Key is required.");
-                else
-                {
-                    if (this.WeaponEdit == this.Weapons?.Count)
-                    {
-                        if (this.Weapons.ContainsKey(WeaponKey))
-                        {
-                            ValidationMessageStore?.Add(fieldIdentifier, "Weapon Key must be unique.");
-                        }
-                    }
-                    if (this.WeaponEdit < this.Weapons?.Count)
-                    {
-                        var keyIndex = this.Weapons?.Keys.ToList().IndexOf(WeaponKey);
-                        if (keyIndex > -1 && keyIndex != this.WeaponEdit)
-                        {
-                            ValidationMessageStore?.Add(fieldIdentifier, "Weapon Key must be unique.");
-                        }
-                    }
-                }
+                return errorMessages;
             }
-            if (field == "MaterialKey")
+            else
             {
-                if (string.IsNullOrWhiteSpace(MaterialKey))
-                    ValidationMessageStore?.Add(fieldIdentifier, "Material Key is required.");
-                else
-                {
-                    if (this.MaterialEdit == this.Materials?.Count)
-                    {
-                        if (this.Materials.ContainsKey(MaterialKey))
-                        {
-                            ValidationMessageStore?.Add(fieldIdentifier, "Material Key must be unique.");
-                        }
-                    }
-                    if (this.MaterialEdit < this.Materials?.Count)
-                    {
-                        var keyIndex = this.Materials?.Keys.ToList().IndexOf(MaterialKey);
-                        if (keyIndex > -1 && keyIndex != this.MaterialEdit)
-                        {
-                            ValidationMessageStore?.Add(fieldIdentifier, "Material Key must be unique.");
-                        }
-                    }
-                }
-            }
-            if (field == "WeaponName")
-            {
-                if (string.IsNullOrWhiteSpace(WeaponName))
-                    ValidationMessageStore?.Add(fieldIdentifier, "Weapon Name is required.");
-                else
-                {
-                    if (this.WeaponEdit == this.Weapons?.Count)
-                    {
-                        if (this.Weapons.Values.Select(w => w.name).Contains(WeaponName))
-                        {
-                            ValidationMessageStore?.Add(fieldIdentifier, "Weapon Name must be unique.");
-                        }
-                    }
-                    if (this.WeaponEdit < this.Weapons?.Count)
-                    {
-                        var keyIndex = this.Weapons.Values.Select(w => w.name).ToList().IndexOf(WeaponName);
-                        if (keyIndex > -1 && keyIndex != this.WeaponEdit)
-                        {
-                            ValidationMessageStore?.Add(fieldIdentifier, "Weapon Name must be unique.");
-                        }
-                    }
-                }
-            }
-            if (field == "MaterialName")
-            {
-                if (string.IsNullOrWhiteSpace(MaterialName))
-                    ValidationMessageStore?.Add(fieldIdentifier, "Material Name is required.");
-                else
-                {
-                    if (this.MaterialEdit == this.Materials?.Count)
-                    {
-                        if (this.Materials.Values.Select(w => w.name).Contains(MaterialName))
-                        {
-                            ValidationMessageStore?.Add(fieldIdentifier, "Material Name must be unique.");
-                        }
-                    }
-                    if (this.MaterialEdit < this.Materials?.Count)
-                    {
-                        var keyIndex = this.Materials?.Values.Select(w => w.name).ToList().IndexOf(MaterialName);
-                        if (keyIndex > -1 && keyIndex != this.MaterialEdit)
-                        {
-                            ValidationMessageStore?.Add(fieldIdentifier, "Material Name must be unique.");
-                        }
-                    }
-                }
+                return new List<string>();
             }
         }
-
-        public EditContext? EditContext;
-        public ValidationMessageStore? ValidationMessageStore { get; set; }
+        
+        private Dictionary<string, List<string>> ErrorMessages = new();
 
         // Basic Settings
         public Theme ThemeOverride { get; set; }
@@ -331,77 +301,172 @@ namespace BlockPenSimWPF.Shared.Models
         public bool HideZeroRatioWeaponColumns { get; set;}
         public bool HideZeroRatioDirectionColumns { get; set; }
         public bool UpdateDefaultBlockdataOverInternet { get; set; }
-        
-        // Weapon Edit
-        public Dictionary<string, Weapon>? Weapons { get; set; }
-        public int WeaponEdit { get; set; }
 
-        [StringLength(255, MinimumLength = 3, ErrorMessage = "Key must be between 3 and 255 characters in length.")]
-        public string? WeaponKey { get; set; }
+        // Weapon Edit
+        public Dictionary<string, Weapon> Weapons { get; set; } = new();
+
+        private int weaponEdit;
+        public int WeaponEdit {
+            get { return weaponEdit; }
+            set {
+                weaponEdit = value;
+                OnChange_WeaponEdit();
+            }
+        }
+
+        private string weaponKey = string.Empty;
+        public string WeaponKey
+        {
+            get { return weaponKey; }
+            set {
+                weaponKey = value;
+                IsValid(nameof(WeaponKey));
+            }
+        }
         
-        [StringLength(255, MinimumLength = 3, ErrorMessage = "Name must be between 3 and 255 characters in length.")]
-        public string? WeaponName { get; set; }
+        private string weaponName = string.Empty;
+        public string WeaponName
+        {
+            get { return weaponName; }
+            set
+            {
+                weaponName = value;
+                IsValid(nameof(WeaponName));
+            }
+        }
         
-        [Range(1, int.MaxValue, ErrorMessage = "CPU Cost should be at least 1.")]
-        public int WeaponCpu { get; set; }
+        private int weaponCpu = 1;
+        public int WeaponCpu
+        {
+            get { return weaponCpu; }
+            set
+            {
+                weaponCpu = value;
+                IsValid(nameof(WeaponCpu));
+            }
+        }
+
+        private double weaponDamage = 1;
+        public double WeaponDamage
+        {
+            get { return weaponDamage; }
+            set
+            {
+                weaponDamage = value;
+                IsValid(nameof(WeaponDamage));
+            }
+        }
         
-        [Range(1, int.MaxValue, ErrorMessage = "Damage should be at least 1.")]
-        public double WeaponDamage { get; set; }
-        
-        [Range(1, int.MaxValue, ErrorMessage = "Pellet Count should be at least 1.")]
-        public double WeaponPellets { get; set; }
-        
-        [Range(0, int.MaxValue, ErrorMessage = "Radius cannot be less than 0.")]
-        public double WeaponRadius { get; set; }
-        
-        [Range(1, int.MaxValue, ErrorMessage = "Penetration Energy should be at least 1.")]
-        public double WeaponEnergy { get; set; }
-        
-        [Range(0.01, int.MaxValue, ErrorMessage = "Cooldown cannot be less than one-hundredth (1/100) of a second.")]
-        public double WeaponCooldown { get; set; }
+        private double weaponPellets = 1;
+        public double WeaponPellets
+        {
+            get { return weaponPellets; }
+            set
+            {
+                weaponPellets = value;
+                IsValid(nameof(WeaponPellets));
+            }
+        }
+
+        private double weaponRadius = 0;
+        public double WeaponRadius
+        {
+            get { return weaponRadius; }
+            set
+            {
+                weaponRadius = value;
+                IsValid(nameof(WeaponRadius));
+            }
+        }
+
+        private double weaponEnergy = 1;
+        public double WeaponEnergy
+        {
+            get { return weaponEnergy; }
+            set
+            {
+                weaponEnergy = value;
+                IsValid(nameof(WeaponEnergy));
+            }
+        }
+
+        private double weaponCooldown = 0.01;
+        public double WeaponCooldown
+        {
+            get { return weaponCooldown; }
+            set
+            {
+                weaponCooldown = value;
+                IsValid(nameof(WeaponCooldown));
+            }
+        }
 
         // Material Edit
-        public Dictionary<string, Material>? Materials { get; set; }
-        public int MaterialEdit { get; set; }
+        public Dictionary<string, Material> Materials { get; set; } = new();
         
-        [StringLength(255, MinimumLength = 3, ErrorMessage = "Key must be between 3 and 255 characters in length.")]
-        public string? MaterialKey { get; set; }
+        private int materialEdit;
+        public int MaterialEdit {
+            get { return materialEdit; }
+            set
+            {
+                materialEdit = value;
+                OnChange_MaterialEdit();
+            }
+        }
         
-        [StringLength(255, MinimumLength = 3, ErrorMessage = "Name must be between 3 and 255 characters in length.")]
-        public string? MaterialName { get; set; }
-
-        [Range(0.01, int.MaxValue, ErrorMessage = "Mass cannot be less than one-hundredth (1/100) of a kilogram.")]
-        public double MaterialDensity { get; set; }
-        
-        [Range(0, int.MaxValue, ErrorMessage = "Connection Strength cannot be less than 0.")]
-        public double MaterialConnecitonStrength { get; set; }
-        
-        [Range(0, int.MaxValue, ErrorMessage = "Penetration Energy Absorption cannot be less than 0.")]
-        public double MaterialEnergyAbsorption { get; set; }
-    }
-
-    //internal class WeaponAttribute : ValidationAttribute
-    //{
-    //    protected override ValidationResult? IsValid(object? value, ValidationContext validationContext)
-    //    {
-    //        var settingsForm = validationContext.ObjectInstance as SettingsForm;
-    //        if (settingsForm?.WeaponEdit == settingsForm?.Weapons?.Count + 1)
-    //            return null;
-
-    //        return null;
-    //    }
-    //}
-
-    internal class SettingsFormCssProvider : FieldCssClassProvider
-    {
-        public override string GetFieldCssClass(EditContext editContext, in FieldIdentifier fieldIdentifier)
+        private string materialKey = string.Empty;
+        public string MaterialKey
         {
-            var errors = editContext.GetValidationMessages(fieldIdentifier);
-            if (errors != null && !string.IsNullOrEmpty(errors.FirstOrDefault()))
-                return "is-invalid";
-            
-            return string.Empty;
-            //return base.GetFieldCssClass(editContext, fieldIdentifier);
+            get { return materialKey; }
+            set
+            {
+                materialKey = value;
+                IsValid(nameof(MaterialKey));
+            }
+        }
+        
+        private string materialName = string.Empty;
+        public string MaterialName
+        {
+            get { return materialName; }
+            set
+            {
+                materialName = value;
+                IsValid(nameof(MaterialName));
+            }
+        }
+
+        private double materialDensity = 0.01;
+        public double MaterialDensity
+        {
+            get { return materialDensity; }
+            set
+            {
+                materialDensity = value;
+                IsValid(nameof(MaterialDensity));
+            }
+        }
+
+        private double materialConnectionStrength = 0;
+        public double MaterialConnectionStrength
+        {
+            get => materialConnectionStrength;
+            set
+            {
+                materialConnectionStrength = value;
+                IsValid(nameof(MaterialConnectionStrength));
+            }
+        }
+
+        private double materialEnergyAbsorption = 0;
+        public double MaterialEnergyAbsorption
+        {
+            get => materialEnergyAbsorption;
+            set
+            {
+                materialEnergyAbsorption = value;
+                IsValid(nameof(MaterialEnergyAbsorption));
+            }
         }
     }
 }
