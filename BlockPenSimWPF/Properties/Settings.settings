@@ -56,7 +56,7 @@
     "Score": 1
   },
   "Cpu": {
-    "Min": 0,
+    "Min": 1,
     "Max": 200
   },
   "Weight": {
@@ -125,7 +125,7 @@
       "cpu": 120,
       "damage": 950,
       "pellets": 1,
-      "radius": 0.3,
+      "radius": 3,
       "energy": 10000,
       "cooldown": 4
     }
@@ -144,7 +144,7 @@
       "energyAbsorption": 5000
     },
     "Ladium": {
-      "name": "",
+      "name": "Ladium",
       "density": 7.3,
       "connectionStrength": 3.35,
       "energyAbsorption": 7500

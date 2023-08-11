@@ -3,20 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.3.32811.315
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Robocraft2BlockPenSim", "Robocraft2BlockPenSim\Robocraft2BlockPenSim.csproj", "{9CC9C85E-9872-4DB3-B9B0-21791A1FE3D9}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Robocraft2BlockPenSimApp", "Robocraft2BlockPenSimApp\Robocraft2BlockPenSimApp.csproj", "{7646D536-B583-4338-8C5F-F961D7C8C567}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AppLauncher", "AppLauncher\AppLauncher.csproj", "{2DCB9F75-7E47-421B-974F-4DD76532876D}"
-	ProjectSection(ProjectDependencies) = postProject
-		{7646D536-B583-4338-8C5F-F961D7C8C567} = {7646D536-B583-4338-8C5F-F961D7C8C567}
-	EndProjectSection
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HostBinPatcher", "HostBinPatcher\HostBinPatcher.csproj", "{86A5353F-8507-41E1-A50C-4F487F05FADC}"
-	ProjectSection(ProjectDependencies) = postProject
-		{2DCB9F75-7E47-421B-974F-4DD76532876D} = {2DCB9F75-7E47-421B-974F-4DD76532876D}
-		{7646D536-B583-4338-8C5F-F961D7C8C567} = {7646D536-B583-4338-8C5F-F961D7C8C567}
-	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BlockPenSimWPF", "BlockPenSimWPF\BlockPenSimWPF.csproj", "{07350BD4-FD1A-43EF-9550-B6A667810B09}"
 EndProject
@@ -26,20 +13,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{9CC9C85E-9872-4DB3-B9B0-21791A1FE3D9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{9CC9C85E-9872-4DB3-B9B0-21791A1FE3D9}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{9CC9C85E-9872-4DB3-B9B0-21791A1FE3D9}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{9CC9C85E-9872-4DB3-B9B0-21791A1FE3D9}.Release|Any CPU.Build.0 = Release|Any CPU
-		{7646D536-B583-4338-8C5F-F961D7C8C567}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{7646D536-B583-4338-8C5F-F961D7C8C567}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{7646D536-B583-4338-8C5F-F961D7C8C567}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
-		{7646D536-B583-4338-8C5F-F961D7C8C567}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{7646D536-B583-4338-8C5F-F961D7C8C567}.Release|Any CPU.Build.0 = Release|Any CPU
-		{7646D536-B583-4338-8C5F-F961D7C8C567}.Release|Any CPU.Deploy.0 = Release|Any CPU
-		{2DCB9F75-7E47-421B-974F-4DD76532876D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{2DCB9F75-7E47-421B-974F-4DD76532876D}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{2DCB9F75-7E47-421B-974F-4DD76532876D}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{2DCB9F75-7E47-421B-974F-4DD76532876D}.Release|Any CPU.Build.0 = Release|Any CPU
 		{86A5353F-8507-41E1-A50C-4F487F05FADC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{86A5353F-8507-41E1-A50C-4F487F05FADC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{86A5353F-8507-41E1-A50C-4F487F05FADC}.Release|Any CPU.ActiveCfg = Release|Any CPU

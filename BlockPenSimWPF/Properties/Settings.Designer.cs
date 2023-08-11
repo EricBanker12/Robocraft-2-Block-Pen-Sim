@@ -56,7 +56,7 @@ namespace BlockPenSimWPF.Properties {
             "arger (Front)\": false,\r\n    \"TTP Arc Discharger (Side)\": false,\r\n    \"TTP Arc Di" +
             "scharger (Top)\": false,\r\n    \"TTP Rail Gun (Front)\": false,\r\n    \"TTP Rail Gun (" +
             "Side)\": false,\r\n    \"TTP Rail Gun (Top)\": false\r\n  },\r\n  \"RowFilters\": {},\r\n  \"C" +
-            "olumnsSort\": {\r\n    \"Score\": 1\r\n  },\r\n  \"Cpu\": {\r\n    \"Min\": 0,\r\n    \"Max\": 200\r" +
+            "olumnsSort\": {\r\n    \"Score\": 1\r\n  },\r\n  \"Cpu\": {\r\n    \"Min\": 1,\r\n    \"Max\": 200\r" +
             "\n  },\r\n  \"Weight\": {\r\n    \"Min\": 0,\r\n    \"Max\": 4000\r\n  },\r\n  \"Length\": {\r\n    \"" +
             "Min\": 4,\r\n    \"Max\": 9\r\n  },\r\n  \"Width\": {\r\n    \"Min\": 9,\r\n    \"Max\": 9\r\n  },\r\n " +
             " \"Height\": {\r\n    \"Min\": 9,\r\n    \"Max\": 9\r\n  },\r\n  \"WeaponCount\": {\r\n    \"LaserB" +
@@ -72,13 +72,13 @@ namespace BlockPenSimWPF.Properties {
             "u\": 40,\r\n      \"damage\": 15000,\r\n      \"pellets\": 20,\r\n      \"radius\": 30,\r\n    " +
             "  \"energy\": 120000,\r\n      \"cooldown\": 6\r\n    },\r\n    \"RailGun\": {\r\n      \"name\"" +
             ": \"Rail Gun\",\r\n      \"cpu\": 120,\r\n      \"damage\": 950,\r\n      \"pellets\": 1,\r\n   " +
-            "   \"radius\": 0.3,\r\n      \"energy\": 10000,\r\n      \"cooldown\": 4\r\n    }\r\n  },\r\n  \"" +
-            "Materials\": {\r\n    \"Airium\": {\r\n      \"name\": \"Airium\",\r\n      \"density\": 0.7,\r\n" +
-            "      \"connectionStrength\": 1.59,\r\n      \"energyAbsorption\": 2500\r\n    },\r\n    \"" +
-            "Moderonium\": {\r\n      \"name\": \"Moderonium\",\r\n      \"density\": 1.8,\r\n      \"conne" +
-            "ctionStrength\": 2.65,\r\n      \"energyAbsorption\": 5000\r\n    },\r\n    \"Ladium\": {\r\n" +
-            "      \"name\": \"\",\r\n      \"density\": 7.3,\r\n      \"connectionStrength\": 3.35,\r\n   " +
-            "   \"energyAbsorption\": 7500\r\n    }\r\n  }\r\n}")]
+            "   \"radius\": 3,\r\n      \"energy\": 10000,\r\n      \"cooldown\": 4\r\n    }\r\n  },\r\n  \"Ma" +
+            "terials\": {\r\n    \"Airium\": {\r\n      \"name\": \"Airium\",\r\n      \"density\": 0.7,\r\n  " +
+            "    \"connectionStrength\": 1.59,\r\n      \"energyAbsorption\": 2500\r\n    },\r\n    \"Mo" +
+            "deronium\": {\r\n      \"name\": \"Moderonium\",\r\n      \"density\": 1.8,\r\n      \"connect" +
+            "ionStrength\": 2.65,\r\n      \"energyAbsorption\": 5000\r\n    },\r\n    \"Ladium\": {\r\n  " +
+            "    \"name\": \"Ladium\",\r\n      \"density\": 7.3,\r\n      \"connectionStrength\": 3.35,\r" +
+            "\n      \"energyAbsorption\": 7500\r\n    }\r\n  }\r\n}")]
         public string IndexStore {
             get {
                 return ((string)(this["IndexStore"]));

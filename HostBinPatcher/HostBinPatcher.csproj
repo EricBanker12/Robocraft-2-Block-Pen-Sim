@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
@@ -8,7 +8,7 @@
   </PropertyGroup>
 
   <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
-    <Exec Command="rd &quot;$(TargetDir)Publish&quot;&#xD;&#xA;mklink /j &quot;$(TargetDir)Publish\&quot; &quot;$(ProjectDir)..\AppLauncher\bin\Publish\&quot;" />
+    <Exec Command="rd &quot;$(TargetDir)Publish&quot;&#xD;&#xA;mklink /j &quot;$(TargetDir)Publish\&quot; &quot;$(ProjectDir)..\blockpensimwpf\bin\publish\net6.0-windows10.0.22621.0\&quot;" />
   </Target>
 
 </Project>

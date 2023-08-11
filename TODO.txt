@@ -1,2 +1,0 @@
-* User can swap decimal place indicator from period(.) to comma(,)
-* Test weapon and material edit/delete/addition
