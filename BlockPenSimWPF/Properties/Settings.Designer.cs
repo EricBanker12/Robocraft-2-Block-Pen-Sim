@@ -56,8 +56,8 @@ namespace BlockPenSimWPF.Properties {
             "arger (Front)\": false,\r\n    \"TTP Arc Discharger (Side)\": false,\r\n    \"TTP Arc Di" +
             "scharger (Top)\": false,\r\n    \"TTP Rail Gun (Front)\": false,\r\n    \"TTP Rail Gun (" +
             "Side)\": false,\r\n    \"TTP Rail Gun (Top)\": false\r\n  },\r\n  \"RowFilters\": {},\r\n  \"C" +
-            "olumnsSort\": {\r\n    \"Score\": 1\r\n  },\r\n  \"Cpu\": {\r\n    \"Min\": 1,\r\n    \"Max\": 200\r" +
-            "\n  },\r\n  \"Weight\": {\r\n    \"Min\": 0,\r\n    \"Max\": 4000\r\n  },\r\n  \"Length\": {\r\n    \"" +
+            "olumnsSort\": {\r\n    \"Score\": 1\r\n  },\r\n  \"Cpu\": {\r\n    \"Min\": 1,\r\n    \"Max\": 100\r" +
+            "\n  },\r\n  \"Weight\": {\r\n    \"Min\": 0,\r\n    \"Max\": 2000\r\n  },\r\n  \"Length\": {\r\n    \"" +
             "Min\": 4,\r\n    \"Max\": 9\r\n  },\r\n  \"Width\": {\r\n    \"Min\": 9,\r\n    \"Max\": 9\r\n  },\r\n " +
             " \"Height\": {\r\n    \"Min\": 9,\r\n    \"Max\": 9\r\n  },\r\n  \"WeaponCount\": {\r\n    \"LaserB" +
             "laster\": 6,\r\n    \"PlasmaCannon\": 2,\r\n    \"ArcDischarger\": 3,\r\n    \"RailGun\": 1\r\n" +

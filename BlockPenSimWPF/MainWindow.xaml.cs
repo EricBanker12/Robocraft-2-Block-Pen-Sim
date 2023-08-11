@@ -45,7 +45,7 @@ namespace BlockPenSimWPF
             if (sender is MainWindow)
             {
                 MainWindow window = (MainWindow)sender;
-                window.Title = "BlockPenSimWPF";
+                window.Title = "Robocraft 2 Block Penetration Simulator";
 
                 if (ThemeData.GetCurrentTheme() == Theme.Dark)
                 {

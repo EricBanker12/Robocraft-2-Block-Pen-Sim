@@ -202,7 +202,7 @@
     /// </summary>
     private async void OnClick_Download()
     {
-        var fileName = "BlockPenSim.csv";
+        var fileName = $"RC2BPS-Results-CPU{State.Cpu.Max}-KG{State.Weight.Max:0}-L{State.Length.Max:0}-W{State.Width.Max:0}-H{State.Height.Max:0}.csv";
         var fileFilter = "CSV files|*.csv|All files|*.*";
         var fileData = GetCsvString(State.SimData);
         await Task.Run(() =>
