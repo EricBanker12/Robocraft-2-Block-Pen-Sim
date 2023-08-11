@@ -3,7 +3,7 @@
 @using BlockPenSimWPF.Shared.State;
 
 <header id="SideBar" class="position-relative col-12" style="width: 320px; margin-left: @(State.ShowSideBar ? "0px" : "-320px"); transition: margin-left 0.5s ease;">
-    <div class="card h-100" aria-hidden="@(State.ShowSideBar ? "false" : "true")">
+    <div class="card h-100" aria-hidden="@State.ShowSideBar">
         <div class="card-header">
             <h1 class="h3 text-center">Robocraft <img src="images/appicon.svg" title="2" alt="2" style="height: 1.0em; transform: translate(0, -0.1em);" class="d-inline-block" /><br/>Block Penetraton Simulator</h1>
         </div>
@@ -16,37 +16,97 @@
                     <label class="my-1">CPU</label>
                     <div class="input-group input-group-sm">
                         <label for="inputCpuMin" aria-label="CPU Min" class="input-group-text">Min</label>
-                        <input id="inputCpuMin" type="number" min="0" max="940" step="1" @bind-value="State.Cpu.Min" class="form-control @(State.Cpu.Min < 0 || State.Cpu.Min > 940 ? "is-invalid" : "")" />
+                        <input id="inputCpuMin" type="number" required min="1" max="940" step="1" @bind-value="simForm.CpuMin" class="form-control @IsValidClass(nameof(simForm.CpuMin))" />
                         <label for="inputCpuMax" aria-label="CPU Max" class="input-group-text">Max</label>
-                        <input id="inputCpuMax" type="number" min="0" max="940" step="1" @bind-value="State.Cpu.Max" class="form-control @(State.Cpu.Max < 0 || State.Cpu.Max > 940 ? "is-invalid" : "")" />
+                        <input id="inputCpuMax" type="number" required min="1" max="940" step="1" @bind-value="simForm.CpuMax" class="form-control @IsValidClass(nameof(simForm.CpuMax))" />
+                        <div class="invalid-feedback">
+                            <ul class="mb-0">
+                                @foreach (var errorMessage in simForm.GetErrorMessages(nameof(simForm.CpuMin)))
+                                {
+                                    <li>@errorMessage</li>
+                                }
+                                @foreach (var errorMessage in simForm.GetErrorMessages(nameof(simForm.CpuMax)))
+                                {
+                                    <li>@errorMessage</li>
+                                }
+                            </ul>
+                        </div>
                     </div>
                     <label class="my-1">Weight (kg)</label>
                     <div class="input-group input-group-sm">
                         <label for="inputWeightMin" aria-label="Weight Min" class="input-group-text">Min</label>
-                        <input id="inputWeightMin" type="number" min="0" max="1825344" step="1" @bind-value="State.Weight.Min" class="form-control @(State.Weight.Min < 0 || State.Weight.Min > 1825344 ? "is-invalid" : "")" />
+                        <input id="inputWeightMin" type="number" required min="0" step="any" @bind-value="simForm.WeightMin" class="form-control @IsValidClass(nameof(simForm.WeightMin))" />
                         <label for="inputWeightMax" aria-label="Weight Max" class="input-group-text">Max</label>
-                        <input id="inputWeightMax" type="number" min="0" max="1825344" step="1" @bind-value="State.Weight.Max" class="form-control @(State.Weight.Max < 0 || State.Weight.Max > 1825344 ? "is-invalid" : "")" />
+                        <input id="inputWeightMax" type="number" required min="0" step="any" @bind-value="simForm.WeightMax" class="form-control @IsValidClass(nameof(simForm.WeightMax))" />
+                        <div class="invalid-feedback">
+                            <ul class="mb-0">
+                                @foreach (var errorMessage in simForm.GetErrorMessages(nameof(simForm.WeightMin)))
+                                {
+                                    <li>@errorMessage</li>
+                                }
+                                @foreach (var errorMessage in simForm.GetErrorMessages(nameof(simForm.WeightMax)))
+                                {
+                                    <li>@errorMessage</li>
+                                }
+                            </ul>
+                        </div>
                     </div>
                     <label class="my-1">Length (blocks)<sup class="text-muted px-1" style="cursor: help;" tabindex="0" title="The distance in blocks between the back and front sides.">?</sup></label>
                     <div class="input-group input-group-sm">
                         <label for="inputLengthMin" aria-label="Length Min" class="input-group-text">Min</label>
-                        <input id="inputLengthMin" type="number" min="0" max="63" step="1" @bind-value="State.Length.Min" class="form-control @(State.Length.Min < 0 || State.Length.Min > 63 ? "is-invalid" : "")" />
+                        <input id="inputLengthMin" type="number" required min="0" max="63" step="any" @bind-value="simForm.LengthMin" class="form-control @IsValidClass(nameof(simForm.LengthMin))" />
                         <label for="inputLengthMax" aria-label="Length Max" class="input-group-text">Max</label>
-                        <input id="inputLengthMax" type="number" min="0" max="63" step="1" @bind-value="State.Length.Max" class="form-control @(State.Length.Max < 0 || State.Length.Max > 63 ? "is-invalid" : "")" />
+                        <input id="inputLengthMax" type="number" required min="0" max="63" step="any" @bind-value="simForm.LengthMax" class="form-control @IsValidClass(nameof(simForm.LengthMax))" />
+                        <div class="invalid-feedback">
+                            <ul class="mb-0">
+                                @foreach (var errorMessage in simForm.GetErrorMessages(nameof(simForm.LengthMin)))
+                                {
+                                    <li>@errorMessage</li>
+                                }
+                                @foreach (var errorMessage in simForm.GetErrorMessages(nameof(simForm.LengthMin)))
+                                {
+                                    <li>@errorMessage</li>
+                                }
+                            </ul>
+                        </div>
                     </div>
                     <label class="my-1">Width (blocks)<sup class="text-muted px-1" style="cursor: help;" tabindex="0" title="The distance in blocks between the right and left sides.">?</sup></label>
                     <div class="input-group input-group-sm">
                         <label for="inputWidthMin" aria-label="Width Min" class="input-group-text">Min</label>
-                        <input id="inputWidthMin" type="number" min="0" max="63" step="1" @bind-value="State.Width.Min" class="form-control @(State.Width.Min < 0 || State.Width.Min > 63 ? "is-invalid" : "")" />
+                        <input id="inputWidthMin" type="number" required min="0" max="63" step="any" @bind-value="simForm.WidthMin" class="form-control @IsValidClass(nameof(simForm.WidthMin))" />
                         <label for="inputWidthMax" aria-label="Width Max" class="input-group-text">Max</label>
-                        <input id="inputWidthMax" type="number" min="0" max="63" step="1" @bind-value="State.Width.Max" class="form-control @(State.Width.Max < 0 || State.Width.Max > 63 ? "is-invalid" : "")" />
+                        <input id="inputWidthMax" type="number" required min="0" max="63" step="any" @bind-value="simForm.WidthMax" class="form-control @IsValidClass(nameof(simForm.WidthMax))" />
+                        <div class="invalid-feedback">
+                            <ul class="mb-0">
+                                @foreach (var errorMessage in simForm.GetErrorMessages(nameof(simForm.WidthMin)))
+                                {
+                                    <li>@errorMessage</li>
+                                }
+                                @foreach (var errorMessage in simForm.GetErrorMessages(nameof(simForm.WidthMax)))
+                                {
+                                    <li>@errorMessage</li>
+                                }
+                            </ul>
+                        </div>
                     </div>
                     <label class="my-1">Height (blocks)<sup class="text-muted px-1" style="cursor: help;" tabindex="0" title="The distance in blocks between the bottom and top sides.">?</sup></label>
                     <div class="input-group input-group-sm">
                         <label for="inputHeightMin" aria-label="Height Min" class="input-group-text">Min</label>
-                        <input id="inputHeightMin" type="number" min="0" max="63" step="1" @bind-value="State.Height.Min" class="form-control @(State.Height.Min < 0 || State.Height.Min > 63 ? "is-invalid" : "")" />
+                        <input id="inputHeightMin" type="number" required min="0" max="63" step="any" @bind-value="simForm.HeightMin" class="form-control @IsValidClass(nameof(simForm.HeightMin))" />
                         <label for="inputHeightMax" aria-label="Height Max" class="input-group-text">Max</label>
-                        <input id="inputHeightMax" type="number" min="0" max="63" step="1" @bind-value="State.Height.Max" class="form-control @(State.Height.Max < 0 || State.Height.Max > 63 ? "is-invalid" : "")" />
+                        <input id="inputHeightMax" type="number" required min="0" max="63" step="any" @bind-value="simForm.HeightMax" class="form-control @IsValidClass(nameof(simForm.HeightMax))" />
+                        <div class="invalid-feedback">
+                            <ul class="mb-0">
+                                @foreach (var errorMessage in simForm.GetErrorMessages(nameof(simForm.HeightMin)))
+                                {
+                                    <li>@errorMessage</li>
+                                }
+                                @foreach (var errorMessage in simForm.GetErrorMessages(nameof(simForm.HeightMax)))
+                                {
+                                    <li>@errorMessage</li>
+                                }
+                            </ul>
+                        </div>
                     </div>
                 </section>
                 <hr />
@@ -59,9 +119,21 @@
                         <label class="my-1">@weapon.Value.name</label>
                         <div class="input-group input-group-sm">
                             <label for="@($"input{weapon.Key}Count")" aria-label="@(weapon.Value.name + " Count")" class="input-group-text">Count</label>
-                            <input id="@($"input{weapon.Key}Count")" type="number" min="0" step="1" @bind-value="State.WeaponCount[weapon.Key]" class="form-control @(State.WeaponCount[weapon.Key] < 0 ? "is-invalid" : "")" />
+                            <input id="@($"input{weapon.Key}Count")" required type="number" min="1" step="1" @bind-value="simForm.WeaponCount[weapon.Key]" class="form-control @IsValidClass(nameof(simForm.WeaponCount), weapon.Key)" />
                             <label for="@($"input{weapon.Key}Ratio")" aria-label="@(weapon.Value.name + " Ratio")" class="input-group-text">Ratio</label>
-                            <input id="@($"input{weapon.Key}Ratio")" type="number" min="0" step="1" @bind-value="State.WeaponRatio[weapon.Key]" class="form-control @(State.WeaponRatio[weapon.Key] < 0 ? "is-invalid" : "")" />
+                            <input id="@($"input{weapon.Key}Ratio")" required type="number" min="0" step="any" @bind-value="simForm.WeaponRatio[weapon.Key]" class="form-control @IsValidClass(nameof(simForm.WeaponRatio), weapon.Key)" />
+                            <div class="invalid-feedback">
+                                <ul class="mb-0">
+                                    @foreach (var errorMessage in simForm.GetErrorMessages(nameof(simForm.WeaponCount), weapon.Key))
+                                    {
+                                        <li>@errorMessage</li>
+                                    }
+                                    @foreach (var errorMessage in simForm.GetErrorMessages(nameof(simForm.WeaponRatio), weapon.Key))
+                                    {
+                                        <li>@errorMessage</li>
+                                    }
+                                </ul>
+                            </div>
                         </div>
                     }
                 </section>
@@ -70,14 +142,27 @@
                     <h2 class="h5 my-2">Direction Score Ratio<sup class="text-muted px-1" style="cursor: help;" tabindex="0"
                         title="Set ratio for what proportion of incomming damage comes from which direction.">?</sup></h2>
                     <div class="input-group input-group-sm">
-                        @for (int i = 0; i < State.DirectionRatio.Length; i++)
+                        @for (int i = 0; i < simForm.DirectionRatio.Length; i++)
                         {
                             int idx = i; // https://stackoverflow.com/questions/60232952/blazor-select-bind-to-a-value-in-a-list
                             string name = ((Direction)i).ToString();
 
                             <label for="@($"input{name}Ratio")" aria-label="@(name + " Ratio")" class="input-group-text">@name</label>
-                            <input id="@($"input{name}Ratio")" type="number" min="0" step="1" @bind-value="State.DirectionRatio[idx]" class="form-control @(State.DirectionRatio[idx] < 0 ? "is-invalid" : "")" />
+                            <input id="@($"input{name}Ratio")" required type="number" min="0" step="any" @bind-value="simForm.DirectionRatio[idx]" class="form-control @IsValidClass(nameof(simForm.DirectionRatio), idx)" />
                         }
+                        <div class="invalid-feedback">
+                            <ul class="mb-0">
+                                @for (int i = 0; i < simForm.DirectionRatio.Length; i++)
+                                {
+                                    int idx = i;
+
+                                    @foreach (var errorMessage in simForm.GetErrorMessages(nameof(simForm.DirectionRatio), idx))
+                                    {
+                                        <li>@errorMessage</li>
+                                    }
+                                }
+                            </ul>
+                        </div>
                     </div>
                 </section>
                 <hr />
@@ -101,6 +186,10 @@
     [Parameter]
     public IndexStore State { get; set; } = new();
 
+    private SimulationForm simForm = new();
+
+    private bool animating = false;
+
     private void ToggleShowSideBar()
     {
         State.ShowSideBar = !State.ShowSideBar;
@@ -108,19 +197,36 @@
 
     private async void OnSubmit()
     {
-        var tempTable = State.SimData;
-        State.SimData = await BlockPenSimulator.RunAsync(State);
-        tempTable.Dispose();
-        State.HasChanged();
+        if (simForm.IsValid())
+        {
+            simForm.SetState(State);
+            var tempTable = State.SimData;
+            State.SimData = await BlockPenSimulator.RunAsync(State);
+            tempTable.Dispose();
+            State.HasChanged();
+        }
     }
 
     protected override async Task OnInitializedAsync()
     {
+        simForm.Reset(State);
+
         if (!State.ShowSideBar)
         {
             await Task.Delay(10);
             State.ShowSideBar = true;
         }
+
         await base.OnInitializedAsync();
+    }
+
+    private string IsValidClass(string fieldName)
+    {
+        return simForm.WasValid(fieldName) ? string.Empty : "is-invalid";
+    }
+
+    private string IsValidClass(string fieldName, object key)
+    {
+        return simForm.IsValid(fieldName, key) ? string.Empty : "is-invalid";
     }
 }

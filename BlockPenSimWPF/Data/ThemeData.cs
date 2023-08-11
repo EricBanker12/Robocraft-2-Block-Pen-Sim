@@ -28,8 +28,8 @@ namespace BlockPenSimWPF.Data
 
         public static async ValueTask OverridePreferredTheme(IJSRuntime js)
         {
-            if (js != null && ThemeOverride != Theme.Default)
-                await js.InvokeVoidAsync("OverridePreferredTheme", ThemeOverride.ToString().ToLower() );
+            if (js != null)
+                await js.InvokeVoidAsync("OverridePreferredTheme", GetCurrentTheme().ToString().ToLower() );
         }
 
         public static Theme GetCurrentTheme()

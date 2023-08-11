@@ -83,8 +83,8 @@ namespace BlockPenSimWPF.Shared.Models
                         ErrorMessages[fieldName].Add("Key must be between 3 and 255 characters in length.");
                     else if (WeaponEdit <= this.Weapons?.Count)
                     {
-                        var match = Weapons.Select(kv => kv.Key).ToList().IndexOf(WeaponKey ?? string.Empty);
-                        if (match >= 0 && match != WeaponEdit) ErrorMessages[fieldName].Add("Key must be unique.");
+                        var matches = Weapons.Where(kv => kv.Key == WeaponKey);
+                        if (matches.Count() > 1) ErrorMessages[fieldName].Add("Key must be unique.");
                     }
                     break;
                 case nameof(WeaponName):
@@ -92,8 +92,8 @@ namespace BlockPenSimWPF.Shared.Models
                         ErrorMessages[fieldName].Add("Name must be between 3 and 255 characters in length.");
                     else if (weaponEdit <= this.Weapons?.Count)
                     {
-                        var match = Weapons.Select(kv => kv.Value.name).ToList().IndexOf(WeaponName ?? string.Empty);
-                        if (match >= 0 && match != WeaponEdit) ErrorMessages[fieldName].Add("Name must be unique.");
+                        var matches = Weapons.Where(kv => kv.Value.name.Equals(WeaponName, StringComparison.OrdinalIgnoreCase));
+                        if (matches.Count() > 1) ErrorMessages[fieldName].Add("Name must be unique.");
                     }
                     break;
                 case nameof(WeaponCpu):
@@ -119,8 +119,8 @@ namespace BlockPenSimWPF.Shared.Models
                         ErrorMessages[fieldName].Add("Key must be between 3 and 255 characters in length.");
                     else if (MaterialEdit <= this.Materials?.Count)
                     {
-                        var match = Materials.Select(kv => kv.Key).ToList().IndexOf(MaterialKey ?? string.Empty);
-                        if (match >= 0 && match != MaterialEdit) ErrorMessages[fieldName].Add("Key must be unique.");
+                        var matches = Materials.Where(kv => kv.Key == MaterialKey);
+                        if (matches.Count() > 1) ErrorMessages[fieldName].Add("Key must be unique.");
                     }
                     break;
                 case nameof(MaterialName):
@@ -128,8 +128,8 @@ namespace BlockPenSimWPF.Shared.Models
                         ErrorMessages[fieldName].Add("Name must be between 3 and 255 characters in length.");
                     else if (materialEdit <= this.Materials?.Count)
                     {
-                        var match = Materials.Select(kv => kv.Value.name).ToList().IndexOf(MaterialName ?? string.Empty);
-                        if (match >= 0 && match != MaterialEdit) ErrorMessages[fieldName].Add("Name must be unique.");
+                        var matches = Materials.Where(kv => kv.Value.name.Equals(MaterialName, StringComparison.OrdinalIgnoreCase));
+                        if (matches.Count() > 1) ErrorMessages[fieldName].Add("Name must be unique.");
                     }
                     break;
                 case nameof(MaterialDensity):
@@ -160,9 +160,9 @@ namespace BlockPenSimWPF.Shared.Models
             if (!IsValid(nameof(WeaponCpu))) return false;
             if (!IsValid(nameof(WeaponDamage))) return false;
             if (!IsValid(nameof(WeaponPellets))) return false;
-            if (!IsValid(nameof(WeaponCooldown))) return false;
-            if (!IsValid(nameof(WeaponEnergy))) return false;
             if (!IsValid(nameof(WeaponRadius))) return false;
+            if (!IsValid(nameof(WeaponEnergy))) return false;
+            if (!IsValid(nameof(WeaponCooldown))) return false;
 
             return true;
         }
@@ -189,6 +189,7 @@ namespace BlockPenSimWPF.Shared.Models
                 this.WeaponPellets = weapon.Value.pellets;
                 this.WeaponRadius = weapon.Value.radius;
                 this.WeaponEnergy = weapon.Value.energy;
+                this.weaponCooldown = weapon.Value.cooldown;
             }
             else
             {

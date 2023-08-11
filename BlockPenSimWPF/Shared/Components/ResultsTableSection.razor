@@ -40,10 +40,10 @@
     </div>
 
     @*Table showing the simulation results*@
-    <table class="table table-striped table-hover table-sm @(ThemeData.GetCurrentTheme() == Theme.Dark ? "table-dark" : "")">
+    <table class="table table-striped table-hover table-sm @(State.IsDarkMode ? "table-dark" : "")">
         
         @*Rotate Column Headers by 45 degrees for more compact spacing*@
-        <thead class="position-sticky sticky-top" style="box-shadow: 0 1px 0 @(ThemeData.GetCurrentTheme() == Theme.Dark ? "rgba(222, 226, 230, 0.5)" : "black");">
+        <thead class="position-sticky sticky-top" style="box-shadow: 0 1px 0 @(State.IsDarkMode ? "rgba(222, 226, 230, 0.5)" : "black");">
             <tr>
                 @foreach (DataColumn column in State.SimData.Columns)
                 {
@@ -454,6 +454,10 @@
             for (int i = 0; i < rowStrings.Length; i++)
             {
                 rowStrings[i] = data.Rows[r].ItemArray[i]?.ToString() ?? string.Empty;
+                if (data.Columns[i].DataType == typeof(double) && State.useDecimalComma)
+                {
+                    rowStrings[i] = rowStrings[i].Replace(".", ",");
+                }
                 if (regex.IsMatch(rowStrings[i]))
                 {
                     rowStrings[i] = $"\"{rowStrings[i].Replace(@"""", @"""""")}\"";
@@ -481,6 +485,8 @@
                 value = ((double)obj).ToString("0.00000");
             else
                 value = ((double)obj).ToString("0.00");
+
+            if (State.useDecimalComma) value = value.Replace(".", ",");
         }
         else
         {

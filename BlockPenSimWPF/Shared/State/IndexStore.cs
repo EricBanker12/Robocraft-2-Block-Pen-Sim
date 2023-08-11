@@ -14,15 +14,11 @@ namespace BlockPenSimWPF.Shared.State
         // ------------------------------------------------------------------------------------------------------------------------
         // Constructors
         // ------------------------------------------------------------------------------------------------------------------------
-        public IndexStore()
-        {
-            this.ColumnsSort.Add("Score", SortDirection.DESC);
-        }
+        public IndexStore() { }
 
         public IndexStore(Action StateHasChanged)
         {
             this.HasChanged = () => { this.SavePreferences(); StateHasChanged(); };
-            this.ColumnsSort.Add("Score", SortDirection.DESC);
         }
 
         // ------------------------------------------------------------------------------------------------------------------------
@@ -50,42 +46,45 @@ namespace BlockPenSimWPF.Shared.State
         [JsonIgnore]
         public bool ShowSettings;
 
+        [JsonIgnore]
+        public bool IsDarkMode;
+
         // ------------------------------------------------------------------------------------------------------------------------
         // settings
         // ------------------------------------------------------------------------------------------------------------------------
         public bool useDecimalComma = false;
-        public bool hideZeroRatioWeaponColumns = true;
-        public bool hideZeroRatioDirectionColumns = true;
+        public bool hideZeroRatioWeaponColumns = false;
+        public bool hideZeroRatioDirectionColumns = false;
         public bool updateDefaultBlockdataOverInternet = false;
 
         // ------------------------------------------------------------------------------------------------------------------------
         // Results view
         // ------------------------------------------------------------------------------------------------------------------------
-        public Dictionary<string, bool> HighlightValues = new() { {"Score", true}, {"Score / CPU", true}, {"Score / Weight", true} };
+        public Dictionary<string, bool> HighlightValues = new();
         public Dictionary<string, string> RowFilters = new();
         public OrderedDictionary ColumnsSort = new();
 
         // ------------------------------------------------------------------------------------------------------------------------
         // blockfill constraints
         // ------------------------------------------------------------------------------------------------------------------------
-        public MinMax Cpu = new MinMax { Min = 0, Max = 100, };
-        public MinMax Weight = new MinMax { Min = 0, Max = 4000, };
-        public MinMax Length = new MinMax { Min = 4, Max = 9, };
-        public MinMax Width = new MinMax { Min = 9, Max = 9, };
-        public MinMax Height = new MinMax { Min = 9, Max = 9, };
+        public MinMax Cpu = new();
+        public MinMax Weight = new();
+        public MinMax Length = new();
+        public MinMax Width = new();
+        public MinMax Height = new();
 
         // ------------------------------------------------------------------------------------------------------------------------
         // scoring ratios
         // ------------------------------------------------------------------------------------------------------------------------
-        public Dictionary<string, double> WeaponCount = new() { {"LaserBlaster", 6}, {"PlasmaCannon", 2}, {"ArcDischarger", 3}, {"RailGun", 1} };
-        public Dictionary<string, double> WeaponRatio = new() { {"LaserBlaster", 1}, {"PlasmaCannon", 1}, {"ArcDischarger", 0}, {"RailGun", 0} };
-        public double[] DirectionRatio = { 8, 1, 1 };
+        public Dictionary<string, double> WeaponCount = new();
+        public Dictionary<string, double> WeaponRatio = new();
+        public double[] DirectionRatio = { 0, 0, 0 };
 
         // ------------------------------------------------------------------------------------------------------------------------
         // block data
         // ------------------------------------------------------------------------------------------------------------------------
-        public Dictionary<string, Weapon> Weapons = BlockData.DefaultWeapons;
-        public Dictionary<string, Material> Materials = BlockData.DefaultMaterials;
+        public Dictionary<string, Weapon> Weapons = new();
+        public Dictionary<string, Material> Materials = new();
 
         // ------------------------------------------------------------------------------------------------------------------------
         // key for local storage
@@ -104,9 +103,12 @@ namespace BlockPenSimWPF.Shared.State
         {
             try
             {
+                this.IsDarkMode = ThemeData.GetCurrentTheme() == Theme.Dark;
+                
                 var settings = LocalSettings.GetValue<IndexStore>(storageKey);
                 if (settings != null)
                 {
+
                     this.useDecimalComma = settings.useDecimalComma;
                     this.hideZeroRatioWeaponColumns = settings.hideZeroRatioWeaponColumns;
                     this.hideZeroRatioDirectionColumns = settings.hideZeroRatioDirectionColumns;
@@ -134,12 +136,17 @@ namespace BlockPenSimWPF.Shared.State
 
                     this.DirectionRatio = settings.DirectionRatio;
 
+                    this.Weapons.Clear();
+                    this.WeaponCount.Clear();
+                    this.WeaponRatio.Clear();
                     foreach (var Weapon in settings.Weapons)
                     {
                         this.Weapons[Weapon.Key] = Weapon.Value;
                         this.WeaponCount[Weapon.Key] = settings.WeaponCount[Weapon.Key];
                         this.WeaponRatio[Weapon.Key] = settings.WeaponRatio[Weapon.Key];
                     }
+
+                    this.Materials.Clear();
                     foreach (var Material in settings.Materials)
                     {
                         this.Materials[Material.Key] = Material.Value;

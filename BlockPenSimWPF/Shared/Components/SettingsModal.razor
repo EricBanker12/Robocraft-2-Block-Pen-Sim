@@ -42,8 +42,8 @@
                         </div>
                         <div class="form-check">
                             <input type="checkbox" id="UpdateDefaultBlockdataOverInternetCheckbox" class="form-check-input" @bind=settingsForm.UpdateDefaultBlockdataOverInternet />
-                            <label for="UpdateDefaultBlockdataOverInternetCheckbox" class="form-label">
-                                <span>Auto-Update Weapons and Materials</span>
+                            <label for="UpdateDefaultBlockdataOverInternetCheckbox" class="form-label" title="This will override local changes to weapons and materials with the same Key value.">
+                                <span>Auto-Update Weapons and Materials On Startup</span>
                             </label>
                         </div>
                     </div>
@@ -73,6 +73,7 @@
                                         @bind-value=settingsForm.WeaponKey
                                         minlength="3"
                                         maxlength="255"
+                                        required
                                         disabled="@IsWeaponNone()" />
                                     <div class="invalid-feedback">
                                         <ul class="mb-0">
@@ -92,7 +93,8 @@
                                            class="form-control @IsValidClass(nameof(settingsForm.WeaponName))"
                                         @bind-value=settingsForm.WeaponName
                                         minlength="3"
-                                        maxlength="255"
+                                           maxlength="255"
+                                           required
                                         disabled="@IsWeaponNone()" />
                                     <div class="invalid-feedback">
                                         <ul class="mb-0">
@@ -114,6 +116,7 @@
                                         class="form-control @IsValidClass(nameof(settingsForm.WeaponCpu))"
                                         @bind-value=settingsForm.WeaponCpu
                                         min="1"
+                                        required
                                         disabled="@IsWeaponNone()" />
                                     <div class="invalid-feedback">
                                         <ul class="mb-0">
@@ -133,6 +136,7 @@
                                            class="form-control @IsValidClass(nameof(settingsForm.WeaponDamage))"
                                            @bind-value=settingsForm.WeaponDamage
                                            min="1"
+                                           required
                                            disabled="@IsWeaponNone()" />
                                     <div class="invalid-feedback">
                                         <ul class="mb-0">
@@ -154,6 +158,7 @@
                                         class="form-control @IsValidClass(nameof(settingsForm.WeaponPellets))"
                                         @bind-value=settingsForm.WeaponPellets
                                         min="1"
+                                        required
                                         disabled="@IsWeaponNone()" />
                                     <div class="invalid-feedback">
                                         <ul class="mb-0">
@@ -173,7 +178,8 @@
                                         class="form-control @IsValidClass(nameof(settingsForm.WeaponRadius))"
                                         @bind-value=settingsForm.WeaponRadius
                                         min="0"
-                                        step="0.01"
+                                        step="any"
+                                        required
                                         disabled="@IsWeaponNone()" />
                                     <label for="WeaponCooldownInput" class="input-group-text" style="width: 6.5ch;">blks</label>
                                     <div class="invalid-feedback">
@@ -196,6 +202,7 @@
                                         class="form-control @IsValidClass(nameof(settingsForm.WeaponEnergy))"
                                         @bind-value=settingsForm.WeaponEnergy
                                         min="1"
+                                        required
                                         disabled="@IsWeaponNone()" />
                                     <label for="WeaponEnergyInput" class="input-group-text" style="width: 6.5ch;">kJ/m</label>
                                     <div class="invalid-feedback">
@@ -216,7 +223,8 @@
                                         class="form-control @IsValidClass(nameof(settingsForm.WeaponCooldown))"
                                         @bind-value=settingsForm.WeaponCooldown
                                         min="0.01"
-                                        step="0.01"
+                                        step="any"
+                                        required
                                         disabled="@IsWeaponNone()" />
                                     <label for="WeaponCooldownInput" class="input-group-text" style="width: 6.5ch;">sec</label>
                                     <div class="invalid-feedback">
@@ -276,6 +284,7 @@
                                         @bind-value=settingsForm.MaterialKey
                                         minlength="3"
                                         maxlength="255"
+                                        required
                                         disabled="@IsMaterialNone()" />
                                     <div class="invalid-feedback">
                                         <ul class="mb-0">
@@ -296,6 +305,7 @@
                                         @bind-value=settingsForm.MaterialName
                                         minlength="3"
                                         maxlength="255"
+                                        required
                                         disabled="@IsMaterialNone()" />
                                     <div class="invalid-feedback">
                                         <ul class="mb-0">
@@ -317,7 +327,8 @@
                                         class="form-control @IsValidClass(nameof(settingsForm.MaterialDensity))"
                                         @bind-value=settingsForm.MaterialDensity
                                         min="0.01"
-                                        step="0.01"
+                                        step="any"
+                                        required
                                         disabled="@IsMaterialNone()" />
                                     <label for="MaterialDensityInput" class="input-group-text" style="width: 6.5ch;">kg</label>
                                     <div class="invalid-feedback">
@@ -338,7 +349,8 @@
                                         class="form-control @IsValidClass(nameof(settingsForm.MaterialConnectionStrength))"
                                         @bind-value=settingsForm.MaterialConnectionStrength
                                         min="0"
-                                        step="0.01"
+                                        step="any"
+                                        required
                                         disabled="@IsMaterialNone()" />
                                     <div class="invalid-feedback">
                                         <ul class="mb-0">
@@ -360,6 +372,7 @@
                                         class="form-control @IsValidClass(nameof(settingsForm.MaterialEnergyAbsorption))"
                                         @bind-value=settingsForm.MaterialEnergyAbsorption
                                         min="0"
+                                        required
                                         disabled="@IsMaterialNone()" />
                                     <label for="MaterialEnergyAbsorptionInput" class="input-group-text" style="width: 6.5ch;">kJ/m</label>
                                     <div class="invalid-feedback">
@@ -406,7 +419,8 @@
 
     private SettingsForm settingsForm = new();
 
-    @inject NavigationManager Nav;
+    //@inject NavigationManager Nav;
+    @inject IJSRuntime jsRuntime;
 
     protected override Task OnInitializedAsync()
     {
@@ -415,7 +429,7 @@
         return base.OnInitializedAsync();
     }
 
-    private void OnSubmit_SettingsForm()
+    private async void OnSubmit_SettingsForm()
     {
         if (settingsForm.IsValid())
         {
@@ -441,9 +455,9 @@
                             cpu = settingsForm.WeaponCpu,
                             damage = settingsForm.WeaponDamage,
                             pellets = settingsForm.WeaponPellets,
-                            cooldown = settingsForm.WeaponCooldown,
-                            energy = settingsForm.WeaponEnergy,
                             radius = settingsForm.WeaponRadius,
+                            energy = settingsForm.WeaponEnergy,
+                            cooldown = settingsForm.WeaponCooldown,
                         };
                 }
             }
@@ -452,8 +466,6 @@
             {
                 settingsForm.AddWeapon();
             }
-
-            State.Weapons = settingsForm.Weapons;
 
             // edit material
             if (settingsForm.MaterialEdit < settingsForm.Materials.Count)
@@ -468,7 +480,7 @@
                 {
                     settingsForm.Materials[key] = new Material()
                         {
-                            name = settingsForm.WeaponName,
+                            name = settingsForm.MaterialName,
                             density = settingsForm.MaterialDensity,
                             connectionStrength = settingsForm.MaterialConnectionStrength,
                             energyAbsorption = settingsForm.MaterialEnergyAbsorption,
@@ -481,10 +493,6 @@
                 settingsForm.AddMaterial();
             }
 
-            State.Materials = settingsForm.Materials;
-
-            State.HasChanged();
-
             if (settingsForm.ThemeOverride != ThemeData.ThemeOverride)
             {
                 var currentTheme = ThemeData.GetCurrentTheme();
@@ -495,7 +503,8 @@
                     if (settingsForm.ThemeOverride != currentTheme)
                     {
                         ThemeData.ThemeOverride = settingsForm.ThemeOverride;
-                        Nav.NavigateTo(Nav.Uri, true);
+                        State.IsDarkMode = ThemeData.ThemeOverride == Theme.Dark;
+                        await ThemeData.OverridePreferredTheme(jsRuntime);
                     }
                     else
                     {
@@ -509,17 +518,38 @@
                     var newTheme = ThemeData.GetCurrentTheme();
                     if (currentTheme != newTheme)
                     {
-                        Nav.NavigateTo(Nav.Uri, true);
+                        State.IsDarkMode = newTheme == Theme.Dark;
+                        await ThemeData.OverridePreferredTheme(jsRuntime);
                     }
                 }
                 // refresh if dark → light, or vice-versa
                 else
                 {
-                    Nav.NavigateTo(Nav.Uri, true);
+                    ThemeData.ThemeOverride = settingsForm.ThemeOverride;
+                    State.IsDarkMode = ThemeData.ThemeOverride == Theme.Dark;
+                    await ThemeData.OverridePreferredTheme(jsRuntime);
+                }
+            }
+
+            State.Weapons = settingsForm.Weapons;
+            State.Materials = settingsForm.Materials;
+            foreach (var weapon in State.Weapons)
+            {
+                if (!State.WeaponCount.ContainsKey(weapon.Key))
+                {
+                    State.WeaponCount[weapon.Key] = 120.0 / weapon.Value.cpu;
+                }
+                if (!State.WeaponRatio.ContainsKey(weapon.Key))
+                {
+                    State.WeaponRatio[weapon.Key] = 0.0;
                 }
             }
 
             State.ShowSettings = !State.ShowSettings;
+            settingsForm.Reset(State);
+
+            State.SimData = await BlockPenSimulator.RunAsync(State);
+            State.HasChanged();
         }
     }
 

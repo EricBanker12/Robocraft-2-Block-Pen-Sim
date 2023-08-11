@@ -1,4 +1,5 @@
 ﻿@using BlockPenSimWPF.Data;
+@using BlockPenSimWPF.Shared.Models;
 
 <Router AppAssembly="@GetType().Assembly">
     <Found Context="routeData">
@@ -15,7 +16,9 @@
 
     protected override async Task OnInitializedAsync()
     {
-        await ThemeData.OverridePreferredTheme(jsRuntime);
+        if (ThemeData.ThemeOverride != Theme.Default)
+            await ThemeData.OverridePreferredTheme(jsRuntime);
+
         await base.OnInitializedAsync();
     }
 }
