@@ -12,9 +12,6 @@
   "hideZeroRatioDirectionColumns": true,
   "updateDefaultBlockdataOverInternet": false,
   "HighlightValues": {
-    "Score": true,
-    "Score / CPU": true,
-    "Score / Weight": true,
     "Block Length": false,
     "Block Width": false,
     "Block Height": false,
@@ -49,7 +46,10 @@
     "TTP Arc Discharger (Top)": false,
     "TTP Rail Gun (Front)": false,
     "TTP Rail Gun (Side)": false,
-    "TTP Rail Gun (Top)": false
+    "TTP Rail Gun (Top)": false,
+    "Score": true,
+    "Score / CPU": true,
+    "Score / Weight": true
   },
   "RowFilters": {},
   "ColumnsSort": {
@@ -75,23 +75,36 @@
     "Min": 9,
     "Max": 9
   },
-  "WeaponCount": {
-    "LaserBlaster": 6,
-    "PlasmaCannon": 2,
-    "ArcDischarger": 3,
-    "RailGun": 1
+  "WeaponSettings": {
+    "LaserBlaster": {
+      "WeaponCount": 6,
+      "WeaponRatio": 1,
+      "WeaponFrontRatio": 3,
+      "WeaponSideRatio": 1,
+      "WeaponTopRatio": 1
+    },
+    "PlasmaCannon": {
+      "WeaponCount": 2,
+      "WeaponRatio": 1,
+      "WeaponFrontRatio": 1,
+      "WeaponSideRatio": 1,
+      "WeaponTopRatio": 2
+    },
+    "ArcDischarger": {
+      "WeaponCount": 3,
+      "WeaponRatio": 0,
+      "WeaponFrontRatio": 1,
+      "WeaponSideRatio": 1,
+      "WeaponTopRatio": 0
+    },
+    "RailGun": {
+      "WeaponCount": 1,
+      "WeaponRatio": 1,
+      "WeaponFrontRatio": 1,
+      "WeaponSideRatio": 0,
+      "WeaponTopRatio": 0
+    }
   },
-  "WeaponRatio": {
-    "LaserBlaster": 1,
-    "PlasmaCannon": 1,
-    "ArcDischarger": 0,
-    "RailGun": 0
-  },
-  "DirectionRatio": [
-    8,
-    1,
-    1
-  ],
   "Weapons": {
     "LaserBlaster": {
       "name": "Laser Blaster",
