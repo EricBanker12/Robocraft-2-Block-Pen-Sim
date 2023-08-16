@@ -140,7 +140,20 @@ namespace BlockPenSimWPF.Data
                                         }
                                     }
 
-                                    energyLoss = blockEnergyAbs * Math.Min(Math.Ceiling(weapon.radius * 2.0 / blockFill.block.width), blockFill.widthCount) * Math.Min(Math.Ceiling(weapon.radius * 2.0 / blockFill.block.height), blockFill.heightCount);
+                                    var blockAreaCount = 0;
+                                    var r2 = weapon.radius * weapon.radius;
+                                    for (double x = -blockFill.Width * 0.5; x <= blockFill.Width * 0.5 - blockFill.block.width; x += blockFill.block.width)
+                                    {
+                                        var xn = Math.Max(x, Math.Min(0, x + blockFill.block.width));
+                                        var x2 = xn * xn;
+                                        for (double y = -blockFill.Height * 0.5; y <= blockFill.Height * 0.5 - blockFill.block.height; x += blockFill.block.height)
+                                        {
+                                            var yn = Math.Max(y, Math.Min(0, y + blockFill.block.height));
+                                            var y2 = yn * yn;
+                                            if (x2 + y2 <= r2) blockAreaCount++;
+                                        }
+                                    }
+                                    energyLoss = blockEnergyAbs * blockAreaCount;
                                 }
                                 if (direction == Direction.Side)
                                 {
@@ -177,7 +190,20 @@ namespace BlockPenSimWPF.Data
                                         }
                                     }
 
-                                    energyLoss = blockEnergyAbs * Math.Min(Math.Ceiling(weapon.radius * 2.0 / blockFill.block.length), blockFill.lengthCount) * Math.Min(Math.Ceiling(weapon.radius * 2.0 / blockFill.block.height), blockFill.heightCount);
+                                    var blockAreaCount = 0;
+                                    var r2 = weapon.radius * weapon.radius;
+                                    for (double x = -blockFill.Height * 0.5; x <= blockFill.Height * 0.5 - blockFill.block.height; x += blockFill.block.height)
+                                    {
+                                        var xn = Math.Max(x, Math.Min(0, x + blockFill.block.height));
+                                        var x2 = xn * xn;
+                                        for (double y = -blockFill.Length * 0.5; y <= blockFill.Length * 0.5 - blockFill.block.length; x += blockFill.block.length)
+                                        {
+                                            var yn = Math.Max(y, Math.Min(0, y + blockFill.block.length));
+                                            var y2 = yn * yn;
+                                            if (x2 + y2 <= r2) blockAreaCount++;
+                                        }
+                                    }
+                                    energyLoss = blockEnergyAbs * blockAreaCount;
                                 }
                                 if (direction == Direction.Top)
                                 {
@@ -214,7 +240,20 @@ namespace BlockPenSimWPF.Data
                                         }
                                     }
 
-                                    energyLoss = blockEnergyAbs * Math.Min(Math.Ceiling(weapon.radius * 2.0 / blockFill.block.width), blockFill.widthCount) * Math.Min(Math.Ceiling(weapon.radius * 2.0 / blockFill.block.length), blockFill.lengthCount);
+                                    var blockAreaCount = 0;
+                                    var r2 = weapon.radius * weapon.radius;
+                                    for (double x = -blockFill.Width * 0.5; x <= blockFill.Width * 0.5 - blockFill.block.width; x += blockFill.block.width)
+                                    {
+                                        var xn = Math.Max(x, Math.Min(0, x + blockFill.block.width));
+                                        var x2 = xn * xn;
+                                        for (double y = -blockFill.Length * 0.5; y <= blockFill.Length * 0.5 - blockFill.block.length; x += blockFill.block.length)
+                                        {
+                                            var yn = Math.Max(y, Math.Min(0, y + blockFill.block.length));
+                                            var y2 = yn * yn;
+                                            if (x2 + y2 <= r2) blockAreaCount++;
+                                        }
+                                    }
+                                    energyLoss = blockEnergyAbs * blockAreaCount;
                                 }
                             }
 
