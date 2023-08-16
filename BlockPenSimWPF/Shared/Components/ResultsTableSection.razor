@@ -369,20 +369,24 @@
     private void SetColumnsWithZeroRatio()
     {
         ColumnsZeroRatioWeapon.Clear();
+        ColumnsZeroRatioDirection.Clear();
         foreach (var weapon in State.Weapons)
         {
-            if (State.WeaponRatio[weapon.Key] == 0.0)
+            if (State.WeaponSettings[weapon.Key].WeaponRatio == 0.0)
             {
                 ColumnsZeroRatioWeapon.AddRange(BlockPenSimulator.GetWeaponColumNames(State, weapon.Value.name));
             }
-        }
-
-        ColumnsZeroRatioDirection.Clear();
-        foreach (int direction in Enum.GetValues<Direction>())
-        {
-            if (State.DirectionRatio[direction] == 0.0)
+            if (State.WeaponSettings[weapon.Key].WeaponFrontRatio == 0.0)
             {
-                ColumnsZeroRatioDirection.AddRange(BlockPenSimulator.GetDirectionColumNames(State, (Direction)direction));
+                ColumnsZeroRatioDirection.AddRange(BlockPenSimulator.GetWeaponColumNames(State, weapon.Value.name, Direction.Front));
+            }
+            if (State.WeaponSettings[weapon.Key].WeaponSideRatio == 0.0)
+            {
+                ColumnsZeroRatioDirection.AddRange(BlockPenSimulator.GetWeaponColumNames(State, weapon.Value.name, Direction.Side));
+            }
+            if (State.WeaponSettings[weapon.Key].WeaponTopRatio == 0.0)
+            {
+                ColumnsZeroRatioDirection.AddRange(BlockPenSimulator.GetWeaponColumNames(State, weapon.Value.name, Direction.Top));
             }
         }
     }

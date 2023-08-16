@@ -44,10 +44,16 @@ else
             foreach (var weapon in blockData.Weapons)
             {
                 State.Weapons[weapon.Key] = weapon.Value;
-                if (!State.WeaponRatio.ContainsKey(weapon.Key))
-                    State.WeaponRatio.Add(weapon.Key, 0.0);
-                if (!State.WeaponCount.ContainsKey(weapon.Key))
-                    State.WeaponCount.Add(weapon.Key, 120.0 / weapon.Value.cpu);
+                if (!State.WeaponSettings.ContainsKey(weapon.Key))
+                    State.WeaponSettings.Add(weapon.Key, new WeaponSettings()
+                    {
+                        WeaponCount = 120.0 / weapon.Value.cpu,
+                        WeaponRatio = 1.0,
+                        WeaponFrontRatio = 1.0,
+                        WeaponSideRatio = 1.0,
+                        WeaponTopRatio = 1.0,
+                        
+                    });
             }
             foreach (var material in blockData.Materials)
             {

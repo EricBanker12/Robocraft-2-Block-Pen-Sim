@@ -39,7 +39,7 @@ namespace BlockPenSimWPF.Data
             double blockDistance;
             double blockArea;
             double blockEnergyAbs;
-            foreach (Direction direction in Enum.GetValues(typeof(Direction)))
+            foreach (var direction in Enum.GetValues<Direction>())
             {
                 switch (direction)
                 {
@@ -146,7 +146,7 @@ namespace BlockPenSimWPF.Data
                                     {
                                         var xn = Math.Max(x, Math.Min(0, x + blockFill.block.width));
                                         var x2 = xn * xn;
-                                        for (double y = -blockFill.Height * 0.5; y <= blockFill.Height * 0.5 - blockFill.block.height; x += blockFill.block.height)
+                                        for (double y = -blockFill.Height * 0.5; y <= blockFill.Height * 0.5 - blockFill.block.height; y += blockFill.block.height)
                                         {
                                             var yn = Math.Max(y, Math.Min(0, y + blockFill.block.height));
                                             var y2 = yn * yn;
@@ -196,7 +196,7 @@ namespace BlockPenSimWPF.Data
                                     {
                                         var xn = Math.Max(x, Math.Min(0, x + blockFill.block.height));
                                         var x2 = xn * xn;
-                                        for (double y = -blockFill.Length * 0.5; y <= blockFill.Length * 0.5 - blockFill.block.length; x += blockFill.block.length)
+                                        for (double y = -blockFill.Length * 0.5; y <= blockFill.Length * 0.5 - blockFill.block.length; y += blockFill.block.length)
                                         {
                                             var yn = Math.Max(y, Math.Min(0, y + blockFill.block.length));
                                             var y2 = yn * yn;
@@ -246,7 +246,7 @@ namespace BlockPenSimWPF.Data
                                     {
                                         var xn = Math.Max(x, Math.Min(0, x + blockFill.block.width));
                                         var x2 = xn * xn;
-                                        for (double y = -blockFill.Length * 0.5; y <= blockFill.Length * 0.5 - blockFill.block.length; x += blockFill.block.length)
+                                        for (double y = -blockFill.Length * 0.5; y <= blockFill.Length * 0.5 - blockFill.block.length; y += blockFill.block.length)
                                         {
                                             var yn = Math.Max(y, Math.Min(0, y + blockFill.block.length));
                                             var y2 = yn * yn;
@@ -277,26 +277,24 @@ namespace BlockPenSimWPF.Data
             var retval = new List<string>();
 
             foreach (Weapon weapon in settings.Weapons.Values)
-                foreach (Direction direction in Enum.GetValues(typeof(Direction)))
+                foreach (var direction in Enum.GetValues<Direction>())
                     if (weapon.name == WeaponName) retval.Add($"STP {weapon.name} ({direction})");
 
             foreach (Weapon weapon in settings.Weapons.Values)
-                foreach (Direction direction in Enum.GetValues(typeof(Direction)))
+                foreach (var direction in Enum.GetValues<Direction>())
                     if (weapon.name == WeaponName) retval.Add($"TTP {weapon.name} ({direction})");
 
             return retval;
         }
-        static public List<string> GetDirectionColumNames(IndexStore settings, Direction dir)
+        static public List<string> GetWeaponColumNames(IndexStore settings, string WeaponName, Direction direction)
         {
             var retval = new List<string>();
 
             foreach (Weapon weapon in settings.Weapons.Values)
-                foreach (Direction direction in Enum.GetValues(typeof(Direction)))
-                    if (direction == dir) retval.Add($"STP {weapon.name} ({direction})");
+                if (weapon.name == WeaponName) retval.Add($"STP {weapon.name} ({direction})");
 
             foreach (Weapon weapon in settings.Weapons.Values)
-                foreach (Direction direction in Enum.GetValues(typeof(Direction)))
-                    if (direction == dir) retval.Add($"TTP {weapon.name} ({direction})");
+                if (weapon.name == WeaponName) retval.Add($"TTP {weapon.name} ({direction})");
 
             return retval;
         }
@@ -329,11 +327,11 @@ namespace BlockPenSimWPF.Data
             schema.Columns.Add("Weight (kg)", typeof(double));
 
             foreach (Weapon weapon in settings.Weapons.Values)
-                foreach (Direction direction in Enum.GetValues(typeof(Direction)))
+                foreach (var direction in Enum.GetValues<Direction>())
                     schema.Columns.Add($"STP {weapon.name} ({direction})", typeof(int));
 
             foreach (Weapon weapon in settings.Weapons.Values)
-                foreach (Direction direction in Enum.GetValues(typeof(Direction)))
+                foreach (var direction in Enum.GetValues<Direction>())
                     schema.Columns.Add($"TTP {weapon.name} ({direction})", typeof(double));
             
             schema.Columns.Add("Score", typeof(double));
@@ -379,23 +377,27 @@ namespace BlockPenSimWPF.Data
                                 SimulateShots(blockFill, settings.Weapons.Values, dataRow);
 
                                 // Add score
-                                double sumDirectionRatio = settings.DirectionRatio.Sum();
-                                double sumWeaponRatio = settings.WeaponRatio.Values.Sum();
                                 double score = 0.0;
-                                for (int d = 0; d < settings.DirectionRatio.Length; d++)
+                                var weaponSum = settings.WeaponSettings.Values.Sum(w => w.WeaponRatio);
+                                foreach (var weapon in settings.Weapons)
                                 {
-                                    double directionScore = settings.DirectionRatio[d] / sumDirectionRatio;
-                                    Direction direction = (Direction)d;
+                                    var weaponSettings = settings.WeaponSettings[weapon.Key];
+                                    var directionSum = weaponSettings.WeaponFrontRatio + weaponSettings.WeaponSideRatio + weaponSettings.WeaponTopRatio;
 
-                                    foreach (var weapon in settings.Weapons)
+                                    foreach (var direction in Enum.GetValues<Direction>())
                                     {
                                         var stpColumnName = $"STP {weapon.Value.name} ({direction})";
                                         var ttpColumnName = $"TTP {weapon.Value.name} ({direction})";
 
-                                        double timeToPen = (Math.Ceiling((int)dataRow[stpColumnName] / settings.WeaponCount[weapon.Key]) - 1.0) * weapon.Value.cooldown;
+                                        double timeToPen = (Math.Ceiling((int)dataRow[stpColumnName] / weaponSettings.WeaponCount) - 1.0) * weapon.Value.cooldown;
                                         dataRow[ttpColumnName] = timeToPen;
 
-                                        score += timeToPen * settings.WeaponRatio[weapon.Key] / sumWeaponRatio * directionScore;
+                                        if (direction == Direction.Front)
+                                            score += timeToPen * weaponSettings.WeaponRatio / weaponSum * weaponSettings.WeaponFrontRatio / directionSum;
+                                        else if (direction == Direction.Side)
+                                            score += timeToPen * weaponSettings.WeaponRatio / weaponSum * weaponSettings.WeaponSideRatio / directionSum;
+                                        else if (direction == Direction.Top)
+                                            score += timeToPen * weaponSettings.WeaponRatio / weaponSum * weaponSettings.WeaponTopRatio / directionSum;
                                     }
                                 }
                                 dataRow["Score"] = score;

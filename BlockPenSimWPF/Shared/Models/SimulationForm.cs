@@ -70,7 +70,10 @@ namespace BlockPenSimWPF.Shared.Models
 
         public Dictionary<string, double> WeaponCount = new();
         public Dictionary<string, double> WeaponRatio = new();
-        public double[] DirectionRatio = { };
+        public Dictionary<string, double> WeaponFrontRatio = new();
+        public Dictionary<string, double> WeaponSideRatio = new();
+        public Dictionary<string, double> WeaponTopRatio = new();
+
 
         public bool IsValid(string fieldName)
         {
@@ -129,20 +132,17 @@ namespace BlockPenSimWPF.Shared.Models
                 {
                     if (WeaponRatio[weaponKey] < 0) errorMessages[errorKey].Add("Ratio should not be less than 0.");
                 }
-
-                return !errorMessages.ContainsKey(errorKey) || errorMessages[errorKey].Count == 0;
-            }
-            else if (fieldName.StartsWith("Direction"))
-            {
-                var directionKey = (Direction)key;
-                var errorKey = fieldName + directionKey;
-
-                if (errorMessages.ContainsKey(errorKey)) errorMessages[errorKey].Clear();
-                else errorMessages[errorKey] = new List<string>();
-
-                if (fieldName == nameof(DirectionRatio))
+                else if (fieldName == nameof(WeaponFrontRatio))
                 {
-                    if (DirectionRatio[(int)directionKey] < 0) errorMessages[errorKey].Add("Ratio should not be less than 0.");
+                    if (WeaponFrontRatio[weaponKey] < 0) errorMessages[errorKey].Add("Front Ratio should not be less than 0.");
+                }
+                else if (fieldName == nameof(WeaponSideRatio))
+                {
+                    if (WeaponSideRatio[weaponKey] < 0) errorMessages[errorKey].Add("Side Ratio should not be less than 0.");
+                }
+                else if (fieldName == nameof(WeaponTopRatio))
+                {
+                    if (WeaponTopRatio[weaponKey] < 0) errorMessages[errorKey].Add("Top Ratio should not be less than 0.");
                 }
 
                 return !errorMessages.ContainsKey(errorKey) || errorMessages[errorKey].Count == 0;
@@ -166,10 +166,9 @@ namespace BlockPenSimWPF.Shared.Models
             {
                 if (!IsValid(nameof(WeaponCount), weapon.Key)) return false;
                 if (!IsValid(nameof(WeaponRatio), weapon.Key)) return false;
-            }
-            for (int i = 0; i < DirectionRatio.Length; i++)
-            {
-                if (!IsValid(nameof(DirectionRatio), i)) return false;
+                if (!IsValid(nameof(WeaponFrontRatio), weapon.Key)) return false;
+                if (!IsValid(nameof(WeaponSideRatio), weapon.Key)) return false;
+                if (!IsValid(nameof(WeaponTopRatio), weapon.Key)) return false;
             }
 
             return true;
@@ -253,17 +252,6 @@ namespace BlockPenSimWPF.Shared.Models
                 }
                 return GetErrorMessages(fieldName);
             }
-            else if (fieldName.StartsWith("Direction"))
-            {
-                var directionKey = (Direction)key;
-                var errorKey = fieldName + directionKey;
-
-                if (errorMessages.ContainsKey(errorKey))
-                {
-                    return errorMessages[errorKey];
-                }
-                return GetErrorMessages(fieldName);
-            }
             return GetErrorMessages(fieldName);
         }
 
@@ -279,9 +267,11 @@ namespace BlockPenSimWPF.Shared.Models
             this.WidthMax = state.Width.Max;
             this.HeightMin = state.Height.Min;
             this.HeightMax = state.Height.Max;
-            this.WeaponCount = state.WeaponCount.ToDictionary(e => e.Key, e => e.Value);
-            this.WeaponRatio = state.WeaponRatio.ToDictionary(e => e.Key, e => e.Value);
-            this.DirectionRatio = state.DirectionRatio.ToArray();
+            this.WeaponCount = state.WeaponSettings.ToDictionary(e => e.Key, e => e.Value.WeaponCount);
+            this.WeaponRatio = state.WeaponSettings.ToDictionary(e => e.Key, e => e.Value.WeaponRatio);
+            this.WeaponFrontRatio = state.WeaponSettings.ToDictionary(e => e.Key, e => e.Value.WeaponFrontRatio);
+            this.WeaponSideRatio = state.WeaponSettings.ToDictionary(e => e.Key, e => e.Value.WeaponSideRatio);
+            this.WeaponTopRatio = state.WeaponSettings.ToDictionary(e => e.Key, e => e.Value.WeaponTopRatio);
             OverrideValid();
         }
 
@@ -293,21 +283,16 @@ namespace BlockPenSimWPF.Shared.Models
             state.Width = this.width;
             state.Height = this.height;
             
-            state.WeaponCount.Clear();
+            state.WeaponSettings.Clear();
             foreach (var item in this.WeaponCount)
             {
-                state.WeaponCount[item.Key] = item.Value;
-            }
-            
-            state.WeaponRatio.Clear();
-            foreach (var item in this.WeaponRatio)
-            {
-                state.WeaponRatio[item.Key] = item.Value;
-            }
-            
-            for (int i = 0; i < this.DirectionRatio.Length; i++)
-            {
-                state.DirectionRatio[i] = this.DirectionRatio[i];
+                state.WeaponSettings[item.Key] = new WeaponSettings() {
+                    WeaponCount = item.Value,
+                    WeaponRatio = this.WeaponRatio[item.Key],
+                    WeaponFrontRatio = this.WeaponFrontRatio[item.Key],
+                    WeaponSideRatio = this.WeaponSideRatio[item.Key],
+                    WeaponTopRatio = this.WeaponTopRatio[item.Key],
+                };
             }
         }
     }

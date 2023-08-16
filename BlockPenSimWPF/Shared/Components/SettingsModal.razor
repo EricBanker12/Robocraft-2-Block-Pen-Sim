@@ -535,13 +535,16 @@
             State.Materials = settingsForm.Materials;
             foreach (var weapon in State.Weapons)
             {
-                if (!State.WeaponCount.ContainsKey(weapon.Key))
+                if (!State.WeaponSettings.ContainsKey(weapon.Key))
                 {
-                    State.WeaponCount[weapon.Key] = 120.0 / weapon.Value.cpu;
-                }
-                if (!State.WeaponRatio.ContainsKey(weapon.Key))
-                {
-                    State.WeaponRatio[weapon.Key] = 0.0;
+                    State.WeaponSettings[weapon.Key] = new WeaponSettings()
+                    {
+                            WeaponCount = 120.0 / weapon.Value.cpu,
+                            WeaponRatio = 1.0,
+                            WeaponFrontRatio = 1.0,
+                            WeaponSideRatio = 1.0,
+                            WeaponTopRatio = 1.0,
+                    };
                 }
             }
 
