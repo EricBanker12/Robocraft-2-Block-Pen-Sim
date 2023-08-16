@@ -108,14 +108,12 @@
         public readonly bool IsDead { get => hpFront <= 0.0 && hpSide <= 0.0 && hpTop <= 0.0; }
     }
 
-    public struct DamageDirectionRatio
+    public struct WeaponSettings
     {
-        public double front;
-        public double side;
-        public double top;
-        public readonly double Sum { get => front + side + top; }
-        public readonly double PercentFront { get => front / Sum; }
-        public readonly double PercentSide { get => side / Sum; }
-        public readonly double PercentTop { get => top / Sum; }
+        public double WeaponCount;
+        public double WeaponRatio;
+        public double WeaponFrontRatio;
+        public double WeaponSideRatio;
+        public double WeaponTopRatio;
     }
 }

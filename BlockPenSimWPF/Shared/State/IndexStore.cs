@@ -76,9 +76,7 @@ namespace BlockPenSimWPF.Shared.State
         // ------------------------------------------------------------------------------------------------------------------------
         // scoring ratios
         // ------------------------------------------------------------------------------------------------------------------------
-        public Dictionary<string, double> WeaponCount = new();
-        public Dictionary<string, double> WeaponRatio = new();
-        public double[] DirectionRatio = { 0, 0, 0 };
+        public Dictionary<string, WeaponSettings> WeaponSettings = new();
 
         // ------------------------------------------------------------------------------------------------------------------------
         // block data
@@ -134,16 +132,26 @@ namespace BlockPenSimWPF.Shared.State
                     this.Width = settings.Width;
                     this.Height = settings.Height;
 
-                    this.DirectionRatio = settings.DirectionRatio;
-
                     this.Weapons.Clear();
-                    this.WeaponCount.Clear();
-                    this.WeaponRatio.Clear();
+                    this.WeaponSettings.Clear();
                     foreach (var Weapon in settings.Weapons)
                     {
                         this.Weapons[Weapon.Key] = Weapon.Value;
-                        this.WeaponCount[Weapon.Key] = settings.WeaponCount[Weapon.Key];
-                        this.WeaponRatio[Weapon.Key] = settings.WeaponRatio[Weapon.Key];
+                        if (settings.WeaponSettings.ContainsKey(Weapon.Key))
+                        {
+                            this.WeaponSettings[Weapon.Key] = settings.WeaponSettings[Weapon.Key];
+                        }
+                        else
+                        {
+                            this.WeaponSettings[Weapon.Key] = new WeaponSettings()
+                            {
+                                WeaponCount = 120.0 / Weapon.Value.cpu,
+                                WeaponRatio = 1.0,
+                                WeaponFrontRatio = 1.0,
+                                WeaponSideRatio = 1.0,
+                                WeaponTopRatio = 1.0,
+                            };
+                        }
                     }
 
                     this.Materials.Clear();

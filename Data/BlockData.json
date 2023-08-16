@@ -32,8 +32,8 @@
       "cpu": 120,
       "damage": 950.0,
       "pellets": 1.0,
-      "radius": 0.3,
-      "energy": 10000.0,
+      "radius": 3.0,
+      "energy": 70000.0,
       "cooldown": 4.0
     }
   },

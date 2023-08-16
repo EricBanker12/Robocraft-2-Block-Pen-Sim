@@ -112,8 +112,8 @@
                 <hr />
                 <section>
                     <h2 class="h5 my-0">Weapon Score Ratio<sup class="text-muted px-1" style="cursor: help;" tabindex="0"
-                            title="Set count for calculating Time-To-Penetrate (TTP) from simulation Shots-To-Penetrate (STP).&#10;Set ratio for what proportion of incomming damage comes from which weapon count">?</sup>
-                        </h2>
+                                               title="Set Count for calculating Time-To-Penetrate (TTP) from simulation Shots-To-Penetrate (STP).&#10;Set Ratio for what proportion of incomming damage comes from which weapon count.&#10Set Front/Side/Top for what proportion of incomming damage comes from which direction.">?</sup>
+                    </h2>
                     @foreach (var weapon in State.Weapons)
                     {
                         <label class="my-1">@weapon.Value.name</label>
@@ -134,36 +134,42 @@
                                     }
                                 </ul>
                             </div>
-                        </div>
-                    }
-                </section>
-                <hr />
-                <section>
-                    <h2 class="h5 my-2">Direction Score Ratio<sup class="text-muted px-1" style="cursor: help;" tabindex="0"
-                        title="Set ratio for what proportion of incomming damage comes from which direction.">?</sup></h2>
-                    <div class="input-group input-group-sm">
-                        @for (int i = 0; i < simForm.DirectionRatio.Length; i++)
-                        {
-                            int idx = i; // https://stackoverflow.com/questions/60232952/blazor-select-bind-to-a-value-in-a-list
-                            string name = ((Direction)i).ToString();
-
-                            <label for="@($"input{name}Ratio")" aria-label="@(name + " Ratio")" class="input-group-text">@name</label>
-                            <input id="@($"input{name}Ratio")" required type="number" min="0" step="any" @bind-value="simForm.DirectionRatio[idx]" class="form-control @IsValidClass(nameof(simForm.DirectionRatio), idx)" />
-                        }
-                        <div class="invalid-feedback">
-                            <ul class="mb-0">
-                                @for (int i = 0; i < simForm.DirectionRatio.Length; i++)
+                            <div class="input-group input-group-sm mt-2">
+                                @foreach (var direction in Enum.GetValues<Direction>())
                                 {
-                                    int idx = i;
-
-                                    @foreach (var errorMessage in simForm.GetErrorMessages(nameof(simForm.DirectionRatio), idx))
+                                    <label for="@($"input{weapon.Key}{direction}")" aria-label="@($"{weapon.Value.name} {direction} Ratio")" class="input-group-text">@direction.ToString()</label>
+                                    if (direction == Direction.Front)
                                     {
-                                        <li>@errorMessage</li>
+                                        <input id="@($"input{weapon.Key}{direction}")" required type="number" min="0" step="any" @bind-value="simForm.WeaponFrontRatio[weapon.Key]" class="form-control @IsValidClass(nameof(simForm.WeaponFrontRatio), weapon.Key)" />
+                                    }
+                                    if (direction == Direction.Side)
+                                    {
+                                        <input id="@($"input{weapon.Key}{direction}")" required type="number" min="0" step="any" @bind-value="simForm.WeaponSideRatio[weapon.Key]" class="form-control @IsValidClass(nameof(simForm.WeaponSideRatio), weapon.Key)" />
+                                    }
+                                    if (direction == Direction.Top)
+                                    {
+                                        <input id="@($"input{weapon.Key}{direction}")" required type="number" min="0" step="any" @bind-value="simForm.WeaponTopRatio[weapon.Key]" class="form-control @IsValidClass(nameof(simForm.WeaponTopRatio), weapon.Key)" />
                                     }
                                 }
-                            </ul>
+                                <div class="invalid-feedback">
+                                    <ul class="mb-0">
+                                        @foreach (var errorMessage in simForm.GetErrorMessages(nameof(simForm.WeaponFrontRatio), weapon.Key))
+                                        {
+                                            <li>@errorMessage</li>
+                                        }
+                                        @foreach (var errorMessage in simForm.GetErrorMessages(nameof(simForm.WeaponSideRatio), weapon.Key))
+                                        {
+                                            <li>@errorMessage</li>
+                                        }
+                                        @foreach (var errorMessage in simForm.GetErrorMessages(nameof(simForm.WeaponTopRatio), weapon.Key))
+                                        {
+                                            <li>@errorMessage</li>
+                                        }
+                                    </ul>
+                                </div>
+                            </div>
                         </div>
-                    </div>
+                    }
                 </section>
                 <hr />
                 <button class="btn btn-lg btn-primary w-100" type="submit">Run Simulation</button>
