@@ -72,7 +72,7 @@ namespace BlockPenSimWPF.Properties {
             "u\": 40,\r\n      \"damage\": 15000,\r\n      \"pellets\": 20,\r\n      \"radius\": 30,\r\n    " +
             "  \"energy\": 120000,\r\n      \"cooldown\": 6\r\n    },\r\n    \"RailGun\": {\r\n      \"name\"" +
             ": \"Rail Gun\",\r\n      \"cpu\": 120,\r\n      \"damage\": 950,\r\n      \"pellets\": 1,\r\n   " +
-            "   \"radius\": 3,\r\n      \"energy\": 10000,\r\n      \"cooldown\": 4\r\n    }\r\n  },\r\n  \"Ma" +
+            "   \"radius\": 3,\r\n      \"energy\": 70000,\r\n      \"cooldown\": 4\r\n    }\r\n  },\r\n  \"Ma" +
             "terials\": {\r\n    \"Airium\": {\r\n      \"name\": \"Airium\",\r\n      \"density\": 0.7,\r\n  " +
             "    \"connectionStrength\": 1.59,\r\n      \"energyAbsorption\": 2500\r\n    },\r\n    \"Mo" +
             "deronium\": {\r\n      \"name\": \"Moderonium\",\r\n      \"density\": 1.8,\r\n      \"connect" +

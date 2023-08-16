@@ -126,7 +126,7 @@
       "damage": 950,
       "pellets": 1,
       "radius": 3,
-      "energy": 10000,
+      "energy": 70000,
       "cooldown": 4
     }
   },

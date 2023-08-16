@@ -100,36 +100,125 @@ namespace BlockPenSimWPF.Data
                                     simBlocks[i - 1].hpTop -= damage * energy / weapon.energy;
                             }
 
+                            var energyLoss = blockEnergyAbs;
+
                             // for rail gun, damage adjacent block connections, if they exist.
                             if (weapon.pellets == 1.0 && weapon.radius > 1.0)
                             {
                                 if (direction == Direction.Front)
                                 {
-                                    if (blockFill.block.width < weapon.radius * 2.0 && blockFill.widthCount > 1)
-                                        simBlocks[i].hpSide -= damage * energy / weapon.energy;
+                                    if (blockFill.block.width < blockFill.block.height)
+                                    {
+                                        if (blockFill.block.width < weapon.radius * 2.0 && blockFill.widthCount > 1)
+                                        {
+                                            energyLoss += blockEnergyAbs;
+                                            if (energy - energyLoss > 0) simBlocks[i].hpSide -= damage * (energy - energyLoss) / weapon.energy;
+                                            energyLoss += blockEnergyAbs;
+                                        }
 
-                                    if (blockFill.block.height < weapon.radius * 2.0 && blockFill.heightCount > 1)
-                                        simBlocks[i].hpTop -= damage * energy / weapon.energy;
+                                        if (blockFill.block.height < weapon.radius * 2.0 && blockFill.heightCount > 1)
+                                        {
+                                            energyLoss += blockEnergyAbs;
+                                            if (energy - energyLoss > 0) simBlocks[i].hpTop -= damage * (energy - energyLoss) / weapon.energy;
+                                            energyLoss += blockEnergyAbs;
+                                        }
+                                    }
+                                    else
+                                    {
+                                        if (blockFill.block.height < weapon.radius * 2.0 && blockFill.heightCount > 1)
+                                        {
+                                            energyLoss += blockEnergyAbs;
+                                            if (energy - energyLoss > 0) simBlocks[i].hpTop -= damage * (energy - energyLoss) / weapon.energy;
+                                            energyLoss += blockEnergyAbs;
+                                        }
+
+                                        if (blockFill.block.width < weapon.radius * 2.0 && blockFill.widthCount > 1)
+                                        {
+                                            energyLoss += blockEnergyAbs;
+                                            if (energy - energyLoss > 0) simBlocks[i].hpSide -= damage * (energy - energyLoss) / weapon.energy;
+                                            energyLoss += blockEnergyAbs;
+                                        }
+                                    }
+
+                                    energyLoss = blockEnergyAbs * Math.Min(Math.Ceiling(weapon.radius * 2.0 / blockFill.block.width), blockFill.widthCount) * Math.Min(Math.Ceiling(weapon.radius * 2.0 / blockFill.block.height), blockFill.heightCount);
                                 }
                                 if (direction == Direction.Side)
                                 {
-                                    if (blockFill.block.length < weapon.radius * 2.0 && blockFill.lengthCount > 1)
-                                        simBlocks[i].hpFront -= damage * energy / weapon.energy;
+                                    if (blockFill.block.length < blockFill.block.height)
+                                    {
+                                        if (blockFill.block.length < weapon.radius * 2.0 && blockFill.lengthCount > 1)
+                                        {
+                                            energyLoss += blockEnergyAbs;
+                                            if (energy - energyLoss > 0) simBlocks[i].hpFront -= damage * (energy - energyLoss) / weapon.energy;
+                                            energyLoss += blockEnergyAbs;
+                                        }
 
-                                    if (blockFill.block.height < weapon.radius * 2.0 && blockFill.heightCount > 1)
-                                        simBlocks[i].hpTop -= damage * energy / weapon.energy;
+                                        if (blockFill.block.height < weapon.radius * 2.0 && blockFill.heightCount > 1)
+                                        {
+                                            energyLoss += blockEnergyAbs;
+                                            if (energy - energyLoss > 0) simBlocks[i].hpTop -= damage * (energy - energyLoss) / weapon.energy;
+                                            energyLoss += blockEnergyAbs;
+                                        }
+                                    }
+                                    else
+                                    {
+                                        if (blockFill.block.height < weapon.radius * 2.0 && blockFill.heightCount > 1)
+                                        {
+                                            energyLoss += blockEnergyAbs;
+                                            if (energy - energyLoss > 0) simBlocks[i].hpTop -= damage * (energy - energyLoss) / weapon.energy;
+                                            energyLoss += blockEnergyAbs;
+                                        }
+
+                                        if (blockFill.block.length < weapon.radius * 2.0 && blockFill.lengthCount > 1)
+                                        {
+                                            energyLoss += blockEnergyAbs;
+                                            if (energy - energyLoss > 0) simBlocks[i].hpFront -= damage * (energy - energyLoss) / weapon.energy;
+                                            energyLoss += blockEnergyAbs;
+                                        }
+                                    }
+
+                                    energyLoss = blockEnergyAbs * Math.Min(Math.Ceiling(weapon.radius * 2.0 / blockFill.block.length), blockFill.lengthCount) * Math.Min(Math.Ceiling(weapon.radius * 2.0 / blockFill.block.height), blockFill.heightCount);
                                 }
                                 if (direction == Direction.Top)
                                 {
-                                    if (blockFill.block.width < weapon.radius * 2.0 && blockFill.widthCount > 1)
-                                        simBlocks[i].hpSide -= damage * energy / weapon.energy;
+                                    if (blockFill.block.width < blockFill.block.length)
+                                    {
+                                        if (blockFill.block.width < weapon.radius * 2.0 && blockFill.widthCount > 1)
+                                        {
+                                            energyLoss += blockEnergyAbs;
+                                            if (energy - energyLoss > 0) simBlocks[i].hpSide -= damage * (energy - energyLoss) / weapon.energy;
+                                            energyLoss += blockEnergyAbs;
+                                        }
 
-                                    if (blockFill.block.length < weapon.radius * 2.0 && blockFill.lengthCount > 1)
-                                        simBlocks[i].hpFront -= damage * energy / weapon.energy;
+                                        if (blockFill.block.length < weapon.radius * 2.0 && blockFill.lengthCount > 1)
+                                        {
+                                            energyLoss += blockEnergyAbs;
+                                            if (energy - energyLoss > 0) simBlocks[i].hpFront -= damage * (energy - energyLoss) / weapon.energy;
+                                            energyLoss += blockEnergyAbs;
+                                        }
+                                    }
+                                    else
+                                    {
+                                        if (blockFill.block.length < weapon.radius * 2.0 && blockFill.lengthCount > 1)
+                                        {
+                                            energyLoss += blockEnergyAbs;
+                                            if (energy - energyLoss > 0) simBlocks[i].hpFront -= damage * (energy - energyLoss) / weapon.energy;
+                                            energyLoss += blockEnergyAbs;
+                                        }
+
+                                        if (blockFill.block.width < weapon.radius * 2.0 && blockFill.widthCount > 1)
+                                        {
+                                            energyLoss += blockEnergyAbs;
+                                            if (energy - energyLoss > 0) simBlocks[i].hpSide -= damage * (energy - energyLoss) / weapon.energy;
+                                            energyLoss += blockEnergyAbs;
+                                        }
+                                    }
+
+                                    energyLoss = blockEnergyAbs * Math.Min(Math.Ceiling(weapon.radius * 2.0 / blockFill.block.width), blockFill.widthCount) * Math.Min(Math.Ceiling(weapon.radius * 2.0 / blockFill.block.length), blockFill.lengthCount);
                                 }
                             }
 
-                            energy -= blockEnergyAbs;
+                            energy -= energyLoss;
 
                             // limit arc discharger distance
                             distance += blockDistance;
