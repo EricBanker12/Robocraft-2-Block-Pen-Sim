@@ -27,13 +27,31 @@
       "energy": 120000.0,
       "cooldown": 6.0
     },
-    "RailGun": {
-      "name": "Rail Gun",
+    "RailGunMax": {
+      "name": "Rail Gun (70m)",
       "cpu": 120,
-      "damage": 950.0,
+      "damage": 810.0,
       "pellets": 1.0,
       "radius": 3.0,
-      "energy": 70000.0,
+      "energy": 59500.0,
+      "cooldown": 4.0
+    },
+    "RailGun": {
+      "name": "Rail Gun (47.5m)",
+      "cpu": 120,
+      "damage": 480.0,
+      "pellets": 1.0,
+      "radius": 1.5,
+      "energy": 34750.0,
+      "cooldown": 4.0
+    },
+    "RailGunMin": {
+      "name": "Rail Gun (25m)",
+      "cpu": 120,
+      "damage": 150.0,
+      "pellets": 1.0,
+      "radius": 0.3,
+      "energy": 10000.0,
       "cooldown": 4.0
     }
   },
