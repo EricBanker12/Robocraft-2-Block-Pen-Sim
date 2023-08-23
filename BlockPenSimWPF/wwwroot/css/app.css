@@ -109,6 +109,20 @@ dialog {
     z-index: 1000;
 }
 
+.collapse:not(.show) {
+    display: block;
+    height: 0;
+    overflow: hidden;
+    transition: height 0.35s ease-out;
+}
+
+.collapse.show {
+    height: 100%;
+    overflow: auto;
+    transition: height 0.35s ease-in;
+    transition-delay: 0.35s;
+}
+
 /*blazor stuff*/
 .valid.modified:not([type=checkbox]) {
     outline: 1px solid #26b050;

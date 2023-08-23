@@ -3,17 +3,26 @@
 @using BlockPenSimWPF.Shared.State;
 
 <header id="SideBar" class="position-relative col-12" style="width: 320px; margin-left: @(State.ShowSideBar ? "0px" : "-320px"); transition: margin-left 0.5s ease;">
-    <div class="card h-100" aria-hidden="@State.ShowSideBar">
-        <div class="card-header">
-            <h1 class="h3 text-center">Robocraft <img src="images/appicon.svg" title="2" alt="2" style="height: 1.0em; transform: translate(0, -0.1em);" class="d-inline-block" /><br/>Block Penetraton Simulator</h1>
-        </div>
-        <div class="card-body overflow-auto">
-            <form @onsubmit="OnSubmit" @onsubmit:preventDefault>
-                <section>
-                    <h2 class="h5 my-0">Block Fill Constraints<sup class="text-muted px-1" style="cursor: help;" tabindex="0"
-                            title="Set minimum and maximum constraints for size, weight, and CPU cost to fill with blocks and simulate taking weapon damage.">?</sup>
-                    </h2>
-                    <label class="my-1">CPU</label>
+    <form class="h-100" @onsubmit="OnSubmit" @onsubmit:preventDefault>
+        <div class="card h-100 overflow-hidden" aria-hidden="@State.ShowSideBar">
+            <div class="card-header">
+                <h1 class="h3 text-center">Robocraft <img src="images/appicon.svg" title="2" alt="2" style="height: 1.0em; transform: translate(0, -0.1em);" class="d-inline-block" /><br/>Block Penetraton Simulator</h1>
+            </div>
+            <ul class="nav nav-tabs px-0">
+                <li class="nav-item">
+                    <button id="BlocksTabButton" type="button" class="nav-link @(tab == SimulationFormTab.Blocks ? "active" : string.Empty)" @onclick="OnClick_Tab_Factory(SimulationFormTab.Blocks)">
+                        <span>Blocks<sup class="text-muted px-1" style="cursor: help;" tabindex="0" title="Set minimum and maximum constraints for size, weight, and CPU cost to fill with blocks and simulate taking weapon damage.">?</sup></span>
+                    </button>
+                </li>
+                <li class="nav-item">
+                    <button id="WeaponsTabButton" type="button" class="nav-link @(tab == SimulationFormTab.Weapons ? "active" : string.Empty)" @onclick="OnClick_Tab_Factory(SimulationFormTab.Weapons)">
+                        <span>Weapons<sup class="text-muted px-1" style="cursor: help;" tabindex="0" title="Set Count for calculating Time-To-Penetrate (TTP) from simulation Shots-To-Penetrate (STP).&#10;Set Ratio for what proportion of incomming damage comes from which weapon count.&#10Set Front/Side/Top for what proportion of incomming damage comes from which direction.">?</sup></span>
+                    </button>
+                </li>
+            </ul>
+            <div class="card-body overflow-auto">
+                <section class="collapse @(tab == SimulationFormTab.Blocks ? "show" : string.Empty)" aria-hidden="@(tab == SimulationFormTab.Blocks)" aria-expanded="@(tab == SimulationFormTab.Blocks)" aria-labelledby="BlocksTabButton">
+                    <label class="my-2">CPU</label>
                     <div class="input-group input-group-sm">
                         <label for="inputCpuMin" aria-label="CPU Min" class="input-group-text">Min</label>
                         <input id="inputCpuMin" type="number" required min="1" max="940" step="1" @bind-value="simForm.CpuMin" class="form-control @IsValidClass(nameof(simForm.CpuMin))" />
@@ -32,7 +41,7 @@
                             </ul>
                         </div>
                     </div>
-                    <label class="my-1">Weight (kg)</label>
+                    <label class="my-2">Weight (kg)</label>
                     <div class="input-group input-group-sm">
                         <label for="inputWeightMin" aria-label="Weight Min" class="input-group-text">Min</label>
                         <input id="inputWeightMin" type="number" required min="0" step="any" @bind-value="simForm.WeightMin" class="form-control @IsValidClass(nameof(simForm.WeightMin))" />
@@ -51,7 +60,7 @@
                             </ul>
                         </div>
                     </div>
-                    <label class="my-1">Length (blocks)<sup class="text-muted px-1" style="cursor: help;" tabindex="0" title="The distance in blocks between the back and front sides.">?</sup></label>
+                    <label class="my-2">Length (blocks)<sup class="text-muted px-1" style="cursor: help;" tabindex="0" title="The distance in blocks between the back and front sides.">?</sup></label>
                     <div class="input-group input-group-sm">
                         <label for="inputLengthMin" aria-label="Length Min" class="input-group-text">Min</label>
                         <input id="inputLengthMin" type="number" required min="0" max="63" step="any" @bind-value="simForm.LengthMin" class="form-control @IsValidClass(nameof(simForm.LengthMin))" />
@@ -70,7 +79,7 @@
                             </ul>
                         </div>
                     </div>
-                    <label class="my-1">Width (blocks)<sup class="text-muted px-1" style="cursor: help;" tabindex="0" title="The distance in blocks between the right and left sides.">?</sup></label>
+                    <label class="my-2">Width (blocks)<sup class="text-muted px-1" style="cursor: help;" tabindex="0" title="The distance in blocks between the right and left sides.">?</sup></label>
                     <div class="input-group input-group-sm">
                         <label for="inputWidthMin" aria-label="Width Min" class="input-group-text">Min</label>
                         <input id="inputWidthMin" type="number" required min="0" max="63" step="any" @bind-value="simForm.WidthMin" class="form-control @IsValidClass(nameof(simForm.WidthMin))" />
@@ -89,7 +98,7 @@
                             </ul>
                         </div>
                     </div>
-                    <label class="my-1">Height (blocks)<sup class="text-muted px-1" style="cursor: help;" tabindex="0" title="The distance in blocks between the bottom and top sides.">?</sup></label>
+                    <label class="my-2">Height (blocks)<sup class="text-muted px-1" style="cursor: help;" tabindex="0" title="The distance in blocks between the bottom and top sides.">?</sup></label>
                     <div class="input-group input-group-sm">
                         <label for="inputHeightMin" aria-label="Height Min" class="input-group-text">Min</label>
                         <input id="inputHeightMin" type="number" required min="0" max="63" step="any" @bind-value="simForm.HeightMin" class="form-control @IsValidClass(nameof(simForm.HeightMin))" />
@@ -109,14 +118,10 @@
                         </div>
                     </div>
                 </section>
-                <hr />
-                <section>
-                    <h2 class="h5 my-0">Weapon Score Ratio<sup class="text-muted px-1" style="cursor: help;" tabindex="0"
-                                               title="Set Count for calculating Time-To-Penetrate (TTP) from simulation Shots-To-Penetrate (STP).&#10;Set Ratio for what proportion of incomming damage comes from which weapon count.&#10Set Front/Side/Top for what proportion of incomming damage comes from which direction.">?</sup>
-                    </h2>
+                <section class="collapse @(tab == SimulationFormTab.Weapons ? "show" : string.Empty)" aria-hidden="@(tab == SimulationFormTab.Weapons)" aria-expanded="@(tab == SimulationFormTab.Weapons)" aria-labelledby="WeaponsTabButton">
                     @foreach (var weapon in State.Weapons)
                     {
-                        <label class="my-1">@weapon.Value.name</label>
+                        <label class="my-2">@weapon.Value.name</label>
                         <div class="input-group input-group-sm">
                             <label for="@($"input{weapon.Key}Count")" aria-label="@(weapon.Value.name + " Count")" class="input-group-text">Count</label>
                             <input id="@($"input{weapon.Key}Count")" required type="number" min="1" step="1" @bind-value="simForm.WeaponCount[weapon.Key]" class="form-control @IsValidClass(nameof(simForm.WeaponCount), weapon.Key)" />
@@ -171,11 +176,12 @@
                         </div>
                     }
                 </section>
-                <hr />
+            </div>
+            <div class="card-footer">
                 <button class="btn btn-lg btn-primary w-100" type="submit">Run Simulation</button>
-            </form>
+            </div>
         </div>
-    </div>
+    </form>
     <div class="position-absolute" style="right: @(State.ShowSideBar ? "5px" : "-35px"); top: 5px; transition: right 0.5s ease; z-index: 1045;">
         <button class="btn btn-sm btn-primary p-0"
             style="width: 30px; height: 30px; border-radius: 50%;"
@@ -193,6 +199,13 @@
     public IndexStore State { get; set; } = new();
 
     private SimulationForm simForm = new();
+
+    private SimulationFormTab tab = SimulationFormTab.Blocks;
+
+    private Action OnClick_Tab_Factory(SimulationFormTab tab)
+    {
+        return () => { this.tab = tab; };
+    }
 
     private void ToggleShowSideBar()
     {

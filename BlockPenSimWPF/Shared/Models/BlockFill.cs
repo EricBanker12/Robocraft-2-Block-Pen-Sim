@@ -102,7 +102,7 @@ namespace BlockPenSimWPF.Shared.Models
                     this.heightCount += Math.Max(0, Math.Min(allowedSize, Math.Min(allowedCpu, allowedWeight)));
                     break;
             }
-
+            // breadth first instead of depth first
             if (blockFillMethod == BlockFillMethod.ALL)
             {
                 double allowedLength = 1.0;
