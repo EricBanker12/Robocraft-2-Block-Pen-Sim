@@ -71,9 +71,6 @@ namespace BlockPenSimWPF.Data
                     for (int i = 0; i < blockCount; i++)
                         simBlocks[i] = new SimBlock(blockFill.block);
 
-                    var damage = weapon.damage / weapon.pellets;
-                    if (weapon.radius > 1.0 && weapon.pellets > 1.0)
-                        damage *= 1 + (weapon.pellets - 1) * blockArea / weapon.radius / weapon.radius / Math.PI * 4.0; // pellet spread is roughly 1/2 the radius listed in tooltip
 
                     // simulate and count shots to penetrate
                     int shots = 0;
@@ -85,6 +82,88 @@ namespace BlockPenSimWPF.Data
                         for (int i = 0; i < blockCount && energy > 0.0; i++) // blockCount
                         {
                             if (simBlocks[i].IsDead) continue;
+
+                            var damage = weapon.damage / weapon.pellets;
+
+                            // handle shrapnel for splash damage weapons
+                            if (weapon.radius > 1.0 && weapon.pellets > 1.0)
+                            {
+                                double d = 0;
+                                if (direction == Direction.Front) d = blockFill.block.length * i;
+                                if (direction == Direction.Side) d = blockFill.block.width * i;
+                                if (direction == Direction.Top) d = blockFill.block.height * i;
+
+                                double x = 0;
+                                if (direction == Direction.Front) x = blockFill.block.width;
+                                if (direction == Direction.Side) x = blockFill.block.length;
+                                if (direction == Direction.Top) x = blockFill.block.width;
+
+                                double y = 0;
+                                if (direction == Direction.Front) y = blockFill.block.height;
+                                if (direction == Direction.Side) y = blockFill.block.height;
+                                if (direction == Direction.Top) y = blockFill.block.length;
+
+                                var conePellets = (weapon.pellets - 1.0) / 2.0;
+
+                                // too much work to do actual calculation, so to this is a decent estimate instead
+                                // for each shrapnel angle, compare length of inner to outer trajectory to length of block
+                                double innerHits = 0.0;
+                                double inner = d * Math.Tan(15.0 * (1.0 - 0.3) * Math.PI / 180.0);
+                                double outer = d * Math.Tan(15.0 * (1.0 + 0.3) * Math.PI / 180.0);
+                                
+                                double innerOffset = Math.PI / conePellets;
+                                for (int j = 0; j < conePellets; j++)
+                                {
+                                    var angle = innerOffset + j * 2.0 * Math.PI / conePellets;
+                                    var xInner = Math.Cos(angle) * inner;
+                                    var yInner = Math.Sin(angle) * inner;
+                                    var xOuter = Math.Cos(angle) * outer;
+                                    var yOuter = Math.Sin(angle) * outer;
+
+                                    if (x > xOuter && y > yOuter) {
+                                        innerHits += 1.0;
+                                        continue;
+                                    }
+
+                                    var dio = Math.Sqrt(Math.Pow(xOuter - xInner, 2) + Math.Pow(yOuter - yInner, 2));
+                                    var dxy = Math.Sqrt(Math.Pow(Math.Max(xOuter, x) - xInner, 2) + Math.Pow(Math.Max(yOuter, y) - yInner, 2));
+
+                                    if (dxy > dio)
+                                    {
+                                        innerHits += dxy / dio;
+                                    }
+                                }
+
+                                double outerHits = 0.0;
+                                inner = d * Math.Tan(30.0 * (1.0 - 0.3) * Math.PI / 180.0);
+                                outer = d * Math.Tan(30.0 * (1.0 + 0.3) * Math.PI / 180.0);
+
+                                for (int j = 0; j < conePellets; j++)
+                                {
+                                    var angle = j * 2.0 * Math.PI / conePellets;
+                                    var xInner = Math.Cos(angle) * inner;
+                                    var yInner = Math.Sin(angle) * inner;
+                                    var xOuter = Math.Cos(angle) * outer;
+                                    var yOuter = Math.Sin(angle) * outer;
+
+                                    if (x > xOuter && y > yOuter)
+                                    {
+                                        outerHits += 1.0;
+                                        continue;
+                                    }
+
+                                    var dio = Math.Sqrt(Math.Pow(xOuter - xInner, 2) + Math.Pow(yOuter - yInner, 2));
+                                    var dxy = Math.Sqrt(Math.Pow(Math.Max(xOuter, x) - xInner, 2) + Math.Pow(Math.Max(yOuter, y) - yInner, 2));
+
+                                    if (dxy > dio)
+                                    {
+                                        outerHits += dxy / dio;
+                                    }
+                                }
+
+                                damage *= 1 + innerHits + outerHits;
+                            }
+                            
                             // damage all the face connections for the current block
                             simBlocks[i].hpFront -= damage * energy / weapon.energy;
                             simBlocks[i].hpSide -= damage * energy / weapon.energy;
