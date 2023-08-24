@@ -3,6 +3,7 @@ using BlockPenSimWPF.Shared.State;
 using Microsoft.VisualBasic;
 using System.Collections;
 using System.Data;
+using System.Threading.Tasks;
 
 namespace BlockPenSimWPF.Data
 {
@@ -85,11 +86,11 @@ namespace BlockPenSimWPF.Data
                     // simulate and count shots to penetrate
                     int shots = 0;
                     int deadCount = 0;
-                    while (deadCount <= blockCount) // blockCount
+                    while (deadCount <= blockCount) // blockCount, up to 189
                     {
                         var energy = weapon.energy;
                         double distance = 0.0;
-                        for (int i = deadCount; i < blockCount && energy > 0.0; i++) // blockCount
+                        for (int i = deadCount; i < blockCount && energy > 0.0; i++) // blockCount, up to 189
                         {
                             if (simBlocks[i].IsDead) continue;
 
@@ -98,20 +99,9 @@ namespace BlockPenSimWPF.Data
                             // handle shrapnel for splash damage weapons
                             if (weapon.radius > 1.0 && weapon.pellets > 1.0)
                             {
-                                double d = 0;
-                                if (direction == Direction.Front) d = blockFill.block.length * i;
-                                if (direction == Direction.Side) d = blockFill.block.width * i;
-                                if (direction == Direction.Top) d = blockFill.block.height * i;
-
-                                double x = 0;
-                                if (direction == Direction.Front) x = blockFill.block.width;
-                                if (direction == Direction.Side) x = blockFill.block.length;
-                                if (direction == Direction.Top) x = blockFill.block.width;
-
-                                double y = 0;
-                                if (direction == Direction.Front) y = blockFill.block.height;
-                                if (direction == Direction.Side) y = blockFill.block.height;
-                                if (direction == Direction.Top) y = blockFill.block.length;
+                                double d = blockDistance * (i - deadCount) + weapon.radius / 2.0;
+                                double x = blockFaceX / 2.0;
+                                double y = blockFaceY / 2.0;
 
                                 var conePellets = (weapon.pellets - 1.0) / 2.0;
 
@@ -125,22 +115,22 @@ namespace BlockPenSimWPF.Data
                                 for (int j = 0; j < conePellets; j++)
                                 {
                                     var angle = innerOffset + j * 2.0 * Math.PI / conePellets;
-                                    var xInner = Math.Cos(angle) * inner;
-                                    var yInner = Math.Sin(angle) * inner;
-                                    var xOuter = Math.Cos(angle) * outer;
-                                    var yOuter = Math.Sin(angle) * outer;
+                                    var xInner = Math.Abs(Math.Cos(angle) * inner);
+                                    var yInner = Math.Abs(Math.Sin(angle) * inner);
+                                    var xOuter = Math.Abs(Math.Cos(angle) * outer);
+                                    var yOuter = Math.Abs(Math.Sin(angle) * outer);
 
                                     if (x > xOuter && y > yOuter) {
                                         innerHits += 1.0;
                                         continue;
                                     }
 
-                                    var dio = Math.Sqrt(Math.Pow(xOuter - xInner, 2) + Math.Pow(yOuter - yInner, 2));
-                                    var dxy = Math.Sqrt(Math.Pow(Math.Max(xOuter, x) - xInner, 2) + Math.Pow(Math.Max(yOuter, y) - yInner, 2));
-
-                                    if (dxy > dio)
+                                    if (x > xInner && y > yInner)
                                     {
+                                        var dio = Math.Sqrt(Math.Pow(xOuter - xInner, 2) + Math.Pow(yOuter - yInner, 2));
+                                        var dxy = Math.Sqrt(Math.Pow(Math.Min(xOuter, x) - xInner, 2) + Math.Pow(Math.Min(yOuter, y) - yInner, 2));
                                         innerHits += dxy / dio;
+                                        continue;
                                     }
                                 }
 
@@ -151,10 +141,10 @@ namespace BlockPenSimWPF.Data
                                 for (int j = 0; j < conePellets; j++)
                                 {
                                     var angle = j * 2.0 * Math.PI / conePellets;
-                                    var xInner = Math.Cos(angle) * inner;
-                                    var yInner = Math.Sin(angle) * inner;
-                                    var xOuter = Math.Cos(angle) * outer;
-                                    var yOuter = Math.Sin(angle) * outer;
+                                    var xInner = Math.Abs(Math.Cos(angle) * inner);
+                                    var yInner = Math.Abs(Math.Sin(angle) * inner);
+                                    var xOuter = Math.Abs(Math.Cos(angle) * outer);
+                                    var yOuter = Math.Abs(Math.Sin(angle) * outer);
 
                                     if (x > xOuter && y > yOuter)
                                     {
@@ -162,16 +152,17 @@ namespace BlockPenSimWPF.Data
                                         continue;
                                     }
 
-                                    var dio = Math.Sqrt(Math.Pow(xOuter - xInner, 2) + Math.Pow(yOuter - yInner, 2));
-                                    var dxy = Math.Sqrt(Math.Pow(Math.Max(xOuter, x) - xInner, 2) + Math.Pow(Math.Max(yOuter, y) - yInner, 2));
 
-                                    if (dxy > dio)
+                                    if (x > xInner && y > yInner)
                                     {
+                                        var dio = Math.Sqrt(Math.Pow(xOuter - xInner, 2) + Math.Pow(yOuter - yInner, 2));
+                                        var dxy = Math.Sqrt(Math.Pow(Math.Min(xOuter, x) - xInner, 2) + Math.Pow(Math.Min(yOuter, y) - yInner, 2));
                                         outerHits += dxy / dio;
+                                        continue;
                                     }
                                 }
 
-                                damage *= 1 + innerHits + outerHits;
+                                damage *= 1.0 + innerHits + outerHits;
                             }
                             
                             // damage all the face connections for the current block
@@ -278,7 +269,11 @@ namespace BlockPenSimWPF.Data
                         }
                         shots++;
                         if (energy > 0.0) break;
-                        if (applyCollision)
+                        if (!applyCollision)
+                        {
+                            deadCount = simBlocks.Where(b => b.IsDead).Count();
+                        }
+                        else
                         {
                             var prevDeadCount = deadCount;
                             deadCount = simBlocks.Where(b => b.IsDead).Count();
@@ -325,6 +320,7 @@ namespace BlockPenSimWPF.Data
                                         simBlocks[i].hpFront -= connectionDamage;
                                     }
                                 }
+                                deadCount = simBlocks.Where(b => b.IsDead).Count();
                             }
                         }
                     }
@@ -402,17 +398,19 @@ namespace BlockPenSimWPF.Data
             var shapes = GetAllShapes();
             var tasks = new List<Task<DataTable>>();
 
-            foreach (Material material in settings.Materials.Values) // 3
+            //foreach (Material material in settings.Materials.Values) // 3
             {
-                foreach (Orientation orientation in Enum.GetValues(typeof(Orientation))) // 6
+                //foreach (Orientation orientation in Enum.GetValues(typeof(Orientation))) // 6
                 {
                     // 18 threads
-                    tasks.Add(Task.Run(DataTable () =>
+                    var blockFillFunc = DataTable () =>
+                    //tasks.Add(Task.Run(DataTable () =>
                     {
                         var output = schema.Clone();
-                        foreach (Shape shape in shapes) // 219
+                        //foreach (Shape shape in shapes) // 219
                         {
-                            Block block = new Block(shape, orientation, material);
+                            //Block block = new Block(shape, orientation, material);
+                            Block block = new Block(new Shape { smallest = 1.0, middle = 3.0, largest = 9.0 }, Orientation.ForwardsTall, new Material { connectionStrength = 3.35, density = 7.3, energyAbsorption = 7500, name = "Ladium"});
 
                             foreach (BlockFillMethod blockFillMethod in Enum.GetValues(typeof(BlockFillMethod))) // 6
                             {
@@ -469,19 +467,22 @@ namespace BlockPenSimWPF.Data
                             }
                         }
                         return output;
-                    }));
+                    //}));
+                    };
+                    var result = blockFillFunc();
+                    schema.Merge(result);
                 }
             }
 
-            await Task.WhenAll(tasks);
+            //await Task.WhenAll(tasks);
 
             using (schema)
             {
-                foreach (var task in tasks)
-                {
-                    schema.Merge(task.Result);
-                    task.Result.Dispose();
-                }
+                //foreach (var task in tasks)
+                //{
+                //    schema.Merge(task.Result);
+                //    task.Result.Dispose();
+                //}
 
                 if (schema.Rows.Count == 0)
                     return schema;

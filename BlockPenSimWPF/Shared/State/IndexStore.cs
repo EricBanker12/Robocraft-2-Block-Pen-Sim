@@ -98,6 +98,12 @@ namespace BlockPenSimWPF.Shared.State
             LocalSettings.SetValue(storageKey, this);
         }
 
+        public void ResetPreferences()
+        {
+            LocalSettings.Reset(storageKey);
+            LoadPreferences();
+        }
+
         public void LoadPreferences()
         {
             try

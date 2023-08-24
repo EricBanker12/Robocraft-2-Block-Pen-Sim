@@ -432,6 +432,7 @@
                     </div>
                 </div>
                 <div class="modal-footer">
+                    <button type="button" @onclick="OnClick_Reset" class="btn btn-danger me-auto">Reset to Defaults</button>
                     <button type="button" @onclick="OnClick_Cancel" class="btn btn-secondary">Cancel</button>
                     <button type="submit" class="btn btn-primary">Save Changes</button>
                 </div>
@@ -601,6 +602,27 @@
     private void OnClick_DeleteMaterial()
     {
         settingsForm.DeleteMaterial();
+    }
+
+    private async void OnClick_Reset()
+    {
+        State.ResetPreferences();
+
+        var currentTheme = ThemeData.GetCurrentTheme();
+        ThemeData.ThemeOverride = Theme.Default;
+        var newTheme = ThemeData.GetCurrentTheme();
+        if (currentTheme != newTheme)
+        {
+            State.IsDarkMode = newTheme == Theme.Dark;
+            await ThemeData.OverridePreferredTheme(jsRuntime);
+        }
+
+        State.SimData = await BlockPenSimulator.RunAsync(State);
+
+        settingsForm.Reset(State);
+        State.ShowSettings = false;
+
+        State.HasChanged();
     }
 
     private void OnClick_Cancel()

@@ -113,14 +113,14 @@ dialog {
     display: block;
     height: 0;
     overflow: hidden;
-    transition: height 0.35s ease-out;
+    transition: height 0.15s ease-out;
 }
 
 .collapse.show {
     height: 100%;
     overflow: auto;
     transition: height 0.35s ease-in;
-    transition-delay: 0.35s;
+    transition-delay: 0.15s;
 }
 
 /*blazor stuff*/
