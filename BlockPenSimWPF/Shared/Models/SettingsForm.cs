@@ -23,6 +23,7 @@ namespace BlockPenSimWPF.Shared.Models
             this.HideZeroRatioWeaponColumns = State.hideZeroRatioWeaponColumns;
             this.HideZeroRatioDirectionColumns = State.hideZeroRatioDirectionColumns;
             this.UpdateDefaultBlockdataOverInternet = State.updateDefaultBlockdataOverInternet;
+            this.ApplyKilledBlockCollisionDamage = State.applyKilledBlockCollisionDamage;
 
             // duplicate weapons/materials
             this.Weapons = State.Weapons.ToDictionary(e => e.Key, e => e.Value);
@@ -38,6 +39,7 @@ namespace BlockPenSimWPF.Shared.Models
             this.weaponRadius = 0.3;
             this.weaponEnergy = 2000;
             this.weaponCooldown = 0.6;
+            this.weaponImpulse = 2750;
 
             this.materialEdit = State.Materials.Count + 1;
             this.materialKey = string.Empty;
@@ -114,6 +116,9 @@ namespace BlockPenSimWPF.Shared.Models
                 case nameof(WeaponRadius):
                     if (WeaponRadius < 0) ErrorMessages[fieldName].Add("Radius cannot be less than 0 blocks.");
                     break;
+                case nameof(WeaponImpulse):
+                    if (WeaponImpulse < 0) ErrorMessages[fieldName].Add("Impulse cannot be less than 0 N*m.");
+                    break;
                 case nameof(MaterialKey):
                     if (string.IsNullOrWhiteSpace(MaterialKey) || MaterialKey?.Length > 255 || MaterialKey?.Length < 3)
                         ErrorMessages[fieldName].Add("Key must be between 3 and 255 characters in length.");
@@ -163,6 +168,7 @@ namespace BlockPenSimWPF.Shared.Models
             if (!IsValid(nameof(WeaponRadius))) return false;
             if (!IsValid(nameof(WeaponEnergy))) return false;
             if (!IsValid(nameof(WeaponCooldown))) return false;
+            if (!IsValid(nameof(WeaponImpulse))) return false;
 
             return true;
         }
@@ -189,7 +195,8 @@ namespace BlockPenSimWPF.Shared.Models
                 this.WeaponPellets = weapon.Value.pellets;
                 this.WeaponRadius = weapon.Value.radius;
                 this.WeaponEnergy = weapon.Value.energy;
-                this.weaponCooldown = weapon.Value.cooldown;
+                this.WeaponCooldown = weapon.Value.cooldown;
+                this.WeaponImpulse = weapon.Value.impulse;
             }
             else
             {
@@ -235,6 +242,7 @@ namespace BlockPenSimWPF.Shared.Models
                     cooldown = WeaponCooldown,
                     energy = WeaponEnergy,
                     radius = WeaponRadius,
+                    impulse = WeaponImpulse,
                 });
             }
         }
@@ -302,6 +310,7 @@ namespace BlockPenSimWPF.Shared.Models
         public bool HideZeroRatioWeaponColumns { get; set;}
         public bool HideZeroRatioDirectionColumns { get; set; }
         public bool UpdateDefaultBlockdataOverInternet { get; set; }
+        public bool ApplyKilledBlockCollisionDamage { get; set; }
 
         // Weapon Edit
         public Dictionary<string, Weapon> Weapons { get; set; } = new();
@@ -399,6 +408,17 @@ namespace BlockPenSimWPF.Shared.Models
             {
                 weaponCooldown = value;
                 IsValid(nameof(WeaponCooldown));
+            }
+        }
+
+        private double weaponImpulse = 2750;
+        public double WeaponImpulse
+        {
+            get { return weaponImpulse; }
+            set
+            {
+                weaponImpulse = value;
+                IsValid(nameof(WeaponImpulse));
             }
         }
 

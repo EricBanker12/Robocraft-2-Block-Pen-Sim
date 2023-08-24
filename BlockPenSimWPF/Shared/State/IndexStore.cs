@@ -56,6 +56,7 @@ namespace BlockPenSimWPF.Shared.State
         public bool hideZeroRatioWeaponColumns = false;
         public bool hideZeroRatioDirectionColumns = false;
         public bool updateDefaultBlockdataOverInternet = false;
+        public bool applyKilledBlockCollisionDamage = false;
 
         // ------------------------------------------------------------------------------------------------------------------------
         // Results view

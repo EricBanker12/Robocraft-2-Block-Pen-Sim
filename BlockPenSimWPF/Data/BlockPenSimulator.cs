@@ -33,7 +33,7 @@ namespace BlockPenSimWPF.Data
         /// <param name="blockFill"></param>
         /// <param name="weapons"></param>
         /// <param name="dataRow"></param>
-        private static void SimulateShots(BlockFill blockFill, IEnumerable<Weapon> weapons, DataRow dataRow)
+        private static void SimulateShots(BlockFill blockFill, IEnumerable<Weapon> weapons, DataRow dataRow, bool applyCollision)
         {
             uint blockCount;
             double blockDistance;
@@ -77,6 +77,7 @@ namespace BlockPenSimWPF.Data
 
                     // simulate and count shots to penetrate
                     int shots = 0;
+                    int deadCount = 0;
                     while (true) // blockCount
                     {
                         var energy = weapon.energy;
@@ -266,6 +267,55 @@ namespace BlockPenSimWPF.Data
                         }
                         shots++;
                         if (energy > 0.0) break;
+                        if (applyCollision)
+                        {
+                            var prevDeadCount = deadCount;
+                            deadCount = simBlocks.Where(b => b.IsDead).Count();
+                            if (deadCount > prevDeadCount && deadCount < simBlocks.Length)
+                            {
+                                var collisionImpulse = weapon.impulse / 1000.0; // very rough estimate, needs more testing
+                                var unlerp20 = (collisionImpulse - 1.0) / (20.0 - 1.0);
+                                var collisionDamage = 144.56 * unlerp20 + (1 - unlerp20) * 13.056;
+                                var unlerp60 = (collisionImpulse - 1.0) / (60.0 - 1.0);
+                                var collisionRadius = 25 * unlerp60 + (1 - unlerp60) * 12.5;
+                                for (int i = deadCount; i < simBlocks.Length; i++)
+                                {
+                                    double d; 
+                                    d = blockFill.block.width;
+                                    if (direction != Direction.Side) d /= 2.0;
+                                    if (direction == Direction.Front) d += blockFill.block.length * (i - deadCount);
+                                    if (direction == Direction.Side) d += blockFill.block.width * (i - deadCount);
+                                    if (direction == Direction.Top) d += blockFill.block.height * (i - deadCount);
+                                    if (d < collisionRadius)
+                                    {
+                                        var connectionDamage = collisionDamage * Math.Pow((collisionRadius - d) / collisionRadius, 2.5);
+                                        simBlocks[i].hpSide -= connectionDamage;
+                                    }
+
+                                    d = blockFill.block.height;
+                                    if (direction != Direction.Top) d /= 2.0;
+                                    if (direction == Direction.Front) d += blockFill.block.length * (i - deadCount);
+                                    if (direction == Direction.Side) d += blockFill.block.width * (i - deadCount);
+                                    if (direction == Direction.Top) d += blockFill.block.height * (i - deadCount);
+                                    if (d < collisionRadius)
+                                    {
+                                        var connectionDamage = collisionDamage * Math.Pow((collisionRadius - d) / collisionRadius, 2.5);
+                                        simBlocks[i].hpTop -= connectionDamage;
+                                    }
+
+                                    d = blockFill.block.length;
+                                    if (direction != Direction.Front) d /= 2.0;
+                                    if (direction == Direction.Front) d += blockFill.block.length * (i - deadCount);
+                                    if (direction == Direction.Side) d += blockFill.block.width * (i - deadCount);
+                                    if (direction == Direction.Top) d += blockFill.block.height * (i - deadCount);
+                                    if (d < collisionRadius)
+                                    {
+                                        var connectionDamage = collisionDamage * Math.Pow((collisionRadius - d) / collisionRadius, 2.5);
+                                        simBlocks[i].hpFront -= connectionDamage;
+                                    }
+                                }
+                            }
+                        }
                     }
                     dataRow[$"STP {weapon.name} ({direction})"] = shots;
                 }
@@ -374,7 +424,7 @@ namespace BlockPenSimWPF.Data
                                 dataRow[11] = blockFill.Weight;
 
                                 // Add STP
-                                SimulateShots(blockFill, settings.Weapons.Values, dataRow);
+                                SimulateShots(blockFill, settings.Weapons.Values, dataRow, settings.applyKilledBlockCollisionDamage);
 
                                 // Add score
                                 double score = 0.0;
