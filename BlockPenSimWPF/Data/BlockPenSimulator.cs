@@ -42,6 +42,8 @@ namespace BlockPenSimWPF.Data
             double blockDistance;
             double blockFaceX;
             double blockFaceY;
+            double blockFillX;
+            double blockFillY;
             double blockArea;
             double blockEnergyAbs;
             foreach (var direction in Enum.GetValues<Direction>())
@@ -54,6 +56,8 @@ namespace BlockPenSimWPF.Data
                         blockDistance = blockFill.block.length;
                         blockFaceX = blockFill.block.width;
                         blockFaceY = blockFill.block.height;
+                        blockFillX = blockFill.Width;
+                        blockFillY = blockFill.Height;
                         blockArea = blockFill.block.AreaFront;
                         blockEnergyAbs = blockFill.block.EnergyAbsFront;
                         break;
@@ -62,6 +66,8 @@ namespace BlockPenSimWPF.Data
                         blockDistance = blockFill.block.width;
                         blockFaceX = blockFill.block.length;
                         blockFaceY = blockFill.block.height;
+                        blockFillX = blockFill.Length;
+                        blockFillY = blockFill.Height;
                         blockArea = blockFill.block.AreaSide;
                         blockEnergyAbs = blockFill.block.EnergyAbsSide;
                         break;
@@ -70,6 +76,8 @@ namespace BlockPenSimWPF.Data
                         blockDistance = blockFill.block.height;
                         blockFaceX = blockFill.block.width;
                         blockFaceY = blockFill.block.length;
+                        blockFillX = blockFill.Width;
+                        blockFillY = blockFill.Length;
                         blockArea = blockFill.block.AreaTop;
                         blockEnergyAbs = blockFill.block.EnergyAbsTop;
                         break;
@@ -198,25 +206,29 @@ namespace BlockPenSimWPF.Data
                             // for rail gun, reduce energy by adjacent blocks
                             if (weapon.pellets == 1.0 && weapon.radius >= 1.0/3.0)
                             {
-                                double penBlockCount = 0.0;
-                                double penBlockDistance = 0.0;
+                                double penBlockCount = 1.0;
+                                double penBlockDistance = blockDistance;
 
-                                // get blocks touching hemisphere
-                                for (int j = 1; j < weapon.radius / blockDistance; j++)
+                                // get blocks touching hemisphere or cylinder
+                                for (int j = 1; j <= i + 1; j++)
                                 {
                                     // get circle radius at each block distance such that block plane insersects sphere
-                                    double d = j * blockDistance;
-                                    double r = weapon.radius * Math.Sin(Math.Acos((weapon.radius - d) / weapon.radius));
+                                    double r = weapon.radius;
+                                    if (j < weapon.radius / blockDistance)
+                                    {
+                                        double d = weapon.radius - j * blockDistance;
+                                        r = weapon.radius * Math.Sin(Math.Acos(d / weapon.radius));
+                                    }
 
                                     // count touching blocks
                                     var r2 = r * r;
-                                    for (double x = -blockFill.Width * 0.5; x <= blockFill.Width * 0.5 - blockFill.block.width; x += blockFill.block.width) // up to 189, could be reduced by restricting to min of width and radius
+                                    for (double x = -blockFillX * 0.5; x <= blockFillX * 0.5 - blockFaceX; x += blockFaceX) // up to 189, could be reduced by restricting to min of width and radius
                                     {
-                                        var xn = Math.Max(x, Math.Min(0, x + blockFill.block.width));
+                                        var xn = Math.Max(x, Math.Min(0, x + blockFaceX));
                                         var x2 = xn * xn;
-                                        for (double y = -blockFill.Length * 0.5; y <= blockFill.Length * 0.5 - blockFill.block.length; y += blockFill.block.length) // up to 189, could be reduced by restricting to min of width and radius
+                                        for (double y = -blockFillY * 0.5; y <= blockFillY * 0.5 - blockFaceY; y += blockFaceY) // up to 189, could be reduced by restricting to min of width and radius
                                         {
-                                            var yn = Math.Max(y, Math.Min(0, y + blockFill.block.length));
+                                            var yn = Math.Max(y, Math.Min(0, y + blockFaceY));
                                             var y2 = yn * yn;
                                             if (x2 + y2 <= r2)
                                             {
@@ -230,36 +242,7 @@ namespace BlockPenSimWPF.Data
                                     }
                                 }
 
-                                // get blocks touching cylinder
-                                var cylinderCount = (distance - weapon.radius) / blockDistance;
-                                if (cylinderCount > 0)
-                                {
-                                    // get circle radius at each block distance such that block plane insersects sphere
-                                    double r = weapon.radius;
-
-                                    // count touching blocks
-                                    var r2 = r * r;
-                                    for (double x = -blockFill.Width * 0.5; x <= blockFill.Width * 0.5 - blockFill.block.width; x += blockFill.block.width) // up to 63
-                                    {
-                                        var xn = Math.Max(x, Math.Min(0, x + blockFill.block.width));
-                                        var x2 = xn * xn;
-                                        for (double y = -blockFill.Length * 0.5; y <= blockFill.Length * 0.5 - blockFill.block.length; y += blockFill.block.length) // up to 63
-                                        {
-                                            var yn = Math.Max(y, Math.Min(0, y + blockFill.block.length));
-                                            var y2 = yn * yn;
-                                            if (x2 + y2 <= r2)
-                                            {
-                                                penBlockCount += cylinderCount;
-                                                // get pen distance from radius
-                                                var offset = Math.Sqrt(x2 + y2);
-                                                var dOffset = weapon.radius * 2.0 * (1.0 - Math.Cos(Math.Asin(offset / weapon.radius)));
-                                                penBlockDistance += Math.Max(0.0, blockDistance - dOffset) * cylinderCount;
-                                            }
-                                        }
-                                    }
-                                }
-
-                                energy = weapon.energy - blockEnergyAbs - penBlockDistance * blockFill.block.material.energyAbsorption / 5.0;
+                                energy = weapon.energy * (1.0 + shots) - penBlockDistance * blockFill.block.material.energyAbsorption / 5.0;
                             }
                             
                             // limit arc discharger distance
@@ -410,12 +393,12 @@ namespace BlockPenSimWPF.Data
                         //foreach (Shape shape in shapes) // 219
                         {
                             //Block block = new Block(shape, orientation, material);
-                            Block block = new Block(new Shape { smallest = 1.0, middle = 3.0, largest = 9.0 }, Orientation.ForwardsTall, new Material { connectionStrength = 3.35, density = 7.3, energyAbsorption = 7500, name = "Ladium"});
+                            Block block = new Block(new Shape { smallest = 1.0/3.0, middle = 1.0/3.0, largest = 1.0 }, Orientation.FlatLong, new Material { connectionStrength = 3.35, density = 7.3, energyAbsorption = 7500, name = "Ladium"});
 
-                            foreach (BlockFillMethod blockFillMethod in Enum.GetValues(typeof(BlockFillMethod))) // 6
+                            //foreach (BlockFillMethod blockFillMethod in Enum.GetValues(typeof(BlockFillMethod))) // 6
                             {
-                                BlockFill blockFill = new BlockFill(block, settings, blockFillMethod);
-                                if (!blockFill.isValid) continue;
+                                BlockFill blockFill = new BlockFill(block, settings, BlockFillMethod.HWL);
+                                //if (!blockFill.isValid) continue;
 
                                 var dataRow = output.NewRow();
                                 // Add block data
