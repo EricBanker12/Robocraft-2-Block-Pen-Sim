@@ -249,6 +249,11 @@ namespace BlockPenSimWPF.Data
                             distance += blockDistance;
                             if (weapon.radius > 1.0 && weapon.pellets > 1.0 && distance > weapon.radius)
                                 energy = 0.0;
+
+                            if (weapon.name == "Rail Gun (25m)" && blockCount == 1)
+                            {
+
+                            }
                         }
                         shots++;
                         if (energy > 0.0) break;
@@ -262,48 +267,53 @@ namespace BlockPenSimWPF.Data
                             deadCount = simBlocks.Where(b => b.IsDead).Count();
                             if (deadCount > prevDeadCount && deadCount < simBlocks.Length)
                             {
-                                var collisionImpulse = weapon.impulse / 1000.0; // very rough estimate, needs more testing
-                                var unlerp20 = (collisionImpulse - 1.0) / (20.0 - 1.0);
-                                var collisionDamage = 144.56 * unlerp20 + (1 - unlerp20) * 13.056;
-                                var unlerp60 = (collisionImpulse - 1.0) / (60.0 - 1.0);
-                                var collisionRadius = 25 * unlerp60 + (1 - unlerp60) * 12.5;
-                                for (int i = deadCount; i < simBlocks.Length; i++)
+                                var sizes = new List<double>() { blockFill.block.length, blockFill.block.width, blockFill.block.height };
+                                sizes.Sort();
+                                var collisionImpulse = weapon.impulse * (1 + (sizes[2] - sizes[0])) / 10000.0; // very rough estimate, needs more testing
+                                if (collisionImpulse >= 1.0)
                                 {
-                                    double d; 
-                                    d = blockFill.block.width;
-                                    if (direction != Direction.Side) d /= 2.0;
-                                    if (direction == Direction.Front) d += blockFill.block.length * (i - deadCount);
-                                    if (direction == Direction.Side) d += blockFill.block.width * (i - deadCount);
-                                    if (direction == Direction.Top) d += blockFill.block.height * (i - deadCount);
-                                    if (d < collisionRadius)
+                                    var unlerp20 = (collisionImpulse - 1.0) / (20.0 - 1.0);
+                                    var collisionDamage = 144.56 * unlerp20 + (1 - unlerp20) * 13.056;
+                                    var unlerp60 = (collisionImpulse - 1.0) / (60.0 - 1.0);
+                                    var collisionRadius = 25 * unlerp60 + (1 - unlerp60) * 12.5;
+                                    for (int i = deadCount; i < simBlocks.Length; i++)
                                     {
-                                        var connectionDamage = collisionDamage * Math.Pow((collisionRadius - d) / collisionRadius, 2.5);
-                                        simBlocks[i].hpSide -= connectionDamage;
-                                    }
+                                        double d; 
+                                        d = blockFill.block.width;
+                                        if (direction != Direction.Side) d /= 2.0;
+                                        if (direction == Direction.Front) d += blockFill.block.length * (i - deadCount);
+                                        if (direction == Direction.Side) d += blockFill.block.width * (i - deadCount);
+                                        if (direction == Direction.Top) d += blockFill.block.height * (i - deadCount);
+                                        if (d < collisionRadius)
+                                        {
+                                            var connectionDamage = collisionDamage * Math.Pow((collisionRadius - d) / collisionRadius, 2.5);
+                                            simBlocks[i].hpSide -= connectionDamage;
+                                        }
 
-                                    d = blockFill.block.height;
-                                    if (direction != Direction.Top) d /= 2.0;
-                                    if (direction == Direction.Front) d += blockFill.block.length * (i - deadCount);
-                                    if (direction == Direction.Side) d += blockFill.block.width * (i - deadCount);
-                                    if (direction == Direction.Top) d += blockFill.block.height * (i - deadCount);
-                                    if (d < collisionRadius)
-                                    {
-                                        var connectionDamage = collisionDamage * Math.Pow((collisionRadius - d) / collisionRadius, 2.5);
-                                        simBlocks[i].hpTop -= connectionDamage;
-                                    }
+                                        d = blockFill.block.height;
+                                        if (direction != Direction.Top) d /= 2.0;
+                                        if (direction == Direction.Front) d += blockFill.block.length * (i - deadCount);
+                                        if (direction == Direction.Side) d += blockFill.block.width * (i - deadCount);
+                                        if (direction == Direction.Top) d += blockFill.block.height * (i - deadCount);
+                                        if (d < collisionRadius)
+                                        {
+                                            var connectionDamage = collisionDamage * Math.Pow((collisionRadius - d) / collisionRadius, 2.5);
+                                            simBlocks[i].hpTop -= connectionDamage;
+                                        }
 
-                                    d = blockFill.block.length;
-                                    if (direction != Direction.Front) d /= 2.0;
-                                    if (direction == Direction.Front) d += blockFill.block.length * (i - deadCount);
-                                    if (direction == Direction.Side) d += blockFill.block.width * (i - deadCount);
-                                    if (direction == Direction.Top) d += blockFill.block.height * (i - deadCount);
-                                    if (d < collisionRadius)
-                                    {
-                                        var connectionDamage = collisionDamage * Math.Pow((collisionRadius - d) / collisionRadius, 2.5);
-                                        simBlocks[i].hpFront -= connectionDamage;
+                                        d = blockFill.block.length;
+                                        if (direction != Direction.Front) d /= 2.0;
+                                        if (direction == Direction.Front) d += blockFill.block.length * (i - deadCount);
+                                        if (direction == Direction.Side) d += blockFill.block.width * (i - deadCount);
+                                        if (direction == Direction.Top) d += blockFill.block.height * (i - deadCount);
+                                        if (d < collisionRadius)
+                                        {
+                                            var connectionDamage = collisionDamage * Math.Pow((collisionRadius - d) / collisionRadius, 2.5);
+                                            simBlocks[i].hpFront -= connectionDamage;
+                                        }
                                     }
+                                    deadCount = simBlocks.Where(b => b.IsDead).Count();
                                 }
-                                deadCount = simBlocks.Where(b => b.IsDead).Count();
                             }
                         }
                     }
@@ -381,24 +391,22 @@ namespace BlockPenSimWPF.Data
             var shapes = GetAllShapes();
             var tasks = new List<Task<DataTable>>();
 
-            //foreach (Material material in settings.Materials.Values) // 3
+            foreach (Material material in settings.Materials.Values) // 3
             {
-                //foreach (Orientation orientation in Enum.GetValues(typeof(Orientation))) // 6
+                foreach (Orientation orientation in Enum.GetValues(typeof(Orientation))) // 6
                 {
                     // 18 threads
-                    var blockFillFunc = DataTable () =>
-                    //tasks.Add(Task.Run(DataTable () =>
+                    tasks.Add(Task.Run(DataTable () =>
                     {
                         var output = schema.Clone();
-                        //foreach (Shape shape in shapes) // 219
+                        foreach (Shape shape in shapes) // 219
                         {
-                            //Block block = new Block(shape, orientation, material);
-                            Block block = new Block(new Shape { smallest = 1.0/3.0, middle = 1.0/3.0, largest = 1.0 }, Orientation.FlatLong, new Material { connectionStrength = 3.35, density = 7.3, energyAbsorption = 7500, name = "Ladium"});
+                            Block block = new Block(shape, orientation, material);
 
-                            //foreach (BlockFillMethod blockFillMethod in Enum.GetValues(typeof(BlockFillMethod))) // 6
+                            foreach (BlockFillMethod blockFillMethod in Enum.GetValues(typeof(BlockFillMethod))) // 6
                             {
-                                BlockFill blockFill = new BlockFill(block, settings, BlockFillMethod.HWL);
-                                //if (!blockFill.isValid) continue;
+                                BlockFill blockFill = new BlockFill(block, settings, blockFillMethod);
+                                if (!blockFill.isValid) continue;
 
                                 var dataRow = output.NewRow();
                                 // Add block data
@@ -450,22 +458,19 @@ namespace BlockPenSimWPF.Data
                             }
                         }
                         return output;
-                    //}));
-                    };
-                    var result = blockFillFunc();
-                    schema.Merge(result);
+                    }));
                 }
             }
 
-            //await Task.WhenAll(tasks);
+            await Task.WhenAll(tasks);
 
             using (schema)
             {
-                //foreach (var task in tasks)
-                //{
-                //    schema.Merge(task.Result);
-                //    task.Result.Dispose();
-                //}
+                foreach (var task in tasks)
+                {
+                    schema.Merge(task.Result);
+                    task.Result.Dispose();
+                }
 
                 if (schema.Rows.Count == 0)
                     return schema;

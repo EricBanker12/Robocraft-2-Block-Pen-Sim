@@ -58,7 +58,7 @@ namespace BlockPenSimWPF.Properties {
             "un (Top)\": false,\r\n    \"Score\": true,\r\n    \"Score / CPU\": true,\r\n    \"Score / We" +
             "ight\": true\r\n  },\r\n  \"RowFilters\": {},\r\n  \"ColumnsSort\": {\r\n    \"Score\": 1\r\n  }," +
             "\r\n  \"Cpu\": {\r\n    \"Min\": 1,\r\n    \"Max\": 100\r\n  },\r\n  \"Weight\": {\r\n    \"Min\": 0,\r" +
-            "\n    \"Max\": 2000\r\n  },\r\n  \"Length\": {\r\n    \"Min\": 4,\r\n    \"Max\": 9\r\n  },\r\n  \"Wid" +
+            "\n    \"Max\": 6000\r\n  },\r\n  \"Length\": {\r\n    \"Min\": 4,\r\n    \"Max\": 9\r\n  },\r\n  \"Wid" +
             "th\": {\r\n    \"Min\": 9,\r\n    \"Max\": 9\r\n  },\r\n  \"Height\": {\r\n    \"Min\": 9,\r\n    \"Ma" +
             "x\": 9\r\n  },\r\n  \"WeaponSettings\": {\r\n    \"LaserBlaster\": {\r\n      \"WeaponCount\": " +
             "6,\r\n      \"WeaponRatio\": 3,\r\n      \"WeaponFrontRatio\": 3,\r\n      \"WeaponSideRati" +

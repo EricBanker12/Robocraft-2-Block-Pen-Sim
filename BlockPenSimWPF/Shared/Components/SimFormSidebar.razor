@@ -227,6 +227,7 @@
     protected override async Task OnInitializedAsync()
     {
         simForm.Reset(State);
+        State.OnResetPreferences.Add(() => { simForm.Reset(State); });
 
         if (!State.ShowSideBar)
         {

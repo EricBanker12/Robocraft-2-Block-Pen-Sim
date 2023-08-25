@@ -62,7 +62,7 @@
   },
   "Weight": {
     "Min": 0,
-    "Max": 2000
+    "Max": 6000
   },
   "Length": {
     "Min": 4,
