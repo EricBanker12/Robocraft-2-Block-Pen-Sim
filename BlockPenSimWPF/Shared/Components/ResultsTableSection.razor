@@ -84,6 +84,7 @@
                         {
                             double value = (double)Row[Column.ColumnName];
                             double percentMax = value / ColumnsMaxValue[Column.ColumnName];
+                            if (Double.IsNaN(percentMax)) percentMax = 0;
 
                             <td @key=@($"{Column.ColumnName} {Row.GetHashCode()}") class="position-relative">
                                 <div class="position-absolute top-0 start-0 end-0 pe-none" style="bottom: -1px; background-color: rgb(0,255,0); opacity: @(Lerp(0.0, 0.25, percentMax).ToString());"></div>
@@ -428,7 +429,14 @@
     /// <param name="x"></param>
     /// <param name="s"></param>
     /// <returns></returns>
-    private double Lerp(double y, double x, double s) => x * s + y * (1 - s);
+    private double Lerp(double y, double x, double s) { s = Saturate(s); return x * s + y * (1.0 - s); }
+
+    /// <summary>
+    /// Clamps a number between 0 and 1.
+    /// </summary>
+    /// <param name="s"></param>
+    /// <returns></returns>
+    private double Saturate(double s) => Math.Max(Math.Min(1.0, s), 0);
 
     /// <summary>
     /// Converts datatable to csv, strictly following RFC 4180 definition. https://datatracker.ietf.org/doc/html/rfc4180

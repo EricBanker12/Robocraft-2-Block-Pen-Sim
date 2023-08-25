@@ -11,6 +11,8 @@ namespace BlockPenSimWPF.Shared.Models
     {
         private Dictionary<string, List<string>> errorMessages = new();
 
+        private IndexStore indexStore;
+
         private MinMax cpu;
         public double CpuMin
         {
@@ -126,22 +128,27 @@ namespace BlockPenSimWPF.Shared.Models
 
                 if (fieldName == nameof(WeaponCount))
                 {
+                    if (!WeaponCount.ContainsKey(weaponKey) && indexStore.WeaponSettings.ContainsKey(weaponKey)) WeaponCount[weaponKey] = indexStore.WeaponSettings[weaponKey].WeaponCount;
                     if (WeaponCount[weaponKey] < 1) errorMessages[errorKey].Add("Count should not be less than 1.");
                 }
                 else if (fieldName == nameof(WeaponRatio))
                 {
+                    if (!WeaponRatio.ContainsKey(weaponKey) && indexStore.WeaponSettings.ContainsKey(weaponKey)) WeaponRatio[weaponKey] = indexStore.WeaponSettings[weaponKey].WeaponRatio;
                     if (WeaponRatio[weaponKey] < 0) errorMessages[errorKey].Add("Ratio should not be less than 0.");
                 }
                 else if (fieldName == nameof(WeaponFrontRatio))
                 {
+                    if (!WeaponFrontRatio.ContainsKey(weaponKey) && indexStore.WeaponSettings.ContainsKey(weaponKey)) WeaponFrontRatio[weaponKey] = indexStore.WeaponSettings[weaponKey].WeaponFrontRatio;
                     if (WeaponFrontRatio[weaponKey] < 0) errorMessages[errorKey].Add("Front Ratio should not be less than 0.");
                 }
                 else if (fieldName == nameof(WeaponSideRatio))
                 {
+                    if (!WeaponSideRatio.ContainsKey(weaponKey) && indexStore.WeaponSettings.ContainsKey(weaponKey)) WeaponSideRatio[weaponKey] = indexStore.WeaponSettings[weaponKey].WeaponSideRatio;
                     if (WeaponSideRatio[weaponKey] < 0) errorMessages[errorKey].Add("Side Ratio should not be less than 0.");
                 }
                 else if (fieldName == nameof(WeaponTopRatio))
                 {
+                    if (!WeaponTopRatio.ContainsKey(weaponKey) && indexStore.WeaponSettings.ContainsKey(weaponKey)) WeaponTopRatio[weaponKey] = indexStore.WeaponSettings[weaponKey].WeaponTopRatio;
                     if (WeaponTopRatio[weaponKey] < 0) errorMessages[errorKey].Add("Top Ratio should not be less than 0.");
                 }
 
@@ -257,6 +264,7 @@ namespace BlockPenSimWPF.Shared.Models
 
         public void Reset(IndexStore state)
         {
+            this.indexStore = state;
             this.CpuMin = state.Cpu.Min;
             this.CpuMax = state.Cpu.Max;
             this.WeightMin = state.Weight.Min;
@@ -294,6 +302,8 @@ namespace BlockPenSimWPF.Shared.Models
                     WeaponTopRatio = this.WeaponTopRatio[item.Key],
                 };
             }
+
+            this.indexStore = state;
         }
     }
 }

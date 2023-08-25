@@ -24,6 +24,7 @@
         public double radius;
         public double energy;
         public double cooldown;
+        public double impulse;
     }
     public struct MinMax
     {

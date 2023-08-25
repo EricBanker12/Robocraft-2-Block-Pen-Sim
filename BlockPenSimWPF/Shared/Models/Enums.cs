@@ -40,4 +40,10 @@
         Light,
         Dark,
     }
+
+    public enum SimulationFormTab
+    {
+        Blocks,
+        Weapons,
+    }
 }

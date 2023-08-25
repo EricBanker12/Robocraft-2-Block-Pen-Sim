@@ -49,5 +49,10 @@ namespace BlockPenSimWPF.Data
                 return default;
             }
         }
+
+        public static void Reset(string key)
+        {
+            Properties.Settings.Default[key] = Properties.Settings.Default.Properties[key].DefaultValue;
+        }
     }
 }

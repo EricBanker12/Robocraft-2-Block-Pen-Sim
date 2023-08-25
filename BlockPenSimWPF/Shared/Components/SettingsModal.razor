@@ -46,6 +46,12 @@
                                 <span>Auto-Update Weapons and Materials On Startup</span>
                             </label>
                         </div>
+                        <div class="form-check">
+                            <input type="checkbox" id="ApplyKilledBlockCollisionDamageCheckbox" class="form-check-input" @bind=settingsForm.ApplyKilledBlockCollisionDamage />
+                            <label for="ApplyKilledBlockCollisionDamageCheckbox" class="form-label">
+                                <span>(Experimental) Apply Killed Block Collision Damage</span>
+                            </label>
+                        </div>
                     </div>
                     <hr />
                     <h2 class="h5">Weapons</h2>
@@ -239,7 +245,28 @@
                             </div>
                         </div>
                         <div class="row">
-                            <div class="col-lg-6 d-none d-lg-block"></div>
+                            <div class="col-lg-6">
+                                <div class="input-group my-1">
+                                    <label for="WeaponImpulseInput" class="input-group-text" style="width: 13ch;">Impulse</label>
+                                    <input type="number"
+                                        id="WeaponImpulseInput"
+                                        class="form-control @IsValidClass(nameof(settingsForm.WeaponImpulse))"
+                                        @bind-value=settingsForm.WeaponImpulse
+                                        min="0"
+                                        step="any"
+                                        required
+                                        disabled="@IsWeaponNone()" />
+                                    <label for="WeaponImpulseInput" class="input-group-text" style="width: 6.5ch;">N*s</label>
+                                    <div class="invalid-feedback">
+                                        <ul class="mb-0">
+                                            @foreach (var message in settingsForm.GetErrorMessages(nameof(settingsForm.WeaponImpulse)))
+                                            {
+                                                <li>@message</li>
+                                            }
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
                             <div class="col-lg-6">
                                 <button type="button"
                                     class="btn btn-danger w-100 my-1"
@@ -405,6 +432,7 @@
                     </div>
                 </div>
                 <div class="modal-footer">
+                    <button type="button" @onclick="OnClick_Reset" class="btn btn-danger me-auto">Reset to Defaults</button>
                     <button type="button" @onclick="OnClick_Cancel" class="btn btn-secondary">Cancel</button>
                     <button type="submit" class="btn btn-primary">Save Changes</button>
                 </div>
@@ -437,6 +465,7 @@
             State.hideZeroRatioWeaponColumns = settingsForm.HideZeroRatioWeaponColumns;
             State.hideZeroRatioDirectionColumns = settingsForm.HideZeroRatioDirectionColumns;
             State.updateDefaultBlockdataOverInternet = settingsForm.UpdateDefaultBlockdataOverInternet;
+            State.applyKilledBlockCollisionDamage = settingsForm.ApplyKilledBlockCollisionDamage;
 
             // edit weapoon
             if (settingsForm.WeaponEdit < settingsForm.Weapons.Count)
@@ -574,6 +603,27 @@
     private void OnClick_DeleteMaterial()
     {
         settingsForm.DeleteMaterial();
+    }
+
+    private async void OnClick_Reset()
+    {
+        State.ResetPreferences();
+
+        var currentTheme = ThemeData.GetCurrentTheme();
+        ThemeData.ThemeOverride = Theme.Default;
+        var newTheme = ThemeData.GetCurrentTheme();
+        if (currentTheme != newTheme)
+        {
+            State.IsDarkMode = newTheme == Theme.Dark;
+            await ThemeData.OverridePreferredTheme(jsRuntime);
+        }
+
+        State.SimData = await BlockPenSimulator.RunAsync(State);
+
+        settingsForm.Reset(State);
+        State.ShowSettings = false;
+
+        State.HasChanged();
     }
 
     private void OnClick_Cancel()

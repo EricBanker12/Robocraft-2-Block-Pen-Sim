@@ -49,6 +49,9 @@ namespace BlockPenSimWPF.Shared.State
         [JsonIgnore]
         public bool IsDarkMode;
 
+        [JsonIgnore]
+        public List<Action> OnResetPreferences = new();
+
         // ------------------------------------------------------------------------------------------------------------------------
         // settings
         // ------------------------------------------------------------------------------------------------------------------------
@@ -56,6 +59,7 @@ namespace BlockPenSimWPF.Shared.State
         public bool hideZeroRatioWeaponColumns = false;
         public bool hideZeroRatioDirectionColumns = false;
         public bool updateDefaultBlockdataOverInternet = false;
+        public bool applyKilledBlockCollisionDamage = false;
 
         // ------------------------------------------------------------------------------------------------------------------------
         // Results view
@@ -97,6 +101,16 @@ namespace BlockPenSimWPF.Shared.State
             LocalSettings.SetValue(storageKey, this);
         }
 
+        public void ResetPreferences()
+        {
+            LocalSettings.Reset(storageKey);
+            LoadPreferences();
+            foreach(var action in OnResetPreferences)
+            {
+                action();
+            }
+        }
+
         public void LoadPreferences()
         {
             try
@@ -111,6 +125,7 @@ namespace BlockPenSimWPF.Shared.State
                     this.hideZeroRatioWeaponColumns = settings.hideZeroRatioWeaponColumns;
                     this.hideZeroRatioDirectionColumns = settings.hideZeroRatioDirectionColumns;
                     this.updateDefaultBlockdataOverInternet = settings.updateDefaultBlockdataOverInternet;
+                    this.applyKilledBlockCollisionDamage = settings.applyKilledBlockCollisionDamage;
 
                     this.HighlightValues = settings.HighlightValues;
                     this.RowFilters = settings.RowFilters;

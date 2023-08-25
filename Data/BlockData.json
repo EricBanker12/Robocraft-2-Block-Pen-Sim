@@ -7,34 +7,58 @@
       "pellets": 1.0,
       "radius": 0.3,
       "energy": 2000.0,
-      "cooldown": 0.6
+      "cooldown": 0.6,
+      "impulse": 2750
     },
     "PlasmaCannon": {
       "name": "Plasma Cannon",
       "cpu": 60,
       "damage": 500.0,
-      "pellets": 10.0,
+      "pellets": 9.0,
       "radius": 12.5,
       "energy": 1000.0,
-      "cooldown": 2.0
+      "cooldown": 2.0,
+      "impulse": 2750
     },
     "ArcDischarger": {
       "name": "Arc Discharger",
       "cpu": 40,
       "damage": 15000.0,
-      "pellets": 20.0,
+      "pellets": 11.0,
       "radius": 30.0,
       "energy": 120000.0,
-      "cooldown": 6.0
+      "cooldown": 6.0,
+      "impulse": 5000
     },
-    "RailGun": {
-      "name": "Rail Gun",
+    "RailGunMax": {
+      "name": "Rail Gun (70m)",
       "cpu": 120,
-      "damage": 950.0,
+      "damage": 810.0,
       "pellets": 1.0,
       "radius": 3.0,
-      "energy": 70000.0,
-      "cooldown": 4.0
+      "energy": 59500.0,
+      "cooldown": 4.0,
+      "impulse": 2750
+    },
+    "RailGun": {
+      "name": "Rail Gun (47.5m)",
+      "cpu": 120,
+      "damage": 480.0,
+      "pellets": 1.0,
+      "radius": 1.5,
+      "energy": 34750.0,
+      "cooldown": 4.0,
+      "impulse": 2750
+    },
+    "RailGunMin": {
+      "name": "Rail Gun (25m)",
+      "cpu": 120,
+      "damage": 150.0,
+      "pellets": 1.0,
+      "radius": 0.3,
+      "energy": 10000.0,
+      "cooldown": 4.0,
+      "impulse": 2750
     }
   },
   "Materials": {

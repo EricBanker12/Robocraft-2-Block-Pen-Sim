@@ -1,6 +1,9 @@
 ﻿using BlockPenSimWPF.Shared.Models;
 using BlockPenSimWPF.Shared.State;
+using Microsoft.VisualBasic;
+using System.Collections;
 using System.Data;
+using System.Threading.Tasks;
 
 namespace BlockPenSimWPF.Data
 {
@@ -33,10 +36,14 @@ namespace BlockPenSimWPF.Data
         /// <param name="blockFill"></param>
         /// <param name="weapons"></param>
         /// <param name="dataRow"></param>
-        private static void SimulateShots(BlockFill blockFill, IEnumerable<Weapon> weapons, DataRow dataRow)
+        private static void SimulateShots(BlockFill blockFill, IEnumerable<Weapon> weapons, DataRow dataRow, bool applyCollision)
         {
             uint blockCount;
             double blockDistance;
+            double blockFaceX;
+            double blockFaceY;
+            double blockFillX;
+            double blockFillY;
             double blockArea;
             double blockEnergyAbs;
             foreach (var direction in Enum.GetValues<Direction>())
@@ -47,18 +54,30 @@ namespace BlockPenSimWPF.Data
                     case Direction.Front:
                         blockCount = (uint)blockFill.lengthCount;
                         blockDistance = blockFill.block.length;
+                        blockFaceX = blockFill.block.width;
+                        blockFaceY = blockFill.block.height;
+                        blockFillX = blockFill.Width;
+                        blockFillY = blockFill.Height;
                         blockArea = blockFill.block.AreaFront;
                         blockEnergyAbs = blockFill.block.EnergyAbsFront;
                         break;
                     case Direction.Side:
                         blockCount = (uint)blockFill.widthCount;
                         blockDistance = blockFill.block.width;
+                        blockFaceX = blockFill.block.length;
+                        blockFaceY = blockFill.block.height;
+                        blockFillX = blockFill.Length;
+                        blockFillY = blockFill.Height;
                         blockArea = blockFill.block.AreaSide;
                         blockEnergyAbs = blockFill.block.EnergyAbsSide;
                         break;
                     case Direction.Top:
                         blockCount = (uint)blockFill.heightCount;
                         blockDistance = blockFill.block.height;
+                        blockFaceX = blockFill.block.width;
+                        blockFaceY = blockFill.block.length;
+                        blockFillX = blockFill.Width;
+                        blockFillY = blockFill.Length;
                         blockArea = blockFill.block.AreaTop;
                         blockEnergyAbs = blockFill.block.EnergyAbsTop;
                         break;
@@ -71,19 +90,89 @@ namespace BlockPenSimWPF.Data
                     for (int i = 0; i < blockCount; i++)
                         simBlocks[i] = new SimBlock(blockFill.block);
 
-                    var damage = weapon.damage / weapon.pellets;
-                    if (weapon.radius > 1.0 && weapon.pellets > 1.0)
-                        damage *= 1 + (weapon.pellets - 1) * blockArea / weapon.radius / weapon.radius / Math.PI * 4.0; // pellet spread is roughly 1/2 the radius listed in tooltip
 
                     // simulate and count shots to penetrate
                     int shots = 0;
-                    while (true) // blockCount
+                    int deadCount = 0;
+                    while (deadCount <= blockCount) // blockCount, up to 189
                     {
                         var energy = weapon.energy;
                         double distance = 0.0;
-                        for (int i = 0; i < blockCount && energy > 0.0; i++) // blockCount
+                        for (int i = deadCount; i < blockCount && energy > 0.0; i++) // blockCount, up to 189
                         {
                             if (simBlocks[i].IsDead) continue;
+
+                            var damage = weapon.damage / weapon.pellets;
+
+                            // handle shrapnel for splash damage weapons
+                            if (weapon.radius > 1.0 && weapon.pellets > 1.0)
+                            {
+                                double d = blockDistance * (i - deadCount) + weapon.radius / 2.0;
+                                double x = blockFaceX / 2.0;
+                                double y = blockFaceY / 2.0;
+
+                                var conePellets = (weapon.pellets - 1.0) / 2.0;
+
+                                // too much work to do actual calculation, so to this is a decent estimate instead
+                                // for each shrapnel angle, compare length of inner to outer trajectory to length of block
+                                double innerHits = 0.0;
+                                double inner = d * Math.Tan(15.0 * (1.0 - 0.3) * Math.PI / 180.0);
+                                double outer = d * Math.Tan(15.0 * (1.0 + 0.3) * Math.PI / 180.0);
+                                
+                                double innerOffset = Math.PI / conePellets;
+                                for (int j = 0; j < conePellets; j++)
+                                {
+                                    var angle = innerOffset + j * 2.0 * Math.PI / conePellets;
+                                    var xInner = Math.Abs(Math.Cos(angle) * inner);
+                                    var yInner = Math.Abs(Math.Sin(angle) * inner);
+                                    var xOuter = Math.Abs(Math.Cos(angle) * outer);
+                                    var yOuter = Math.Abs(Math.Sin(angle) * outer);
+
+                                    if (x > xOuter && y > yOuter) {
+                                        innerHits += 1.0;
+                                        continue;
+                                    }
+
+                                    if (x > xInner && y > yInner)
+                                    {
+                                        var dio = Math.Sqrt(Math.Pow(xOuter - xInner, 2) + Math.Pow(yOuter - yInner, 2));
+                                        var dxy = Math.Sqrt(Math.Pow(Math.Min(xOuter, x) - xInner, 2) + Math.Pow(Math.Min(yOuter, y) - yInner, 2));
+                                        innerHits += dxy / dio;
+                                        continue;
+                                    }
+                                }
+
+                                double outerHits = 0.0;
+                                inner = d * Math.Tan(30.0 * (1.0 - 0.3) * Math.PI / 180.0);
+                                outer = d * Math.Tan(30.0 * (1.0 + 0.3) * Math.PI / 180.0);
+
+                                for (int j = 0; j < conePellets; j++)
+                                {
+                                    var angle = j * 2.0 * Math.PI / conePellets;
+                                    var xInner = Math.Abs(Math.Cos(angle) * inner);
+                                    var yInner = Math.Abs(Math.Sin(angle) * inner);
+                                    var xOuter = Math.Abs(Math.Cos(angle) * outer);
+                                    var yOuter = Math.Abs(Math.Sin(angle) * outer);
+
+                                    if (x > xOuter && y > yOuter)
+                                    {
+                                        outerHits += 1.0;
+                                        continue;
+                                    }
+
+
+                                    if (x > xInner && y > yInner)
+                                    {
+                                        var dio = Math.Sqrt(Math.Pow(xOuter - xInner, 2) + Math.Pow(yOuter - yInner, 2));
+                                        var dxy = Math.Sqrt(Math.Pow(Math.Min(xOuter, x) - xInner, 2) + Math.Pow(Math.Min(yOuter, y) - yInner, 2));
+                                        outerHits += dxy / dio;
+                                        continue;
+                                    }
+                                }
+
+                                damage *= 1.0 + innerHits + outerHits;
+                            }
+                            
                             // damage all the face connections for the current block
                             simBlocks[i].hpFront -= damage * energy / weapon.energy;
                             simBlocks[i].hpSide -= damage * energy / weapon.energy;
@@ -98,174 +187,135 @@ namespace BlockPenSimWPF.Data
                                     simBlocks[i - 1].hpSide -= damage * energy / weapon.energy;
                                 if (direction == Direction.Top)
                                     simBlocks[i - 1].hpTop -= damage * energy / weapon.energy;
+
+                                // for rail gun, damage adjacent block connections for previous block, if they exist.
+                                // this is not accurate, energy should be higher, but the high damage and high energy profile for rail minimizes the impact of this shortcut
+                                if (weapon.pellets == 1.0 && weapon.radius >= 1.0/3.0)
+                                {
+                                    if (direction != Direction.Front && blockFill.block.length <= weapon.radius * 2.0)
+                                        simBlocks[i - 1].hpFront -= damage * energy / weapon.energy;
+                                    if (direction != Direction.Side && blockFill.block.width <= weapon.radius * 2.0)
+                                        simBlocks[i - 1].hpSide -= damage * energy / weapon.energy;
+                                    if (direction != Direction.Top && blockFill.block.height <= weapon.radius * 2.0)
+                                        simBlocks[i - 1].hpTop -= damage * energy / weapon.energy;
+                                }
                             }
 
-                            var energyLoss = blockEnergyAbs;
+                            energy -= blockEnergyAbs;
 
-                            // for rail gun, damage adjacent block connections, if they exist.
-                            if (weapon.pellets == 1.0 && weapon.radius > 1.0)
+                            // for rail gun, reduce energy by adjacent blocks
+                            if (weapon.pellets == 1.0 && weapon.radius >= 1.0/3.0)
                             {
-                                if (direction == Direction.Front)
+                                double penBlockCount = 1.0;
+                                double penBlockDistance = blockDistance;
+
+                                // get blocks touching hemisphere or cylinder
+                                for (int j = 1; j <= i + 1; j++)
                                 {
-                                    if (blockFill.block.width < blockFill.block.height)
+                                    // get circle radius at each block distance such that block plane insersects sphere
+                                    double r = weapon.radius;
+                                    if (j < weapon.radius / blockDistance)
                                     {
-                                        if (blockFill.block.width < weapon.radius * 2.0 && blockFill.widthCount > 1)
-                                        {
-                                            energyLoss += blockEnergyAbs;
-                                            if (energy - energyLoss > 0) simBlocks[i].hpSide -= damage * (energy - energyLoss) / weapon.energy;
-                                            energyLoss += blockEnergyAbs;
-                                        }
-
-                                        if (blockFill.block.height < weapon.radius * 2.0 && blockFill.heightCount > 1)
-                                        {
-                                            energyLoss += blockEnergyAbs;
-                                            if (energy - energyLoss > 0) simBlocks[i].hpTop -= damage * (energy - energyLoss) / weapon.energy;
-                                            energyLoss += blockEnergyAbs;
-                                        }
-                                    }
-                                    else
-                                    {
-                                        if (blockFill.block.height < weapon.radius * 2.0 && blockFill.heightCount > 1)
-                                        {
-                                            energyLoss += blockEnergyAbs;
-                                            if (energy - energyLoss > 0) simBlocks[i].hpTop -= damage * (energy - energyLoss) / weapon.energy;
-                                            energyLoss += blockEnergyAbs;
-                                        }
-
-                                        if (blockFill.block.width < weapon.radius * 2.0 && blockFill.widthCount > 1)
-                                        {
-                                            energyLoss += blockEnergyAbs;
-                                            if (energy - energyLoss > 0) simBlocks[i].hpSide -= damage * (energy - energyLoss) / weapon.energy;
-                                            energyLoss += blockEnergyAbs;
-                                        }
+                                        double d = weapon.radius - j * blockDistance;
+                                        r = weapon.radius * Math.Sin(Math.Acos(d / weapon.radius));
                                     }
 
-                                    var blockAreaCount = 0;
-                                    var r2 = weapon.radius * weapon.radius;
-                                    for (double x = -blockFill.Width * 0.5; x <= blockFill.Width * 0.5 - blockFill.block.width; x += blockFill.block.width)
+                                    // count touching blocks
+                                    var r2 = r * r;
+                                    for (double x = -blockFillX * 0.5; x <= blockFillX * 0.5 - blockFaceX; x += blockFaceX) // up to 189, could be reduced by restricting to min of width and radius
                                     {
-                                        var xn = Math.Max(x, Math.Min(0, x + blockFill.block.width));
+                                        var xn = Math.Max(x, Math.Min(0, x + blockFaceX));
                                         var x2 = xn * xn;
-                                        for (double y = -blockFill.Height * 0.5; y <= blockFill.Height * 0.5 - blockFill.block.height; y += blockFill.block.height)
+                                        for (double y = -blockFillY * 0.5; y <= blockFillY * 0.5 - blockFaceY; y += blockFaceY) // up to 189, could be reduced by restricting to min of width and radius
                                         {
-                                            var yn = Math.Max(y, Math.Min(0, y + blockFill.block.height));
+                                            var yn = Math.Max(y, Math.Min(0, y + blockFaceY));
                                             var y2 = yn * yn;
-                                            if (x2 + y2 <= r2) blockAreaCount++;
+                                            if (x2 + y2 <= r2)
+                                            {
+                                                penBlockCount++;
+                                                // get pen distance from radius
+                                                var offset = Math.Sqrt(x2 + y2);
+                                                var dOffset = weapon.radius * 2.0 * (1.0 - Math.Cos(Math.Asin(offset / weapon.radius)));
+                                                penBlockDistance += Math.Max(0.0, blockDistance - dOffset);
+                                            }
                                         }
                                     }
-                                    energyLoss = blockEnergyAbs * blockAreaCount;
                                 }
-                                if (direction == Direction.Side)
-                                {
-                                    if (blockFill.block.length < blockFill.block.height)
-                                    {
-                                        if (blockFill.block.length < weapon.radius * 2.0 && blockFill.lengthCount > 1)
-                                        {
-                                            energyLoss += blockEnergyAbs;
-                                            if (energy - energyLoss > 0) simBlocks[i].hpFront -= damage * (energy - energyLoss) / weapon.energy;
-                                            energyLoss += blockEnergyAbs;
-                                        }
 
-                                        if (blockFill.block.height < weapon.radius * 2.0 && blockFill.heightCount > 1)
-                                        {
-                                            energyLoss += blockEnergyAbs;
-                                            if (energy - energyLoss > 0) simBlocks[i].hpTop -= damage * (energy - energyLoss) / weapon.energy;
-                                            energyLoss += blockEnergyAbs;
-                                        }
-                                    }
-                                    else
-                                    {
-                                        if (blockFill.block.height < weapon.radius * 2.0 && blockFill.heightCount > 1)
-                                        {
-                                            energyLoss += blockEnergyAbs;
-                                            if (energy - energyLoss > 0) simBlocks[i].hpTop -= damage * (energy - energyLoss) / weapon.energy;
-                                            energyLoss += blockEnergyAbs;
-                                        }
-
-                                        if (blockFill.block.length < weapon.radius * 2.0 && blockFill.lengthCount > 1)
-                                        {
-                                            energyLoss += blockEnergyAbs;
-                                            if (energy - energyLoss > 0) simBlocks[i].hpFront -= damage * (energy - energyLoss) / weapon.energy;
-                                            energyLoss += blockEnergyAbs;
-                                        }
-                                    }
-
-                                    var blockAreaCount = 0;
-                                    var r2 = weapon.radius * weapon.radius;
-                                    for (double x = -blockFill.Height * 0.5; x <= blockFill.Height * 0.5 - blockFill.block.height; x += blockFill.block.height)
-                                    {
-                                        var xn = Math.Max(x, Math.Min(0, x + blockFill.block.height));
-                                        var x2 = xn * xn;
-                                        for (double y = -blockFill.Length * 0.5; y <= blockFill.Length * 0.5 - blockFill.block.length; y += blockFill.block.length)
-                                        {
-                                            var yn = Math.Max(y, Math.Min(0, y + blockFill.block.length));
-                                            var y2 = yn * yn;
-                                            if (x2 + y2 <= r2) blockAreaCount++;
-                                        }
-                                    }
-                                    energyLoss = blockEnergyAbs * blockAreaCount;
-                                }
-                                if (direction == Direction.Top)
-                                {
-                                    if (blockFill.block.width < blockFill.block.length)
-                                    {
-                                        if (blockFill.block.width < weapon.radius * 2.0 && blockFill.widthCount > 1)
-                                        {
-                                            energyLoss += blockEnergyAbs;
-                                            if (energy - energyLoss > 0) simBlocks[i].hpSide -= damage * (energy - energyLoss) / weapon.energy;
-                                            energyLoss += blockEnergyAbs;
-                                        }
-
-                                        if (blockFill.block.length < weapon.radius * 2.0 && blockFill.lengthCount > 1)
-                                        {
-                                            energyLoss += blockEnergyAbs;
-                                            if (energy - energyLoss > 0) simBlocks[i].hpFront -= damage * (energy - energyLoss) / weapon.energy;
-                                            energyLoss += blockEnergyAbs;
-                                        }
-                                    }
-                                    else
-                                    {
-                                        if (blockFill.block.length < weapon.radius * 2.0 && blockFill.lengthCount > 1)
-                                        {
-                                            energyLoss += blockEnergyAbs;
-                                            if (energy - energyLoss > 0) simBlocks[i].hpFront -= damage * (energy - energyLoss) / weapon.energy;
-                                            energyLoss += blockEnergyAbs;
-                                        }
-
-                                        if (blockFill.block.width < weapon.radius * 2.0 && blockFill.widthCount > 1)
-                                        {
-                                            energyLoss += blockEnergyAbs;
-                                            if (energy - energyLoss > 0) simBlocks[i].hpSide -= damage * (energy - energyLoss) / weapon.energy;
-                                            energyLoss += blockEnergyAbs;
-                                        }
-                                    }
-
-                                    var blockAreaCount = 0;
-                                    var r2 = weapon.radius * weapon.radius;
-                                    for (double x = -blockFill.Width * 0.5; x <= blockFill.Width * 0.5 - blockFill.block.width; x += blockFill.block.width)
-                                    {
-                                        var xn = Math.Max(x, Math.Min(0, x + blockFill.block.width));
-                                        var x2 = xn * xn;
-                                        for (double y = -blockFill.Length * 0.5; y <= blockFill.Length * 0.5 - blockFill.block.length; y += blockFill.block.length)
-                                        {
-                                            var yn = Math.Max(y, Math.Min(0, y + blockFill.block.length));
-                                            var y2 = yn * yn;
-                                            if (x2 + y2 <= r2) blockAreaCount++;
-                                        }
-                                    }
-                                    energyLoss = blockEnergyAbs * blockAreaCount;
-                                }
+                                energy = weapon.energy * (1.0 + shots) - penBlockDistance * blockFill.block.material.energyAbsorption / 5.0;
                             }
-
-                            energy -= energyLoss;
-
+                            
                             // limit arc discharger distance
                             distance += blockDistance;
                             if (weapon.radius > 1.0 && weapon.pellets > 1.0 && distance > weapon.radius)
                                 energy = 0.0;
+
+                            if (weapon.name == "Rail Gun (25m)" && blockCount == 1)
+                            {
+
+                            }
                         }
                         shots++;
                         if (energy > 0.0) break;
+                        if (!applyCollision)
+                        {
+                            deadCount = simBlocks.Where(b => b.IsDead).Count();
+                        }
+                        else
+                        {
+                            var prevDeadCount = deadCount;
+                            deadCount = simBlocks.Where(b => b.IsDead).Count();
+                            if (deadCount > prevDeadCount && deadCount < simBlocks.Length)
+                            {
+                                var sizes = new List<double>() { blockFill.block.length, blockFill.block.width, blockFill.block.height };
+                                sizes.Sort();
+                                var collisionImpulse = weapon.impulse * (1 + (sizes[2] - sizes[0])) / 10000.0; // very rough estimate, needs more testing
+                                if (collisionImpulse >= 1.0)
+                                {
+                                    var unlerp20 = (collisionImpulse - 1.0) / (20.0 - 1.0);
+                                    var collisionDamage = 144.56 * unlerp20 + (1 - unlerp20) * 13.056;
+                                    var unlerp60 = (collisionImpulse - 1.0) / (60.0 - 1.0);
+                                    var collisionRadius = 25 * unlerp60 + (1 - unlerp60) * 12.5;
+                                    for (int i = deadCount; i < simBlocks.Length; i++)
+                                    {
+                                        double d; 
+                                        d = blockFill.block.width;
+                                        if (direction != Direction.Side) d /= 2.0;
+                                        if (direction == Direction.Front) d += blockFill.block.length * (i - deadCount);
+                                        if (direction == Direction.Side) d += blockFill.block.width * (i - deadCount);
+                                        if (direction == Direction.Top) d += blockFill.block.height * (i - deadCount);
+                                        if (d < collisionRadius)
+                                        {
+                                            var connectionDamage = collisionDamage * Math.Pow((collisionRadius - d) / collisionRadius, 2.5);
+                                            simBlocks[i].hpSide -= connectionDamage;
+                                        }
+
+                                        d = blockFill.block.height;
+                                        if (direction != Direction.Top) d /= 2.0;
+                                        if (direction == Direction.Front) d += blockFill.block.length * (i - deadCount);
+                                        if (direction == Direction.Side) d += blockFill.block.width * (i - deadCount);
+                                        if (direction == Direction.Top) d += blockFill.block.height * (i - deadCount);
+                                        if (d < collisionRadius)
+                                        {
+                                            var connectionDamage = collisionDamage * Math.Pow((collisionRadius - d) / collisionRadius, 2.5);
+                                            simBlocks[i].hpTop -= connectionDamage;
+                                        }
+
+                                        d = blockFill.block.length;
+                                        if (direction != Direction.Front) d /= 2.0;
+                                        if (direction == Direction.Front) d += blockFill.block.length * (i - deadCount);
+                                        if (direction == Direction.Side) d += blockFill.block.width * (i - deadCount);
+                                        if (direction == Direction.Top) d += blockFill.block.height * (i - deadCount);
+                                        if (d < collisionRadius)
+                                        {
+                                            var connectionDamage = collisionDamage * Math.Pow((collisionRadius - d) / collisionRadius, 2.5);
+                                            simBlocks[i].hpFront -= connectionDamage;
+                                        }
+                                    }
+                                    deadCount = simBlocks.Where(b => b.IsDead).Count();
+                                }
+                            }
+                        }
                     }
                     dataRow[$"STP {weapon.name} ({direction})"] = shots;
                 }
@@ -374,7 +424,7 @@ namespace BlockPenSimWPF.Data
                                 dataRow[11] = blockFill.Weight;
 
                                 // Add STP
-                                SimulateShots(blockFill, settings.Weapons.Values, dataRow);
+                                SimulateShots(blockFill, settings.Weapons.Values, dataRow, settings.applyKilledBlockCollisionDamage);
 
                                 // Add score
                                 double score = 0.0;
