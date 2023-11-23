@@ -3,21 +3,45 @@
     "LaserBlaster": {
       "name": "Laser Blaster",
       "cpu": 20,
-      "damage": 13.0,
+      "damage": 24.0,
       "pellets": 1.0,
-      "radius": 0.3,
+      "radius": 0.0,
+      "splashShape": 0,
       "energy": 2000.0,
       "cooldown": 0.6,
       "impulse": 2750
     },
-    "PlasmaCannon": {
-      "name": "Plasma Cannon",
+    "PlasmaCannonMax": {
+      "name": "Plasma Cannon (37.5m)",
       "cpu": 60,
-      "damage": 500.0,
+      "damage": 600.0,
       "pellets": 9.0,
-      "radius": 12.5,
+      "radius": 25.0,
+      "splashShape": 1,
       "energy": 1000.0,
-      "cooldown": 2.0,
+      "cooldown": 2.5,
+      "impulse": 2750
+    },
+    "PlasmaCannon": {
+      "name": "Plasma Cannon (78.75m)",
+      "cpu": 60,
+      "damage": 340.0,
+      "pellets": 9.0,
+      "radius": 25.0,
+      "splashShape": 1,
+      "energy": 1000.0,
+      "cooldown": 2.5,
+      "impulse": 2750
+    },
+    "PlasmaCannonMin": {
+      "name": "Plasma Cannon (120m)",
+      "cpu": 60,
+      "damage": 80.0,
+      "pellets": 9.0,
+      "radius": 25.0,
+      "splashShape": 1,
+      "energy": 1000.0,
+      "cooldown": 2.5,
       "impulse": 2750
     },
     "ArcDischarger": {
@@ -26,6 +50,7 @@
       "damage": 15000.0,
       "pellets": 11.0,
       "radius": 30.0,
+      "splashShape": 1,
       "energy": 120000.0,
       "cooldown": 6.0,
       "impulse": 5000
@@ -34,20 +59,22 @@
       "name": "Rail Gun (70m)",
       "cpu": 120,
       "damage": 810.0,
-      "pellets": 1.0,
+      "pellets": 12.0,
       "radius": 3.0,
-      "energy": 59500.0,
-      "cooldown": 4.0,
+      "splashShape": 2,
+      "energy": 4500.0,
+      "cooldown": 3.5,
       "impulse": 2750
     },
     "RailGun": {
       "name": "Rail Gun (47.5m)",
       "cpu": 120,
       "damage": 480.0,
-      "pellets": 1.0,
+      "pellets": 12.0,
       "radius": 1.5,
-      "energy": 34750.0,
-      "cooldown": 4.0,
+      "splashShape": 2,
+      "energy": 2350.0,
+      "cooldown": 3.5,
       "impulse": 2750
     },
     "RailGunMin": {
@@ -55,9 +82,10 @@
       "cpu": 120,
       "damage": 150.0,
       "pellets": 1.0,
-      "radius": 0.3,
-      "energy": 10000.0,
-      "cooldown": 4.0,
+      "radius": 0.0,
+      "splashShape": 0,
+      "energy": 200.0,
+      "cooldown": 3.5,
       "impulse": 2750
     }
   },

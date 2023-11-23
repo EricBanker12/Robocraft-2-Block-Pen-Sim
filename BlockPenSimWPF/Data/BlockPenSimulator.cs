@@ -105,20 +105,26 @@ namespace BlockPenSimWPF.Data
                             var damage = weapon.damage / weapon.pellets;
 
                             // handle shrapnel for splash damage weapons
-                            if (weapon.radius > 1.0 && weapon.pellets > 1.0)
+                            if (weapon.radius > 0.3 && weapon.pellets > 1.0 && weapon.splashShape != SplashShape.None)
                             {
                                 double d = blockDistance * (i - deadCount) + weapon.radius / 2.0;
                                 double x = blockFaceX / 2.0;
                                 double y = blockFaceY / 2.0;
 
-                                var conePellets = (weapon.pellets - 1.0) / 2.0;
+                                var conePellets = Math.Floor((weapon.pellets - 1.0) / 2.0);
 
                                 // too much work to do actual calculation, so to this is a decent estimate instead
                                 // for each shrapnel angle, compare length of inner to outer trajectory to length of block
                                 double innerHits = 0.0;
                                 double inner = d * Math.Tan(15.0 * (1.0 - 0.3) * Math.PI / 180.0);
                                 double outer = d * Math.Tan(15.0 * (1.0 + 0.3) * Math.PI / 180.0);
-                                
+
+                                if (weapon.splashShape == SplashShape.Cylinder)
+                                {
+                                    inner = weapon.radius / 2.0;
+                                    outer = inner;
+                                }
+
                                 double innerOffset = Math.PI / conePellets;
                                 for (int j = 0; j < conePellets; j++)
                                 {
@@ -128,7 +134,8 @@ namespace BlockPenSimWPF.Data
                                     var xOuter = Math.Abs(Math.Cos(angle) * outer);
                                     var yOuter = Math.Abs(Math.Sin(angle) * outer);
 
-                                    if (x > xOuter && y > yOuter) {
+                                    if (x > xOuter && y > yOuter)
+                                    {
                                         innerHits += 1.0;
                                         continue;
                                     }
@@ -145,6 +152,14 @@ namespace BlockPenSimWPF.Data
                                 double outerHits = 0.0;
                                 inner = d * Math.Tan(30.0 * (1.0 - 0.3) * Math.PI / 180.0);
                                 outer = d * Math.Tan(30.0 * (1.0 + 0.3) * Math.PI / 180.0);
+
+                                if (weapon.splashShape == SplashShape.Cylinder)
+                                {
+                                    inner = weapon.radius / 2.0;
+                                    outer = inner;
+                                }
+                                
+                                conePellets = Math.Ceiling((weapon.pellets - 1.0) / 2.0);
 
                                 for (int j = 0; j < conePellets; j++)
                                 {
@@ -172,7 +187,7 @@ namespace BlockPenSimWPF.Data
 
                                 damage *= 1.0 + innerHits + outerHits;
                             }
-                            
+
                             // damage all the face connections for the current block
                             simBlocks[i].hpFront -= damage * energy / weapon.energy;
                             simBlocks[i].hpSide -= damage * energy / weapon.energy;
@@ -190,7 +205,7 @@ namespace BlockPenSimWPF.Data
 
                                 // for rail gun, damage adjacent block connections for previous block, if they exist.
                                 // this is not accurate, energy should be higher, but the high damage and high energy profile for rail minimizes the impact of this shortcut
-                                if (weapon.pellets == 1.0 && weapon.radius >= 1.0/3.0)
+                                if (weapon.pellets == 1.0 && weapon.radius >= 1.0 / 3.0)
                                 {
                                     if (direction != Direction.Front && blockFill.block.length <= weapon.radius * 2.0)
                                         simBlocks[i - 1].hpFront -= damage * energy / weapon.energy;
@@ -203,57 +218,8 @@ namespace BlockPenSimWPF.Data
 
                             energy -= blockEnergyAbs;
 
-                            // for rail gun, reduce energy by adjacent blocks
-                            if (weapon.pellets == 1.0 && weapon.radius >= 1.0/3.0)
-                            {
-                                double penBlockCount = 1.0;
-                                double penBlockDistance = blockDistance;
-
-                                // get blocks touching hemisphere or cylinder
-                                for (int j = 1; j <= i + 1; j++)
-                                {
-                                    // get circle radius at each block distance such that block plane insersects sphere
-                                    double r = weapon.radius;
-                                    if (j < weapon.radius / blockDistance)
-                                    {
-                                        double d = weapon.radius - j * blockDistance;
-                                        r = weapon.radius * Math.Sin(Math.Acos(d / weapon.radius));
-                                    }
-
-                                    // count touching blocks
-                                    var r2 = r * r;
-                                    for (double x = -blockFillX * 0.5; x <= blockFillX * 0.5 - blockFaceX; x += blockFaceX) // up to 189, could be reduced by restricting to min of width and radius
-                                    {
-                                        var xn = Math.Max(x, Math.Min(0, x + blockFaceX));
-                                        var x2 = xn * xn;
-                                        for (double y = -blockFillY * 0.5; y <= blockFillY * 0.5 - blockFaceY; y += blockFaceY) // up to 189, could be reduced by restricting to min of width and radius
-                                        {
-                                            var yn = Math.Max(y, Math.Min(0, y + blockFaceY));
-                                            var y2 = yn * yn;
-                                            if (x2 + y2 <= r2)
-                                            {
-                                                penBlockCount++;
-                                                // get pen distance from radius
-                                                var offset = Math.Sqrt(x2 + y2);
-                                                var dOffset = weapon.radius * 2.0 * (1.0 - Math.Cos(Math.Asin(offset / weapon.radius)));
-                                                penBlockDistance += Math.Max(0.0, blockDistance - dOffset);
-                                            }
-                                        }
-                                    }
-                                }
-
-                                energy = weapon.energy * (1.0 + shots) - penBlockDistance * blockFill.block.material.energyAbsorption / 5.0;
-                            }
-                            
-                            // limit arc discharger distance
+                            // TODO limit distance to max penetration distance
                             distance += blockDistance;
-                            if (weapon.radius > 1.0 && weapon.pellets > 1.0 && distance > weapon.radius)
-                                energy = 0.0;
-
-                            if (weapon.name == "Rail Gun (25m)" && blockCount == 1)
-                            {
-
-                            }
                         }
                         shots++;
                         if (energy > 0.0) break;
@@ -269,7 +235,7 @@ namespace BlockPenSimWPF.Data
                             {
                                 var sizes = new List<double>() { blockFill.block.length, blockFill.block.width, blockFill.block.height };
                                 sizes.Sort();
-                                var collisionImpulse = weapon.impulse * (1 + (sizes[2] - sizes[0])) / 10000.0; // very rough estimate, needs more testing
+                                var collisionImpulse = weapon.impulse * (1 + (sizes[2] - sizes[0])) / 20000.0; // very rough estimate, needs more testing
                                 if (collisionImpulse >= 1.0)
                                 {
                                     var unlerp20 = (collisionImpulse - 1.0) / (20.0 - 1.0);
@@ -278,7 +244,7 @@ namespace BlockPenSimWPF.Data
                                     var collisionRadius = 25 * unlerp60 + (1 - unlerp60) * 12.5;
                                     for (int i = deadCount; i < simBlocks.Length; i++)
                                     {
-                                        double d; 
+                                        double d;
                                         d = blockFill.block.width;
                                         if (direction != Direction.Side) d /= 2.0;
                                         if (direction == Direction.Front) d += blockFill.block.length * (i - deadCount);
@@ -362,6 +328,126 @@ namespace BlockPenSimWPF.Data
         /// <returns></returns>
         public static async Task<DataTable> RunAsync(IndexStore settings)
         {
+            var schema = CreateSchema(settings);
+            var shapes = GetAllShapes();
+            var tasks = new List<Task<DataTable>>();
+            
+            //var output = schema.Clone();
+
+            foreach (Material material in settings.Materials.Values) // 3
+            {
+                foreach (Orientation orientation in Enum.GetValues(typeof(Orientation))) // 6
+                {
+                    tasks.Add(Task.Run(DataTable () =>
+                    {
+                        var output = schema.Clone();
+
+                        foreach (Shape shape in shapes) // 219
+                        {
+                            Block block = new Block(shape, orientation, material);
+
+                            // foreach fill size
+                            var minLengthCount = Math.Max((int)Math.Ceiling(settings.Length.Min / block.length), 1);
+                            var minWidthCount = Math.Max((int)Math.Ceiling(settings.Width.Min / block.width), 1);
+                            var minHeightCount = Math.Max((int)Math.Ceiling(settings.Height.Min / block.height), 1);
+
+                            var maxLengthCount = Math.Max((int)Math.Floor(settings.Length.Max / block.length), 1);
+                            var maxWidthCount = Math.Max((int)Math.Floor(settings.Width.Max / block.width), 1);
+                            var maxHeightCount = Math.Max((int)Math.Floor(settings.Height.Max / block.height), 1);
+
+                            for (int lengthCount = minLengthCount; lengthCount <= maxLengthCount; lengthCount++) // 1 - 63
+                            {
+                                for (int widthCount = minWidthCount; widthCount <= maxWidthCount; widthCount++) // 1 - 63
+                                {
+                                    for (int heightCount = minHeightCount; heightCount <= maxHeightCount; heightCount++) // 1 - 63
+                                    {
+                                        var blockFill = new BlockFill(block, lengthCount, widthCount, heightCount);
+
+                                        if (blockFill.Cpu < settings.Cpu.Min || blockFill.Cpu > settings.Cpu.Max) continue;
+                                        if (blockFill.Weight < settings.Weight.Min || blockFill.Weight > settings.Weight.Max) continue;
+
+                                        var dataRow = output.NewRow();
+
+                                        // Add block data
+                                        dataRow[0] = blockFill.block.material.name;
+                                        dataRow[1] = blockFill.block.length;
+                                        dataRow[2] = blockFill.block.width;
+                                        dataRow[3] = blockFill.block.height;
+                                        dataRow[4] = blockFill.Length;
+                                        dataRow[5] = blockFill.Width;
+                                        dataRow[6] = blockFill.Height;
+                                        dataRow[7] = blockFill.lengthCount;
+                                        dataRow[8] = blockFill.widthCount;
+                                        dataRow[9] = blockFill.heightCount;
+                                        dataRow[10] = blockFill.Cpu;
+                                        dataRow[11] = blockFill.Weight;
+
+                                        // Add STP
+                                        SimulateShots(blockFill, settings.Weapons.Values, dataRow, settings.applyKilledBlockCollisionDamage);
+
+                                        // Add score
+                                        double score = 0.0;
+                                        var weaponSum = settings.WeaponSettings.Values.Sum(w => w.WeaponRatio);
+                                        foreach (var weapon in settings.Weapons)
+                                        {
+                                            var weaponSettings = settings.WeaponSettings[weapon.Key];
+                                            var directionSum = weaponSettings.WeaponFrontRatio + weaponSettings.WeaponSideRatio + weaponSettings.WeaponTopRatio;
+
+                                            foreach (var direction in Enum.GetValues<Direction>())
+                                            {
+                                                var stpColumnName = $"STP {weapon.Value.name} ({direction})";
+                                                var ttpColumnName = $"TTP {weapon.Value.name} ({direction})";
+
+                                                double timeToPen = (Math.Ceiling((int)dataRow[stpColumnName] / weaponSettings.WeaponCount) - 1.0) * weapon.Value.cooldown;
+                                                dataRow[ttpColumnName] = timeToPen;
+
+                                                if (direction == Direction.Front)
+                                                    score += timeToPen * weaponSettings.WeaponRatio / weaponSum * weaponSettings.WeaponFrontRatio / directionSum;
+                                                else if (direction == Direction.Side)
+                                                    score += timeToPen * weaponSettings.WeaponRatio / weaponSum * weaponSettings.WeaponSideRatio / directionSum;
+                                                else if (direction == Direction.Top)
+                                                    score += timeToPen * weaponSettings.WeaponRatio / weaponSum * weaponSettings.WeaponTopRatio / directionSum;
+                                            }
+                                        }
+                                        dataRow["Score"] = score;
+                                        dataRow["Score / CPU"] = score / blockFill.Cpu;
+                                        dataRow["Score / Weight"] = score / blockFill.Weight;
+
+                                        output.Rows.Add(dataRow);
+                                    }
+                                }
+                            }
+                        }
+
+                        return output;
+                    }));
+                }
+            }
+
+            await Task.WhenAll(tasks);
+
+            using (schema)
+            {
+                foreach (var task in tasks)
+                {
+                    schema.Merge(task.Result);
+                    task.Result.Dispose();
+                }
+
+                if (schema.Rows.Count == 0)
+                    return schema;
+                else
+                    return schema.AsEnumerable().Distinct(DataRowComparer.Default).CopyToDataTable();
+            }
+        }
+
+        /// <summary>
+        /// Create empty datatable with simulation results schema
+        /// </summary>
+        /// <param name="settings"></param>
+        /// <returns></returns>
+        public static DataTable CreateSchema(IndexStore settings)
+        {
             var schema = new DataTable($"Simulation{DateTime.Now}");
             schema.Columns.Add("Material", typeof(string));
             schema.Columns.Add("Block Length", typeof(double));
@@ -383,100 +469,12 @@ namespace BlockPenSimWPF.Data
             foreach (Weapon weapon in settings.Weapons.Values)
                 foreach (var direction in Enum.GetValues<Direction>())
                     schema.Columns.Add($"TTP {weapon.name} ({direction})", typeof(double));
-            
+
             schema.Columns.Add("Score", typeof(double));
             schema.Columns.Add("Score / CPU", typeof(double));
             schema.Columns.Add("Score / Weight", typeof(double));
 
-            var shapes = GetAllShapes();
-            var tasks = new List<Task<DataTable>>();
-
-            foreach (Material material in settings.Materials.Values) // 3
-            {
-                foreach (Orientation orientation in Enum.GetValues(typeof(Orientation))) // 6
-                {
-                    // 18 threads
-                    tasks.Add(Task.Run(DataTable () =>
-                    {
-                        var output = schema.Clone();
-                        foreach (Shape shape in shapes) // 219
-                        {
-                            Block block = new Block(shape, orientation, material);
-
-                            foreach (BlockFillMethod blockFillMethod in Enum.GetValues(typeof(BlockFillMethod))) // 6
-                            {
-                                BlockFill blockFill = new BlockFill(block, settings, blockFillMethod);
-                                if (!blockFill.isValid) continue;
-
-                                var dataRow = output.NewRow();
-                                // Add block data
-                                dataRow[0] = blockFill.block.material.name;
-                                dataRow[1] = blockFill.block.length;
-                                dataRow[2] = blockFill.block.width;
-                                dataRow[3] = blockFill.block.height;
-                                dataRow[4] = blockFill.Length;
-                                dataRow[5] = blockFill.Width;
-                                dataRow[6] = blockFill.Height;
-                                dataRow[7] = (int)blockFill.lengthCount;
-                                dataRow[8] = (int)blockFill.widthCount;
-                                dataRow[9] = (int)blockFill.heightCount;
-                                dataRow[10] = blockFill.Cpu;
-                                dataRow[11] = blockFill.Weight;
-
-                                // Add STP
-                                SimulateShots(blockFill, settings.Weapons.Values, dataRow, settings.applyKilledBlockCollisionDamage);
-
-                                // Add score
-                                double score = 0.0;
-                                var weaponSum = settings.WeaponSettings.Values.Sum(w => w.WeaponRatio);
-                                foreach (var weapon in settings.Weapons)
-                                {
-                                    var weaponSettings = settings.WeaponSettings[weapon.Key];
-                                    var directionSum = weaponSettings.WeaponFrontRatio + weaponSettings.WeaponSideRatio + weaponSettings.WeaponTopRatio;
-
-                                    foreach (var direction in Enum.GetValues<Direction>())
-                                    {
-                                        var stpColumnName = $"STP {weapon.Value.name} ({direction})";
-                                        var ttpColumnName = $"TTP {weapon.Value.name} ({direction})";
-
-                                        double timeToPen = (Math.Ceiling((int)dataRow[stpColumnName] / weaponSettings.WeaponCount) - 1.0) * weapon.Value.cooldown;
-                                        dataRow[ttpColumnName] = timeToPen;
-
-                                        if (direction == Direction.Front)
-                                            score += timeToPen * weaponSettings.WeaponRatio / weaponSum * weaponSettings.WeaponFrontRatio / directionSum;
-                                        else if (direction == Direction.Side)
-                                            score += timeToPen * weaponSettings.WeaponRatio / weaponSum * weaponSettings.WeaponSideRatio / directionSum;
-                                        else if (direction == Direction.Top)
-                                            score += timeToPen * weaponSettings.WeaponRatio / weaponSum * weaponSettings.WeaponTopRatio / directionSum;
-                                    }
-                                }
-                                dataRow["Score"] = score;
-                                dataRow["Score / CPU"] = score / blockFill.Cpu;
-                                dataRow["Score / Weight"] = score / blockFill.Weight;
-
-                                output.Rows.Add(dataRow);
-                            }
-                        }
-                        return output;
-                    }));
-                }
-            }
-
-            await Task.WhenAll(tasks);
-
-            using (schema)
-            {
-                foreach (var task in tasks)
-                {
-                    schema.Merge(task.Result);
-                    task.Result.Dispose();
-                }
-
-                if (schema.Rows.Count == 0)
-                    return schema;
-                else
-                    return schema.AsEnumerable().Distinct(DataRowComparer.Default).CopyToDataTable();
-            }
+            return schema;
         }
     }
 }

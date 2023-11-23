@@ -135,9 +135,14 @@ dialog {
 
 .collapse.show {
     height: 100%;
-    overflow: auto;
+    overflow: visible;
     transition: height 0.35s ease-in;
     transition-delay: 0.15s;
+    animation: 1s delay-overflow;
+}
+
+@keyframes delay-overflow {
+    from {overflow: hidden;}
 }
 
 /*blazor stuff*/

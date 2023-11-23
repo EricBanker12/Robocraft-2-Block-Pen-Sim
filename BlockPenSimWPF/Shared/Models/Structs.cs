@@ -22,6 +22,7 @@
         public double damage;
         public double pellets;
         public double radius;
+        public SplashShape splashShape;
         public double energy;
         public double cooldown;
         public double impulse;
@@ -93,6 +94,27 @@
         public readonly double EnergyAbsTop { get => material.energyAbsorption / 5.0 * height; }
         public readonly double Volume { get => length * width * height; }
         public readonly double Weight { get => Volume * material.density; }
+    }
+
+    public struct BlockFill
+    {
+        public BlockFill(Block block, int lengthCount, int widthCount, int heightCount)
+        {
+            this.block = block;
+            this.lengthCount = lengthCount;
+            this.widthCount = widthCount;
+            this.heightCount = heightCount;
+        }
+
+        public readonly Block block;
+        public readonly int lengthCount;
+        public readonly int widthCount;
+        public readonly int heightCount;
+        public readonly double Length { get => this.block.length * this.lengthCount; }
+        public readonly double Width { get => this.block.width * this.widthCount; }
+        public readonly double Height { get => this.block.height * this.heightCount; }
+        public readonly int Cpu { get => this.lengthCount * this.widthCount * this.heightCount; }
+        public readonly double Weight { get => this.block.Weight * this.Cpu; }
     }
 
     public struct SimBlock

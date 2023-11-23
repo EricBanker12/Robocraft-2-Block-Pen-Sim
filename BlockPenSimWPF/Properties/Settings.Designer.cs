@@ -62,40 +62,53 @@ namespace BlockPenSimWPF.Properties {
             "th\": {\r\n    \"Min\": 9,\r\n    \"Max\": 9\r\n  },\r\n  \"Height\": {\r\n    \"Min\": 9,\r\n    \"Ma" +
             "x\": 9\r\n  },\r\n  \"WeaponSettings\": {\r\n    \"LaserBlaster\": {\r\n      \"WeaponCount\": " +
             "6,\r\n      \"WeaponRatio\": 3,\r\n      \"WeaponFrontRatio\": 3,\r\n      \"WeaponSideRati" +
-            "o\": 1,\r\n      \"WeaponTopRatio\": 1\r\n    },\r\n    \"PlasmaCannon\": {\r\n      \"WeaponC" +
-            "ount\": 2,\r\n      \"WeaponRatio\": 3,\r\n      \"WeaponFrontRatio\": 1,\r\n      \"WeaponS" +
-            "ideRatio\": 1,\r\n      \"WeaponTopRatio\": 2\r\n    },\r\n    \"ArcDischarger\": {\r\n      " +
-            "\"WeaponCount\": 3,\r\n      \"WeaponRatio\": 0,\r\n      \"WeaponFrontRatio\": 1,\r\n      " +
-            "\"WeaponSideRatio\": 1,\r\n      \"WeaponTopRatio\": 0\r\n    },\r\n    \"RailGunMax\": {\r\n " +
-            "     \"WeaponCount\": 1,\r\n      \"WeaponRatio\": 1,\r\n      \"WeaponFrontRatio\": 1,\r\n " +
-            "     \"WeaponSideRatio\": 0,\r\n      \"WeaponTopRatio\": 0\r\n    },\r\n    \"RailGun\": {\r" +
-            "\n      \"WeaponCount\": 1,\r\n      \"WeaponRatio\": 1,\r\n      \"WeaponFrontRatio\": 1,\r" +
-            "\n      \"WeaponSideRatio\": 0,\r\n      \"WeaponTopRatio\": 0\r\n    },\r\n    \"RailGunMin" +
-            "\": {\r\n      \"WeaponCount\": 1,\r\n      \"WeaponRatio\": 1,\r\n      \"WeaponFrontRatio\"" +
-            ": 1,\r\n      \"WeaponSideRatio\": 0,\r\n      \"WeaponTopRatio\": 0\r\n    }\r\n  },\r\n  \"We" +
-            "apons\": {\r\n    \"LaserBlaster\": {\r\n      \"name\": \"Laser Blaster\",\r\n      \"cpu\": 2" +
-            "0,\r\n      \"damage\": 13.0,\r\n      \"pellets\": 1.0,\r\n      \"radius\": 0.3,\r\n      \"e" +
-            "nergy\": 2000.0,\r\n      \"cooldown\": 0.6,\r\n      \"impulse\": 2750\r\n    },\r\n    \"Pla" +
-            "smaCannon\": {\r\n      \"name\": \"Plasma Cannon\",\r\n      \"cpu\": 60,\r\n      \"damage\":" +
-            " 500.0,\r\n      \"pellets\": 9.0,\r\n      \"radius\": 12.5,\r\n      \"energy\": 1000.0,\r\n" +
-            "      \"cooldown\": 2.0,\r\n      \"impulse\": 2750\r\n    },\r\n    \"ArcDischarger\": {\r\n " +
-            "     \"name\": \"Arc Discharger\",\r\n      \"cpu\": 40,\r\n      \"damage\": 15000.0,\r\n    " +
-            "  \"pellets\": 11.0,\r\n      \"radius\": 30.0,\r\n      \"energy\": 120000.0,\r\n      \"coo" +
-            "ldown\": 6.0,\r\n      \"impulse\": 5000\r\n    },\r\n    \"RailGunMax\": {\r\n      \"name\": " +
-            "\"Rail Gun (70m)\",\r\n      \"cpu\": 120,\r\n      \"damage\": 810.0,\r\n      \"pellets\": 1" +
-            ".0,\r\n      \"radius\": 3.0,\r\n      \"energy\": 59500.0,\r\n      \"cooldown\": 4.0,\r\n   " +
-            "   \"impulse\": 2750\r\n    },\r\n    \"RailGun\": {\r\n      \"name\": \"Rail Gun (47.5m)\",\r" +
-            "\n      \"cpu\": 120,\r\n      \"damage\": 480.0,\r\n      \"pellets\": 1.0,\r\n      \"radius" +
-            "\": 1.5,\r\n      \"energy\": 34750.0,\r\n      \"cooldown\": 4.0,\r\n      \"impulse\": 2750" +
-            "\r\n    },\r\n    \"RailGunMin\": {\r\n      \"name\": \"Rail Gun (25m)\",\r\n      \"cpu\": 120" +
-            ",\r\n      \"damage\": 150.0,\r\n      \"pellets\": 1.0,\r\n      \"radius\": 0.3,\r\n      \"e" +
-            "nergy\": 10000.0,\r\n      \"cooldown\": 4.0,\r\n      \"impulse\": 2750\r\n    }\r\n  },\r\n  " +
-            "\"Materials\": {\r\n    \"Airium\": {\r\n      \"name\": \"Airium\",\r\n      \"density\": 0.7,\r" +
-            "\n      \"connectionStrength\": 1.59,\r\n      \"energyAbsorption\": 2500\r\n    },\r\n    " +
-            "\"Moderonium\": {\r\n      \"name\": \"Moderonium\",\r\n      \"density\": 1.8,\r\n      \"conn" +
-            "ectionStrength\": 2.65,\r\n      \"energyAbsorption\": 5000\r\n    },\r\n    \"Ladium\": {\r" +
-            "\n      \"name\": \"Ladium\",\r\n      \"density\": 7.3,\r\n      \"connectionStrength\": 3.3" +
-            "5,\r\n      \"energyAbsorption\": 7500\r\n    }\r\n  }\r\n}")]
+            "o\": 1,\r\n      \"WeaponTopRatio\": 1\r\n    },\r\n    \"PlasmaCannonMax\": {\r\n      \"Weap" +
+            "onCount\": 2,\r\n      \"WeaponRatio\": 3,\r\n      \"WeaponFrontRatio\": 1,\r\n      \"Weap" +
+            "onSideRatio\": 1,\r\n      \"WeaponTopRatio\": 2\r\n    },\r\n    \"PlasmaCannon\": {\r\n    " +
+            "  \"WeaponCount\": 2,\r\n      \"WeaponRatio\": 3,\r\n      \"WeaponFrontRatio\": 1,\r\n    " +
+            "  \"WeaponSideRatio\": 1,\r\n      \"WeaponTopRatio\": 2\r\n    },\r\n    \"PlasmaCannonMin" +
+            "\": {\r\n      \"WeaponCount\": 2,\r\n      \"WeaponRatio\": 3,\r\n      \"WeaponFrontRatio\"" +
+            ": 1,\r\n      \"WeaponSideRatio\": 1,\r\n      \"WeaponTopRatio\": 2\r\n    },\r\n    \"ArcDi" +
+            "scharger\": {\r\n      \"WeaponCount\": 3,\r\n      \"WeaponRatio\": 0,\r\n      \"WeaponFro" +
+            "ntRatio\": 1,\r\n      \"WeaponSideRatio\": 1,\r\n      \"WeaponTopRatio\": 0\r\n    },\r\n  " +
+            "  \"RailGunMax\": {\r\n      \"WeaponCount\": 1,\r\n      \"WeaponRatio\": 1,\r\n      \"Weap" +
+            "onFrontRatio\": 1,\r\n      \"WeaponSideRatio\": 0,\r\n      \"WeaponTopRatio\": 0\r\n    }" +
+            ",\r\n    \"RailGun\": {\r\n      \"WeaponCount\": 1,\r\n      \"WeaponRatio\": 1,\r\n      \"We" +
+            "aponFrontRatio\": 1,\r\n      \"WeaponSideRatio\": 0,\r\n      \"WeaponTopRatio\": 0\r\n   " +
+            " },\r\n    \"RailGunMin\": {\r\n      \"WeaponCount\": 1,\r\n      \"WeaponRatio\": 1,\r\n    " +
+            "  \"WeaponFrontRatio\": 1,\r\n      \"WeaponSideRatio\": 0,\r\n      \"WeaponTopRatio\": 0" +
+            "\r\n    }\r\n  },\r\n  \"Weapons\": {\r\n    \"LaserBlaster\": {\r\n      \"name\": \"Laser Blast" +
+            "er\",\r\n      \"cpu\": 20,\r\n      \"damage\": 24.0,\r\n      \"pellets\": 1.0,\r\n      \"rad" +
+            "ius\": 0.0,\r\n      \"splashShape\": 0,\r\n      \"energy\": 2000.0,\r\n      \"cooldown\": " +
+            "0.6,\r\n      \"impulse\": 2750\r\n    },\r\n    \"PlasmaCannonMax\": {\r\n      \"name\": \"Pl" +
+            "asma Cannon (37.5m)\",\r\n      \"cpu\": 60,\r\n      \"damage\": 600.0,\r\n      \"pellets\"" +
+            ": 9.0,\r\n      \"radius\": 25.0,\r\n      \"splashShape\": 1,\r\n      \"energy\": 1000.0,\r" +
+            "\n      \"cooldown\": 2.5,\r\n      \"impulse\": 2750\r\n    },\r\n    \"PlasmaCannon\": {\r\n " +
+            "     \"name\": \"Plasma Cannon (78.75m)\",\r\n      \"cpu\": 60,\r\n      \"damage\": 340.0," +
+            "\r\n      \"pellets\": 9.0,\r\n      \"radius\": 25.0,\r\n      \"splashShape\": 1,\r\n      \"" +
+            "energy\": 1000.0,\r\n      \"cooldown\": 2.5,\r\n      \"impulse\": 2750\r\n    },\r\n    \"Pl" +
+            "asmaCannonMin\": {\r\n      \"name\": \"Plasma Cannon (120m)\",\r\n      \"cpu\": 60,\r\n    " +
+            "  \"damage\": 80.0,\r\n      \"pellets\": 9.0,\r\n      \"radius\": 25.0,\r\n      \"splashSh" +
+            "ape\": 1,\r\n      \"energy\": 1000.0,\r\n      \"cooldown\": 2.5,\r\n      \"impulse\": 2750" +
+            "\r\n    },\r\n    \"ArcDischarger\": {\r\n      \"name\": \"Arc Discharger\",\r\n      \"cpu\": " +
+            "40,\r\n      \"damage\": 15000.0,\r\n      \"pellets\": 11.0,\r\n      \"radius\": 30.0,\r\n  " +
+            "    \"splashShape\": 1,\r\n      \"energy\": 120000.0,\r\n      \"cooldown\": 6.0,\r\n      " +
+            "\"impulse\": 5000\r\n    },\r\n    \"RailGunMax\": {\r\n      \"name\": \"Rail Gun (70m)\",\r\n " +
+            "     \"cpu\": 120,\r\n      \"damage\": 810.0,\r\n      \"pellets\": 12.0,\r\n      \"radius\"" +
+            ": 3.0,\r\n      \"splashShape\": 2,\r\n      \"energy\": 4500.0,\r\n      \"cooldown\": 3.5," +
+            "\r\n      \"impulse\": 2750\r\n    },\r\n    \"RailGun\": {\r\n      \"name\": \"Rail Gun (47.5" +
+            "m)\",\r\n      \"cpu\": 120,\r\n      \"damage\": 480.0,\r\n      \"pellets\": 12.0,\r\n      \"" +
+            "radius\": 1.5,\r\n      \"splashShape\": 2,\r\n      \"energy\": 2350.0,\r\n      \"cooldown" +
+            "\": 3.5,\r\n      \"impulse\": 2750\r\n    },\r\n    \"RailGunMin\": {\r\n      \"name\": \"Rail" +
+            " Gun (25m)\",\r\n      \"cpu\": 120,\r\n      \"damage\": 150.0,\r\n      \"pellets\": 1.0,\r\n" +
+            "      \"radius\": 0.0,\r\n      \"splashShape\": 0,\r\n      \"energy\": 200.0,\r\n      \"co" +
+            "oldown\": 3.5,\r\n      \"impulse\": 2750\r\n    }\r\n  },\r\n  \"Materials\": {\r\n    \"Airium" +
+            "\": {\r\n      \"name\": \"Airium\",\r\n      \"density\": 0.7,\r\n      \"connectionStrength\"" +
+            ": 1.59,\r\n      \"energyAbsorption\": 2500\r\n    },\r\n    \"Moderonium\": {\r\n      \"nam" +
+            "e\": \"Moderonium\",\r\n      \"density\": 1.8,\r\n      \"connectionStrength\": 2.65,\r\n   " +
+            "   \"energyAbsorption\": 5000\r\n    },\r\n    \"Ladium\": {\r\n      \"name\": \"Ladium\",\r\n " +
+            "     \"density\": 7.3,\r\n      \"connectionStrength\": 3.35,\r\n      \"energyAbsorption" +
+            "\": 7500\r\n    }\r\n  }\r\n}")]
         public string IndexStore {
             get {
                 return ((string)(this["IndexStore"]));
