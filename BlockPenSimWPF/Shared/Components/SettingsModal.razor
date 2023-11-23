@@ -202,6 +202,27 @@
                         <div class="row">
                             <div class="col-lg-6">
                                 <div class="input-group my-1">
+                                    <label for="WeaponShapeSelect" class="input-group-text" style="width: 13ch;">Shape</label>
+                                    <select id="WeaponShapeSelect" class="form-select @IsValidClass(nameof(settingsForm.WeaponShape))" required disabled="@IsWeaponNone()" @bind=settingsForm.WeaponShape>
+                                        @foreach (var shape in Enum.GetValues<SplashShape>())
+                                        {
+                                            <option value="@((int)shape)">
+                                                <span>@shape.ToString()</span>
+                                            </option>
+                                        }
+                                    </select>
+                                    <div class="invalid-feedback">
+                                        <ul class="mb-0">
+                                            @foreach (var message in settingsForm.GetErrorMessages(nameof(settingsForm.WeaponShape)))
+                                            {
+                                                <li>@message</li>
+                                            }
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-6">
+                                <div class="input-group my-1">
                                     <label for="WeaponEnergyInput" class="input-group-text" style="width: 13ch;">Pen. Energy</label>
                                     <input type="number"
                                         id="WeaponEnergyInput"
@@ -221,6 +242,8 @@
                                     </div>
                                 </div>
                             </div>
+                        </div>
+                        <div class="row">
                             <div class="col-lg-6">
                                 <div class="input-group my-1">
                                     <label for="WeaponCooldownInput" class="input-group-text" style="width: 13ch;">Cooldown</label>
@@ -243,8 +266,6 @@
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                        <div class="row">
                             <div class="col-lg-6">
                                 <div class="input-group my-1">
                                     <label for="WeaponImpulseInput" class="input-group-text" style="width: 13ch;">Impulse</label>
@@ -266,6 +287,11 @@
                                         </ul>
                                     </div>
                                 </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-lg-6">
+                                @*blank space*@
                             </div>
                             <div class="col-lg-6">
                                 <button type="button"
@@ -484,6 +510,7 @@
                             cpu = settingsForm.WeaponCpu,
                             damage = settingsForm.WeaponDamage,
                             pellets = settingsForm.WeaponPellets,
+                            splashShape = (SplashShape)settingsForm.WeaponShape,
                             radius = settingsForm.WeaponRadius,
                             energy = settingsForm.WeaponEnergy,
                             cooldown = settingsForm.WeaponCooldown,

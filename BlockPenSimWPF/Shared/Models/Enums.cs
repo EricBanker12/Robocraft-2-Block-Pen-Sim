@@ -17,15 +17,11 @@
         FlatWide,
     }
 
-    public enum BlockFillMethod
+    public enum SplashShape
     {
-        LWH,
-        LHW,
-        WLH,
-        WHL,
-        HLW,
-        HWL,
-        ALL,
+        None,
+        Cone,
+        Cylinder,
     }
 
     public enum SortDirection

@@ -37,6 +37,7 @@ namespace BlockPenSimWPF.Shared.Models
             this.weaponDamage = 13;
             this.weaponPellets = 1;
             this.weaponRadius = 0.3;
+            this.weaponShape = 0;
             this.weaponEnergy = 2000;
             this.weaponCooldown = 0.6;
             this.weaponImpulse = 2750;
@@ -113,6 +114,9 @@ namespace BlockPenSimWPF.Shared.Models
                 case nameof(WeaponEnergy):
                     if (WeaponEnergy < 1) ErrorMessages[fieldName].Add("Penetration Energy must be at least 1 kJ/m.");
                     break;
+                case nameof(WeaponShape):
+                    if (WeaponShape > 0 && WeaponPellets <= 1.0) ErrorMessages[fieldName].Add($"Shape {(SplashShape)WeaponShape} requires Pellet Count greater than 1.");
+                    break;
                 case nameof(WeaponRadius):
                     if (WeaponRadius < 0) ErrorMessages[fieldName].Add("Radius cannot be less than 0 blocks.");
                     break;
@@ -165,6 +169,7 @@ namespace BlockPenSimWPF.Shared.Models
             if (!IsValid(nameof(WeaponCpu))) return false;
             if (!IsValid(nameof(WeaponDamage))) return false;
             if (!IsValid(nameof(WeaponPellets))) return false;
+            if (!IsValid(nameof(WeaponShape))) return false;
             if (!IsValid(nameof(WeaponRadius))) return false;
             if (!IsValid(nameof(WeaponEnergy))) return false;
             if (!IsValid(nameof(WeaponCooldown))) return false;
@@ -193,6 +198,7 @@ namespace BlockPenSimWPF.Shared.Models
                 this.WeaponDamage = weapon.Value.damage;
                 this.WeaponCpu = weapon.Value.cpu;
                 this.WeaponPellets = weapon.Value.pellets;
+                this.WeaponShape = (int)weapon.Value.splashShape;
                 this.WeaponRadius = weapon.Value.radius;
                 this.WeaponEnergy = weapon.Value.energy;
                 this.WeaponCooldown = weapon.Value.cooldown;
@@ -241,6 +247,7 @@ namespace BlockPenSimWPF.Shared.Models
                     pellets = WeaponPellets,
                     cooldown = WeaponCooldown,
                     energy = WeaponEnergy,
+                    splashShape = (SplashShape)WeaponShape,
                     radius = WeaponRadius,
                     impulse = WeaponImpulse,
                 });
@@ -386,6 +393,17 @@ namespace BlockPenSimWPF.Shared.Models
             {
                 weaponRadius = value;
                 IsValid(nameof(WeaponRadius));
+            }
+        }
+
+        private int weaponShape;
+        public int WeaponShape
+        {
+            get { return weaponShape; }
+            set
+            {
+                weaponShape = value;
+                IsValid(nameof(WeaponShape));
             }
         }
 
