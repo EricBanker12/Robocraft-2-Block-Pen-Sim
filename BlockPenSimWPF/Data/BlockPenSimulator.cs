@@ -331,22 +331,24 @@ namespace BlockPenSimWPF.Data
             var schema = CreateSchema(settings);
             var shapes = GetAllShapes();
             var tasks = new List<Task<DataTable>>();
-            
-            //var output = schema.Clone();
 
-            foreach (Material material in settings.Materials.Values) // 3
+            foreach (Shape shape in shapes) // 219
             {
-                foreach (Orientation orientation in Enum.GetValues(typeof(Orientation))) // 6
+                tasks.Add(Task.Run(DataTable () =>
                 {
-                    tasks.Add(Task.Run(DataTable () =>
+                    var output = schema.Clone();
+                    foreach (Material material in settings.Materials.Values) // 3
                     {
-                        var output = schema.Clone();
-
-                        foreach (Shape shape in shapes) // 219
+                        foreach (Orientation orientation in Enum.GetValues(typeof(Orientation))) // 6
                         {
                             Block block = new Block(shape, orientation, material);
 
-                            // foreach fill size
+                            // skip duplicate shapes
+                            if (block.length == block.width && orientation == Orientation.FlatWide) continue;
+                            if (block.width == block.height && orientation == Orientation.ForwardsWide) continue;
+                            if (block.length == block.height && orientation == Orientation.SidewaysLong) continue;
+                            if (block.length == block.width && block.length == block.height && ((int)orientation) > 0) continue;
+
                             var minLengthCount = Math.Max((int)Math.Ceiling(settings.Length.Min / block.length), 1);
                             var minWidthCount = Math.Max((int)Math.Ceiling(settings.Width.Min / block.width), 1);
                             var minHeightCount = Math.Max((int)Math.Ceiling(settings.Height.Min / block.height), 1);
@@ -418,10 +420,9 @@ namespace BlockPenSimWPF.Data
                                 }
                             }
                         }
-
-                        return output;
-                    }));
-                }
+                    }
+                    return output;
+                }));
             }
 
             await Task.WhenAll(tasks);
@@ -434,10 +435,7 @@ namespace BlockPenSimWPF.Data
                     task.Result.Dispose();
                 }
 
-                if (schema.Rows.Count == 0)
-                    return schema;
-                else
-                    return schema.AsEnumerable().Distinct(DataRowComparer.Default).CopyToDataTable();
+                return schema;
             }
         }
 
