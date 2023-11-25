@@ -25,9 +25,9 @@ namespace BlockPenSimWPF.Data
 
         public static Dictionary<string, Material> DefaultMaterials = new Dictionary<string, Material>()
         {
-            {"Airium", new Material     { name = "Airium", density = 0.7, connectionStrength = 1.59, energyAbsorption = 2500.0 } },
+            {"Airium", new Material     { name = "Airium", density = 0.728, connectionStrength = 1.59, energyAbsorption = 2500.0 } },
             {"Moderonium", new Material { name = "Moderonium", density = 1.8, connectionStrength = 2.65, energyAbsorption = 5000.0 } },
-            {"Ladium", new Material     { name = "Ladium", density = 7.3, connectionStrength = 3.35, energyAbsorption = 7500.0 } },
+            {"Ladium", new Material     { name = "Ladium", density = 7.32, connectionStrength = 3.35225, energyAbsorption = 7500.0 } },
         };
 
         public BlockData()
