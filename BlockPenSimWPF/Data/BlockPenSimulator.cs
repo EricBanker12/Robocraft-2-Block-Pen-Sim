@@ -11,20 +11,22 @@ namespace BlockPenSimWPF.Data
     {
         private static readonly double[] shapeSizes = { 1.0 / 3.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0 };
 
+        private static readonly double[] postSizes = { 1.0 / 3.0, 2.0 / 3.0, 1.0, 4.0 / 3.0, 5.0 / 3.0, 2.0, 7.0 / 3.0, 8.0 / 3.0, 3.0 };
+
         /// <summary>
         /// Generates all 219 permutations of shapes
         /// </summary>
         /// <returns></returns>
-        private static List<Shape> GetAllShapes()
+        private static List<Shape> GetAllShapes(double[] sizes)
         {
             var retval = new List<Shape>();
-            for (int a = 0; a < shapeSizes.Length; a++)
-                for (int b = 0; b < shapeSizes.Length; b++)
-                    for (int c = 1; c < shapeSizes.Length; c++)
+            for (int a = 0; a < sizes.Length; a++)
+                for (int b = 0; b < sizes.Length; b++)
+                    for (int c = 1; c < sizes.Length; c++)
                     {
-                        if (shapeSizes[a] > shapeSizes[b]) continue;
-                        if (shapeSizes[b] > shapeSizes[c]) continue;
-                        retval.Add(new Shape { smallest = shapeSizes[a], middle = shapeSizes[b], largest = shapeSizes[c] });
+                        if (sizes[a] > sizes[b]) continue;
+                        if (sizes[b] > sizes[c]) continue;
+                        retval.Add(new Shape { smallest = sizes[a], middle = sizes[b], largest = sizes[c] });
                     }
 
             return retval;
@@ -329,7 +331,21 @@ namespace BlockPenSimWPF.Data
         public static async Task<DataTable> RunAsync(IndexStore settings)
         {
             var schema = CreateSchema(settings);
-            var shapes = GetAllShapes();
+            var shapes = GetAllShapes(shapeSizes);
+
+            if (settings.simulateWithScaledPostStraights)
+            {
+                var posts = GetAllShapes(postSizes);
+                foreach (var post in posts)
+                {
+                    foreach (var shape in shapes)
+                    {
+                        if (shape.Equals(post)) break;
+                    }
+                    shapes.Add(post);
+                }
+            }
+
             var tasks = new List<Task<DataTable>>();
 
             foreach (Shape shape in shapes) // 219

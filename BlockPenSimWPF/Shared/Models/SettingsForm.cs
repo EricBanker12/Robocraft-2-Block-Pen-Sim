@@ -22,6 +22,7 @@ namespace BlockPenSimWPF.Shared.Models
             this.UseDecimalComma = State.useDecimalComma;
             this.HideZeroRatioWeaponColumns = State.hideZeroRatioWeaponColumns;
             this.HideZeroRatioDirectionColumns = State.hideZeroRatioDirectionColumns;
+            this.SimulateWithScaledPostStraights = State.simulateWithScaledPostStraights;
             this.UpdateDefaultBlockdataOverInternet = State.updateDefaultBlockdataOverInternet;
             this.ApplyKilledBlockCollisionDamage = State.applyKilledBlockCollisionDamage;
 
@@ -314,8 +315,9 @@ namespace BlockPenSimWPF.Shared.Models
         // Basic Settings
         public Theme ThemeOverride { get; set; }
         public bool UseDecimalComma { get; set; }
-        public bool HideZeroRatioWeaponColumns { get; set;}
+        public bool HideZeroRatioWeaponColumns { get; set; }
         public bool HideZeroRatioDirectionColumns { get; set; }
+        public bool SimulateWithScaledPostStraights { get; set; }
         public bool UpdateDefaultBlockdataOverInternet { get; set; }
         public bool ApplyKilledBlockCollisionDamage { get; set; }
 

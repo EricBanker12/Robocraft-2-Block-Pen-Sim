@@ -205,7 +205,6 @@
     {
         var fileName = $"RC2BPS-Results-CPU{State.Cpu.Max}-KG{State.Weight.Max:0}-L{State.Length.Max:0}-W{State.Width.Max:0}-H{State.Height.Max:0}.csv";
         var fileFilter = "CSV files|*.csv|All files|*.*";
-        var fileData = GetCsvString(State.SimData);
         await Task.Run(() =>
         {
             Microsoft.Win32.SaveFileDialog saveFileDialog = new();
@@ -213,7 +212,7 @@
             saveFileDialog.Filter = fileFilter;
             if (saveFileDialog.ShowDialog() == true)
             {
-                File.WriteAllText(saveFileDialog.FileName, fileData);
+                File.WriteAllText(saveFileDialog.FileName, GetCsvString(State.SimData));
             }
         });
     }
@@ -419,7 +418,14 @@
         }
         var RowFilter = sb.ToString();
 
-        SimDataView = new DataView(State.SimData, RowFilter, Sort, DataViewRowState.CurrentRows);
+        try
+        {
+            SimDataView = new DataView(State.SimData, RowFilter, Sort, DataViewRowState.CurrentRows);
+        }
+        catch (Exception)
+        {
+            SimDataView = new DataView(State.SimData, "FALSE", "", DataViewRowState.CurrentRows);
+        }
     }
 
     /// <summary>
