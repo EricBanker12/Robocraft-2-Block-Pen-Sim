@@ -14,7 +14,7 @@ namespace BlockPenSimWPF.Data
         private static readonly double[] postSizes = { 1.0 / 3.0, 2.0 / 3.0, 1.0, 4.0 / 3.0, 5.0 / 3.0, 2.0, 7.0 / 3.0, 8.0 / 3.0, 3.0 };
 
         /// <summary>
-        /// Generates all 219 permutations of shapes
+        /// Generates all permutations of shapes
         /// </summary>
         /// <returns></returns>
         private static List<Shape> GetAllShapes(double[] sizes)

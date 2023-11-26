@@ -34,7 +34,7 @@ namespace BlockPenSimWPF.Shared.State
         {
             get
             {
-                simData ??= BlockPenSimulator.Run(this);
+                simData ??= BlockPenSimulator.CreateSchema(this);
                 return simData;
             }
             set { simData = value; }
@@ -45,6 +45,9 @@ namespace BlockPenSimWPF.Shared.State
         
         [JsonIgnore]
         public bool ShowSettings;
+
+        [JsonIgnore]
+        public bool ShowLoading = true;
 
         [JsonIgnore]
         public bool IsDarkMode;

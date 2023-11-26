@@ -145,6 +145,83 @@ dialog {
     from {overflow: hidden;}
 }
 
+/*loading animation*/
+
+.loading {
+    transform-box: view-box;
+    transform-origin: center;
+}
+
+    .loading.loading-section-large {
+        animation: spin linear 5s infinite;
+    }
+
+    .loading.loading-section-small {
+        animation: spin reverse linear 5s infinite;
+    }
+
+    .loading.loading-outline {
+        animation: spin-half ease 1s infinite;
+    }
+
+.loading-hex-1, .loading-hex-2, .loading-hex-3, .loading-hex-4, .loading-hex-5, .loading-hex-6 {
+    animation: blink ease 1.8s infinite;
+}
+
+.loading-hex-2 {
+    animation-delay: 0.3s;
+}
+
+.loading-hex-3 {
+    animation-delay: 0.6s
+}
+
+.loading-hex-4 {
+    animation-delay: 0.9s;
+}
+
+.loading-hex-5 {
+    animation-delay: 1.2s;
+}
+
+.loading-hex-6 {
+    animation-delay: 1.5s;
+}
+
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg)
+    }
+}
+
+@keyframes spin-half {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(180deg)
+    }
+}
+
+@keyframes blink {
+    from {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
 /*blazor stuff*/
 .valid.modified:not([type=checkbox]) {
     outline: 1px solid #26b050;

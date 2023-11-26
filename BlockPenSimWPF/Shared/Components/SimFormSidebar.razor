@@ -217,9 +217,13 @@
         if (simForm.IsValid())
         {
             simForm.SetState(State);
+            State.ShowLoading = true;
+            State.HasChanged();
+
             var tempTable = State.SimData;
             State.SimData = await BlockPenSimulator.RunAsync(State);
             tempTable.Dispose();
+            State.ShowLoading = false;
             State.HasChanged();
         }
     }
