@@ -26,6 +26,7 @@ namespace BlockPenSimWPF.Data
                     {
                         if (sizes[a] > sizes[b]) continue;
                         if (sizes[b] > sizes[c]) continue;
+                        if (sizes[a] % 1.0 > 0.0 && sizes[b] % 1.0 > 0.0 && sizes[c] % 1.0 > 0.0) continue;
                         retval.Add(new Shape { smallest = sizes[a], middle = sizes[b], largest = sizes[c] });
                     }
 

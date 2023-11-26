@@ -93,9 +93,53 @@ namespace BlockPenSimWPF.Shared.Models
         public readonly double AreaFront { get => width * height; }
         public readonly double AreaSide { get => length * height; }
         public readonly double AreaTop { get => length * width; }
-        public readonly double HpFront { get => PerimeterFront * material.connectionStrength; }
-        public readonly double HpSide { get => PerimeterSide * material.connectionStrength; }
-        public readonly double HpTop { get => PerimeterTop * material.connectionStrength; }
+        public readonly double HpFront
+        {
+            get {
+                if (width % 1.0 > 0)
+                    if (height % 1.0 > 0)
+                            return (width + height) * 3.9999 * material.connectionStrength;
+                    else
+                        return (width * 3.0 + height) * 1.3333 * material.connectionStrength;
+                else
+                    if (height % 1.0 > 0)
+                        return (width + height * 3.0) * 1.3333 * material.connectionStrength;
+                    else
+                        return PerimeterFront * material.connectionStrength;
+            }
+        }
+        public readonly double HpSide
+        {
+            get
+            {
+                if (length % 1.0 > 0)
+                    if (height % 1.0 > 0)
+                        return (length + height) * 3.9999 * material.connectionStrength;
+                    else
+                        return (length * 3.0 + height) * 1.3333 * material.connectionStrength;
+                else
+                    if (height % 1.0 > 0)
+                        return (length + height * 3.0) * 1.3333 * material.connectionStrength;
+                    else
+                        return PerimeterSide * material.connectionStrength;
+            }
+        }
+        public readonly double HpTop
+        {
+            get
+            {
+                if (width % 1.0 > 0)
+                    if (length % 1.0 > 0)
+                        return (width + length) * 3.9999 * material.connectionStrength;
+                    else
+                        return (width * 3.0 + length) * 1.3333 * material.connectionStrength;
+                else
+                    if (length % 1.0 > 0)
+                        return (width + length * 3.0) * 1.3333 * material.connectionStrength;
+                    else
+                        return PerimeterTop * material.connectionStrength;
+            }
+        }
         public readonly double EnergyAbsFront { get => material.energyAbsorption / 5.0 * length; }
         public readonly double EnergyAbsSide { get => material.energyAbsorption / 5.0 * width; }
         public readonly double EnergyAbsTop { get => material.energyAbsorption / 5.0 * height; }
