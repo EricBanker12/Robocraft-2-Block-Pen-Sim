@@ -41,6 +41,12 @@
                             </label>
                         </div>
                         <div class="form-check">
+                            <input type="checkbox" id="SimulateWithScaledPostStraightsCheckbox" class="form-check-input" @bind=settingsForm.SimulateWithScaledPostStraights />
+                            <label for="SimulateWithScaledPostStraightsCheckbox" class="form-label">
+                                <span>Simulate With Scaled Post Straights</span>
+                            </label>
+                        </div>
+                        <div class="form-check">
                             <input type="checkbox" id="UpdateDefaultBlockdataOverInternetCheckbox" class="form-check-input" @bind=settingsForm.UpdateDefaultBlockdataOverInternet />
                             <label for="UpdateDefaultBlockdataOverInternetCheckbox" class="form-label" title="This will override local changes to weapons and materials with the same Key value.">
                                 <span>Auto-Update Weapons and Materials On Startup</span>
@@ -490,6 +496,7 @@
             State.useDecimalComma = settingsForm.UseDecimalComma;
             State.hideZeroRatioWeaponColumns = settingsForm.HideZeroRatioWeaponColumns;
             State.hideZeroRatioDirectionColumns = settingsForm.HideZeroRatioDirectionColumns;
+            State.simulateWithScaledPostStraights = settingsForm.SimulateWithScaledPostStraights;
             State.updateDefaultBlockdataOverInternet = settingsForm.UpdateDefaultBlockdataOverInternet;
             State.applyKilledBlockCollisionDamage = settingsForm.ApplyKilledBlockCollisionDamage;
 
@@ -606,8 +613,12 @@
 
             State.ShowSettings = !State.ShowSettings;
             settingsForm.Reset(State);
+            
+            State.ShowLoading = true;
+            State.HasChanged();
 
             State.SimData = await BlockPenSimulator.RunAsync(State);
+            State.ShowLoading = false;
             State.HasChanged();
         }
     }
@@ -645,11 +656,14 @@
             await ThemeData.OverridePreferredTheme(jsRuntime);
         }
 
-        State.SimData = await BlockPenSimulator.RunAsync(State);
-
-        settingsForm.Reset(State);
         State.ShowSettings = false;
+        settingsForm.Reset(State);
 
+        State.ShowLoading = true;
+        State.HasChanged();
+
+        State.SimData = await BlockPenSimulator.RunAsync(State);
+        State.ShowLoading = false;
         State.HasChanged();
     }
 

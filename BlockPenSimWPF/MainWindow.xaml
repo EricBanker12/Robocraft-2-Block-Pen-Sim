@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:BlockPenSimWPF"
         xmlns:blazor="clr-namespace:Microsoft.AspNetCore.Components.WebView.Wpf;assembly=Microsoft.AspNetCore.Components.WebView.Wpf"
         mc:Ignorable="d"
-        Title="MainWindow" Height="680" Width="1280" Initialized="Window_Initialized" SizeChanged="Window_SizeChanged">
+        Title="MainWindow" Height="680" Width="1280" Initialized="Window_Initialized" SizeChanged="Window_SizeChanged" StateChanged="Window_StateChanged">
     <Grid>
         <blazor:BlazorWebView HostPage="wwwroot\index.html" Services="{StaticResource services}">
             <blazor:BlazorWebView.RootComponents>

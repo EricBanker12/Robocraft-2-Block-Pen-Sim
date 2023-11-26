@@ -1,10 +1,17 @@
-﻿namespace BlockPenSimWPF.Shared.Models
+﻿using System.Diagnostics.CodeAnalysis;
+
+namespace BlockPenSimWPF.Shared.Models
 {
-    public struct Shape
+    public struct Shape: IEquatable<Shape>
     {
         public double smallest;
         public double middle;
         public double largest;
+
+        public readonly bool Equals(Shape other)
+        {
+            return smallest == other.smallest && middle == other.middle && largest == other.largest;
+        }
     }
 
     public struct Material

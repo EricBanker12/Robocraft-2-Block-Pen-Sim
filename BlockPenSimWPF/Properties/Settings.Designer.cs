@@ -58,25 +58,25 @@ namespace BlockPenSimWPF.Properties {
             "un (Top)\": false,\r\n    \"Score\": true,\r\n    \"Score / CPU\": true,\r\n    \"Score / We" +
             "ight\": true\r\n  },\r\n  \"RowFilters\": {},\r\n  \"ColumnsSort\": {\r\n    \"Score\": 1\r\n  }," +
             "\r\n  \"Cpu\": {\r\n    \"Min\": 1,\r\n    \"Max\": 100\r\n  },\r\n  \"Weight\": {\r\n    \"Min\": 0,\r" +
-            "\n    \"Max\": 6000\r\n  },\r\n  \"Length\": {\r\n    \"Min\": 4,\r\n    \"Max\": 9\r\n  },\r\n  \"Wid" +
-            "th\": {\r\n    \"Min\": 9,\r\n    \"Max\": 9\r\n  },\r\n  \"Height\": {\r\n    \"Min\": 9,\r\n    \"Ma" +
+            "\n    \"Max\": 6000\r\n  },\r\n  \"Length\": {\r\n    \"Min\": 0,\r\n    \"Max\": 9\r\n  },\r\n  \"Wid" +
+            "th\": {\r\n    \"Min\": 0,\r\n    \"Max\": 9\r\n  },\r\n  \"Height\": {\r\n    \"Min\": 0,\r\n    \"Ma" +
             "x\": 9\r\n  },\r\n  \"WeaponSettings\": {\r\n    \"LaserBlaster\": {\r\n      \"WeaponCount\": " +
-            "6,\r\n      \"WeaponRatio\": 3,\r\n      \"WeaponFrontRatio\": 3,\r\n      \"WeaponSideRati" +
+            "6,\r\n      \"WeaponRatio\": 1,\r\n      \"WeaponFrontRatio\": 2,\r\n      \"WeaponSideRati" +
             "o\": 1,\r\n      \"WeaponTopRatio\": 1\r\n    },\r\n    \"PlasmaCannonMax\": {\r\n      \"Weap" +
-            "onCount\": 2,\r\n      \"WeaponRatio\": 3,\r\n      \"WeaponFrontRatio\": 1,\r\n      \"Weap" +
-            "onSideRatio\": 1,\r\n      \"WeaponTopRatio\": 2\r\n    },\r\n    \"PlasmaCannon\": {\r\n    " +
-            "  \"WeaponCount\": 2,\r\n      \"WeaponRatio\": 3,\r\n      \"WeaponFrontRatio\": 1,\r\n    " +
-            "  \"WeaponSideRatio\": 1,\r\n      \"WeaponTopRatio\": 2\r\n    },\r\n    \"PlasmaCannonMin" +
-            "\": {\r\n      \"WeaponCount\": 2,\r\n      \"WeaponRatio\": 3,\r\n      \"WeaponFrontRatio\"" +
-            ": 1,\r\n      \"WeaponSideRatio\": 1,\r\n      \"WeaponTopRatio\": 2\r\n    },\r\n    \"ArcDi" +
+            "onCount\": 2,\r\n      \"WeaponRatio\": 1,\r\n      \"WeaponFrontRatio\": 1,\r\n      \"Weap" +
+            "onSideRatio\": 1,\r\n      \"WeaponTopRatio\": 1\r\n    },\r\n    \"PlasmaCannon\": {\r\n    " +
+            "  \"WeaponCount\": 2,\r\n      \"WeaponRatio\": 0,\r\n      \"WeaponFrontRatio\": 1,\r\n    " +
+            "  \"WeaponSideRatio\": 1,\r\n      \"WeaponTopRatio\": 1\r\n    },\r\n    \"PlasmaCannonMin" +
+            "\": {\r\n      \"WeaponCount\": 2,\r\n      \"WeaponRatio\": 0,\r\n      \"WeaponFrontRatio\"" +
+            ": 1,\r\n      \"WeaponSideRatio\": 1,\r\n      \"WeaponTopRatio\": 1\r\n    },\r\n    \"ArcDi" +
             "scharger\": {\r\n      \"WeaponCount\": 3,\r\n      \"WeaponRatio\": 0,\r\n      \"WeaponFro" +
-            "ntRatio\": 1,\r\n      \"WeaponSideRatio\": 1,\r\n      \"WeaponTopRatio\": 0\r\n    },\r\n  " +
+            "ntRatio\": 1,\r\n      \"WeaponSideRatio\": 1,\r\n      \"WeaponTopRatio\": 1\r\n    },\r\n  " +
             "  \"RailGunMax\": {\r\n      \"WeaponCount\": 1,\r\n      \"WeaponRatio\": 1,\r\n      \"Weap" +
-            "onFrontRatio\": 1,\r\n      \"WeaponSideRatio\": 0,\r\n      \"WeaponTopRatio\": 0\r\n    }" +
-            ",\r\n    \"RailGun\": {\r\n      \"WeaponCount\": 1,\r\n      \"WeaponRatio\": 1,\r\n      \"We" +
-            "aponFrontRatio\": 1,\r\n      \"WeaponSideRatio\": 0,\r\n      \"WeaponTopRatio\": 0\r\n   " +
-            " },\r\n    \"RailGunMin\": {\r\n      \"WeaponCount\": 1,\r\n      \"WeaponRatio\": 1,\r\n    " +
-            "  \"WeaponFrontRatio\": 1,\r\n      \"WeaponSideRatio\": 0,\r\n      \"WeaponTopRatio\": 0" +
+            "onFrontRatio\": 2,\r\n      \"WeaponSideRatio\": 1,\r\n      \"WeaponTopRatio\": 0\r\n    }" +
+            ",\r\n    \"RailGun\": {\r\n      \"WeaponCount\": 1,\r\n      \"WeaponRatio\": 0,\r\n      \"We" +
+            "aponFrontRatio\": 2,\r\n      \"WeaponSideRatio\": 1,\r\n      \"WeaponTopRatio\": 0\r\n   " +
+            " },\r\n    \"RailGunMin\": {\r\n      \"WeaponCount\": 1,\r\n      \"WeaponRatio\": 0,\r\n    " +
+            "  \"WeaponFrontRatio\": 2,\r\n      \"WeaponSideRatio\": 1,\r\n      \"WeaponTopRatio\": 0" +
             "\r\n    }\r\n  },\r\n  \"Weapons\": {\r\n    \"LaserBlaster\": {\r\n      \"name\": \"Laser Blast" +
             "er\",\r\n      \"cpu\": 20,\r\n      \"damage\": 24.0,\r\n      \"pellets\": 1.0,\r\n      \"rad" +
             "ius\": 0.0,\r\n      \"splashShape\": 0,\r\n      \"energy\": 2000.0,\r\n      \"cooldown\": " +
@@ -103,12 +103,12 @@ namespace BlockPenSimWPF.Properties {
             " Gun (25m)\",\r\n      \"cpu\": 120,\r\n      \"damage\": 150.0,\r\n      \"pellets\": 1.0,\r\n" +
             "      \"radius\": 0.0,\r\n      \"splashShape\": 0,\r\n      \"energy\": 200.0,\r\n      \"co" +
             "oldown\": 3.5,\r\n      \"impulse\": 2750\r\n    }\r\n  },\r\n  \"Materials\": {\r\n    \"Airium" +
-            "\": {\r\n      \"name\": \"Airium\",\r\n      \"density\": 0.7,\r\n      \"connectionStrength\"" +
-            ": 1.59,\r\n      \"energyAbsorption\": 2500\r\n    },\r\n    \"Moderonium\": {\r\n      \"nam" +
-            "e\": \"Moderonium\",\r\n      \"density\": 1.8,\r\n      \"connectionStrength\": 2.65,\r\n   " +
-            "   \"energyAbsorption\": 5000\r\n    },\r\n    \"Ladium\": {\r\n      \"name\": \"Ladium\",\r\n " +
-            "     \"density\": 7.3,\r\n      \"connectionStrength\": 3.35,\r\n      \"energyAbsorption" +
-            "\": 7500\r\n    }\r\n  }\r\n}")]
+            "\": {\r\n      \"name\": \"Airium\",\r\n      \"density\": 0.728,\r\n      \"connectionStrengt" +
+            "h\": 1.59,\r\n      \"energyAbsorption\": 2500\r\n    },\r\n    \"Moderonium\": {\r\n      \"n" +
+            "ame\": \"Moderonium\",\r\n      \"density\": 1.8,\r\n      \"connectionStrength\": 2.65,\r\n " +
+            "     \"energyAbsorption\": 5000\r\n    },\r\n    \"Ladium\": {\r\n      \"name\": \"Ladium\",\r" +
+            "\n      \"density\": 7.32,\r\n      \"connectionStrength\": 3.35225,\r\n      \"energyAbso" +
+            "rption\": 7500\r\n    }\r\n  }\r\n}")]
         public string IndexStore {
             get {
                 return ((string)(this["IndexStore"]));
@@ -127,6 +127,18 @@ namespace BlockPenSimWPF.Properties {
             }
             set {
                 this["ThemeOverride"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        public string WindowMaximized {
+            get {
+                return ((string)(this["WindowMaximized"]));
+            }
+            set {
+                this["WindowMaximized"] = value;
             }
         }
     }
