@@ -42,9 +42,8 @@ namespace BlockPenSimWPF
 
         private void Window_Initialized(object sender, EventArgs e)
         {
-            if (sender is MainWindow)
+            if (sender is MainWindow window)
             {
-                MainWindow window = (MainWindow)sender;
                 window.Title = "Robocraft 2 Block Penetration Simulator";
 
                 if (ThemeData.GetCurrentTheme() == Theme.Dark)
@@ -58,6 +57,12 @@ namespace BlockPenSimWPF
                     window.Width = size.Width;
                     window.Height = size.Height;
                 }
+
+                var maximized = LocalSettings.GetValue<bool>("WindowMaximized");
+                if (maximized)
+                {
+                    window.WindowState = WindowState.Maximized;
+                }
             }
         }
 
@@ -67,6 +72,15 @@ namespace BlockPenSimWPF
             {
                 var size = e.NewSize;
                 LocalSettings.SetValue("WindowSize", size);
+            }
+        }
+
+        private void Window_StateChanged(object sender, EventArgs e)
+        {
+            if (sender is MainWindow window)
+            {
+                var maximized = window.WindowState == WindowState.Maximized;
+                LocalSettings.SetValue("WindowMaximized", maximized);
             }
         }
     }
