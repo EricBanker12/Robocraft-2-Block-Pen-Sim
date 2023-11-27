@@ -17,17 +17,34 @@ namespace BlockPenSimWPF.Data
         /// Generates all permutations of shapes
         /// </summary>
         /// <returns></returns>
-        private static List<Shape> GetAllShapes(double[] sizes)
+        private static List<Shape> GetAllShapes()
         {
             var retval = new List<Shape>();
-            for (int a = 0; a < sizes.Length; a++)
-                for (int b = 0; b < sizes.Length; b++)
-                    for (int c = 1; c < sizes.Length; c++)
+            for (int a = 0; a < shapeSizes.Length; a++)
+                for (int b = 0; b < shapeSizes.Length; b++)
+                    for (int c = 1; c < shapeSizes.Length; c++)
                     {
-                        if (sizes[a] > sizes[b]) continue;
-                        if (sizes[b] > sizes[c]) continue;
-                        if (sizes[a] % 1.0 > 0.0 && sizes[b] % 1.0 > 0.0 && sizes[c] % 1.0 > 0.0) continue;
-                        retval.Add(new Shape { smallest = sizes[a], middle = sizes[b], largest = sizes[c] });
+                        if (shapeSizes[a] > shapeSizes[b]) continue;
+                        if (shapeSizes[b] > shapeSizes[c]) continue;
+                        retval.Add(new Shape { smallest = shapeSizes[a], middle = shapeSizes[b], largest = shapeSizes[c] });
+                    }
+
+            return retval;
+        }
+
+        /// <summary>
+        /// Generates all permutations of post straights
+        /// </summary>
+        /// <returns></returns>
+        private static List<Shape> GetAllPosts()
+        {
+            var retval = new List<Shape>();
+            for (int a = 0; a < postSizes.Length; a++)
+                for (int b = 0; b < postSizes.Length; b++)
+                    for (int c = 1; c < shapeSizes.Length; c++)
+                    {
+                        if (postSizes[a] > postSizes[b]) continue;
+                        retval.Add(new Shape { smallest = postSizes[a], middle = postSizes[b], largest = shapeSizes[c] });
                     }
 
             return retval;
@@ -332,18 +349,25 @@ namespace BlockPenSimWPF.Data
         public static async Task<DataTable> RunAsync(IndexStore settings)
         {
             var schema = CreateSchema(settings);
-            var shapes = GetAllShapes(shapeSizes);
+            var shapes = GetAllShapes();
 
             if (settings.simulateWithScaledPostStraights)
             {
-                var posts = GetAllShapes(postSizes);
+                var posts = GetAllPosts();
                 foreach (var post in posts)
                 {
+                    bool isShape = false;
                     foreach (var shape in shapes)
                     {
-                        if (shape.Equals(post)) break;
+                        if (shape.Equals(post))
+                        {
+                            isShape = true;
+                            break;
+                        }
                     }
-                    shapes.Add(post);
+                    
+                    if (isShape) continue;
+                    else shapes.Add(post);
                 }
             }
 
@@ -358,13 +382,12 @@ namespace BlockPenSimWPF.Data
                     {
                         foreach (Orientation orientation in Enum.GetValues(typeof(Orientation))) // 6
                         {
-                            Block block = new Block(shape, orientation, material);
-
                             // skip duplicate shapes
-                            if (block.length == block.width && orientation == Orientation.FlatWide) continue;
-                            if (block.width == block.height && orientation == Orientation.ForwardsWide) continue;
-                            if (block.length == block.height && orientation == Orientation.SidewaysLong) continue;
-                            if (block.length == block.width && block.length == block.height && ((int)orientation) > 0) continue;
+                            if (shape.smallest == shape.middle && (orientation == Orientation.SidewaysTall || orientation == Orientation.FlatLong || orientation == Orientation.FlatWide)) continue;
+                            if (shape.largest == shape.middle && (orientation == Orientation.ForwardsWide || orientation == Orientation.SidewaysLong || orientation == Orientation.FlatWide)) continue;
+                            if (shape.smallest == shape.middle && shape.largest == shape.middle && ((int)orientation) > 0) continue;
+
+                            Block block = new Block(shape, orientation, material);
 
                             var minLengthCount = Math.Max((int)Math.Ceiling(settings.Length.Min / block.length), 1);
                             var minWidthCount = Math.Max((int)Math.Ceiling(settings.Width.Min / block.width), 1);
@@ -431,13 +454,14 @@ namespace BlockPenSimWPF.Data
                                         dataRow["Score"] = score;
                                         dataRow["Score / CPU"] = score / blockFill.Cpu;
                                         dataRow["Score / Weight"] = score / blockFill.Weight;
-
+                                        
                                         output.Rows.Add(dataRow);
                                     }
                                 }
                             }
                         }
                     }
+                    
                     return output;
                 }));
             }
