@@ -389,6 +389,10 @@ namespace BlockPenSimWPF.Data
 
                             Block block = new Block(shape, orientation, material);
 
+                            if (block.length > settings.Length.Max) continue;
+                            if (block.width > settings.Width.Max) continue;
+                            if (block.height > settings.Height.Max) continue;
+
                             var minLengthCount = Math.Max((int)Math.Ceiling(settings.Length.Min / block.length), 1);
                             var minWidthCount = Math.Max((int)Math.Ceiling(settings.Width.Min / block.width), 1);
                             var minHeightCount = Math.Max((int)Math.Ceiling(settings.Height.Min / block.height), 1);
