@@ -94,10 +94,10 @@ namespace BlockPenSimWPF.Properties {
             "40,\r\n      \"damage\": 15000.0,\r\n      \"pellets\": 11.0,\r\n      \"radius\": 30.0,\r\n  " +
             "    \"splashShape\": 1,\r\n      \"energy\": 120000.0,\r\n      \"cooldown\": 6.0,\r\n      " +
             "\"impulse\": 5000\r\n    },\r\n    \"RailGunMax\": {\r\n      \"name\": \"Rail Gun (70m)\",\r\n " +
-            "     \"cpu\": 120,\r\n      \"damage\": 810.0,\r\n      \"pellets\": 12.0,\r\n      \"radius\"" +
+            "     \"cpu\": 120,\r\n      \"damage\": 810.0,\r\n      \"pellets\": 14.0,\r\n      \"radius\"" +
             ": 5.0,\r\n      \"splashShape\": 2,\r\n      \"energy\": 5200.0,\r\n      \"cooldown\": 3.5," +
             "\r\n      \"impulse\": 2750\r\n    },\r\n    \"RailGun\": {\r\n      \"name\": \"Rail Gun (47.5" +
-            "m)\",\r\n      \"cpu\": 120,\r\n      \"damage\": 480.0,\r\n      \"pellets\": 12.0,\r\n      \"" +
+            "m)\",\r\n      \"cpu\": 120,\r\n      \"damage\": 480.0,\r\n      \"pellets\": 14.0,\r\n      \"" +
             "radius\": 2.5,\r\n      \"splashShape\": 2,\r\n      \"energy\": 2700.0,\r\n      \"cooldown" +
             "\": 3.5,\r\n      \"impulse\": 2750\r\n    },\r\n    \"RailGunMin\": {\r\n      \"name\": \"Rail" +
             " Gun (25m)\",\r\n      \"cpu\": 120,\r\n      \"damage\": 150.0,\r\n      \"pellets\": 1.0,\r\n" +
