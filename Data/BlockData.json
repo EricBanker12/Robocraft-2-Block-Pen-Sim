@@ -7,7 +7,7 @@
       "pellets": 1.0,
       "radius": 0.0,
       "splashShape": 0,
-      "energy": 2000.0,
+      "energy": 1500.0,
       "cooldown": 0.6,
       "impulse": 2750
     },
