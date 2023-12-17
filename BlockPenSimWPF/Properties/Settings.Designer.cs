@@ -12,7 +12,7 @@ namespace BlockPenSimWPF.Properties {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "17.6.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "17.8.0.0")]
     internal sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
         
         private static Settings defaultInstance = ((Settings)(global::System.Configuration.ApplicationSettingsBase.Synchronized(new Settings())));
@@ -78,27 +78,27 @@ namespace BlockPenSimWPF.Properties {
             " },\r\n    \"RailGunMin\": {\r\n      \"WeaponCount\": 1,\r\n      \"WeaponRatio\": 0,\r\n    " +
             "  \"WeaponFrontRatio\": 2,\r\n      \"WeaponSideRatio\": 1,\r\n      \"WeaponTopRatio\": 0" +
             "\r\n    }\r\n  },\r\n  \"Weapons\": {\r\n    \"LaserBlaster\": {\r\n      \"name\": \"Laser Blast" +
-            "er\",\r\n      \"cpu\": 20,\r\n      \"damage\": 24.0,\r\n      \"pellets\": 1.0,\r\n      \"rad" +
-            "ius\": 0.0,\r\n      \"splashShape\": 0,\r\n      \"energy\": 2000.0,\r\n      \"cooldown\": " +
+            "er\",\r\n      \"cpu\": 20,\r\n      \"damage\": 22.0,\r\n      \"pellets\": 1.0,\r\n      \"rad" +
+            "ius\": 0.0,\r\n      \"splashShape\": 0,\r\n      \"energy\": 1500.0,\r\n      \"cooldown\": " +
             "0.6,\r\n      \"impulse\": 2750\r\n    },\r\n    \"PlasmaCannonMax\": {\r\n      \"name\": \"Pl" +
-            "asma Cannon (37.5m)\",\r\n      \"cpu\": 60,\r\n      \"damage\": 600.0,\r\n      \"pellets\"" +
-            ": 9.0,\r\n      \"radius\": 25.0,\r\n      \"splashShape\": 1,\r\n      \"energy\": 1000.0,\r" +
+            "asma Cannon (37.5m)\",\r\n      \"cpu\": 60,\r\n      \"damage\": 850.0,\r\n      \"pellets\"" +
+            ": 9.0,\r\n      \"radius\": 25.0,\r\n      \"splashShape\": 1,\r\n      \"energy\": 3000.0,\r" +
             "\n      \"cooldown\": 2.5,\r\n      \"impulse\": 2750\r\n    },\r\n    \"PlasmaCannon\": {\r\n " +
-            "     \"name\": \"Plasma Cannon (78.75m)\",\r\n      \"cpu\": 60,\r\n      \"damage\": 340.0," +
+            "     \"name\": \"Plasma Cannon (78.75m)\",\r\n      \"cpu\": 60,\r\n      \"damage\": 465.0," +
             "\r\n      \"pellets\": 9.0,\r\n      \"radius\": 25.0,\r\n      \"splashShape\": 1,\r\n      \"" +
-            "energy\": 1000.0,\r\n      \"cooldown\": 2.5,\r\n      \"impulse\": 2750\r\n    },\r\n    \"Pl" +
+            "energy\": 3000.0,\r\n      \"cooldown\": 2.5,\r\n      \"impulse\": 2750\r\n    },\r\n    \"Pl" +
             "asmaCannonMin\": {\r\n      \"name\": \"Plasma Cannon (120m)\",\r\n      \"cpu\": 60,\r\n    " +
             "  \"damage\": 80.0,\r\n      \"pellets\": 9.0,\r\n      \"radius\": 25.0,\r\n      \"splashSh" +
-            "ape\": 1,\r\n      \"energy\": 1000.0,\r\n      \"cooldown\": 2.5,\r\n      \"impulse\": 2750" +
+            "ape\": 1,\r\n      \"energy\": 3000.0,\r\n      \"cooldown\": 2.5,\r\n      \"impulse\": 2750" +
             "\r\n    },\r\n    \"ArcDischarger\": {\r\n      \"name\": \"Arc Discharger\",\r\n      \"cpu\": " +
             "40,\r\n      \"damage\": 15000.0,\r\n      \"pellets\": 11.0,\r\n      \"radius\": 30.0,\r\n  " +
             "    \"splashShape\": 1,\r\n      \"energy\": 120000.0,\r\n      \"cooldown\": 6.0,\r\n      " +
             "\"impulse\": 5000\r\n    },\r\n    \"RailGunMax\": {\r\n      \"name\": \"Rail Gun (70m)\",\r\n " +
-            "     \"cpu\": 120,\r\n      \"damage\": 810.0,\r\n      \"pellets\": 12.0,\r\n      \"radius\"" +
-            ": 3.0,\r\n      \"splashShape\": 2,\r\n      \"energy\": 4500.0,\r\n      \"cooldown\": 3.5," +
+            "     \"cpu\": 120,\r\n      \"damage\": 810.0,\r\n      \"pellets\": 14.0,\r\n      \"radius\"" +
+            ": 5.0,\r\n      \"splashShape\": 2,\r\n      \"energy\": 5200.0,\r\n      \"cooldown\": 3.5," +
             "\r\n      \"impulse\": 2750\r\n    },\r\n    \"RailGun\": {\r\n      \"name\": \"Rail Gun (47.5" +
-            "m)\",\r\n      \"cpu\": 120,\r\n      \"damage\": 480.0,\r\n      \"pellets\": 12.0,\r\n      \"" +
-            "radius\": 1.5,\r\n      \"splashShape\": 2,\r\n      \"energy\": 2350.0,\r\n      \"cooldown" +
+            "m)\",\r\n      \"cpu\": 120,\r\n      \"damage\": 480.0,\r\n      \"pellets\": 14.0,\r\n      \"" +
+            "radius\": 2.5,\r\n      \"splashShape\": 2,\r\n      \"energy\": 2700.0,\r\n      \"cooldown" +
             "\": 3.5,\r\n      \"impulse\": 2750\r\n    },\r\n    \"RailGunMin\": {\r\n      \"name\": \"Rail" +
             " Gun (25m)\",\r\n      \"cpu\": 120,\r\n      \"damage\": 150.0,\r\n      \"pellets\": 1.0,\r\n" +
             "      \"radius\": 0.0,\r\n      \"splashShape\": 0,\r\n      \"energy\": 200.0,\r\n      \"co" +
